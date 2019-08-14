@@ -1,18 +1,26 @@
-FOREMAN_VERSION="1.23"
-KATELLO_VERSION="3.13"
+VERSION="${VERSION:-1.23}"
 PROJECT="${PROJECT:-foreman}"
-if [[ $PROJECT = foreman ]]; then
-  VERSION=$FOREMAN_VERSION
-elif [[ $PROJECT = katello ]]; then
-  VERSION=$KATELLO_VERSION
-else
-  echo "unsupported project: $PROJECT"
-  exit 1
+RELEASEDIR="releases/$PROJECT/$VERSION"
+
+# Prepare settings file
+if [[ ! -d "$RELEASEDIR" ]] ; then
+	mkdir -p "$RELEASEDIR"
+	echo "FULLVERSION='${VERSION}.0-RC1'" > "$RELEASEDIR/settings"
 fi
+
+if [[ $PROJECT != foreman ]]; then
+  . "$RELEASEDIR/settings"
+  if [[ -z "$FOREMAN_VERSION" ]]; then
+    echo "please set FOREMAN_VERSION in $RELEASEDIR/settings"
+    exit 1
+  fi
+else
+  FOREMAN_VERSION="$VERSION"
+fi
+
 SIGNER="packages@theforeman.org"
 OSES="rhel7"
 CLIENT_OSES="rhel5 rhel6 rhel7 sles11 sles12 fedora28 fedora29"
-RELEASEDIR="releases/$PROJECT/$VERSION"
 RPMDIR="$RELEASEDIR/rpms"
 KEYDIR="$RELEASEDIR/gnupg"
 GNUPGHOME="$KEYDIR"
@@ -33,10 +41,6 @@ PACKAGING_PR=true
 
 # Load settings per release
 # Expected: GPGKEY FULLGPGKEY FULLVERSION
-if [[ ! -d "$RELEASEDIR" ]] ; then
-	mkdir -p "$RELEASEDIR"
-	echo "FULLVERSION='${VERSION}.0-RC1'" > "$RELEASEDIR/settings"
-fi
 . "$RELEASEDIR/settings"
 
 copy_gpg_key() {
