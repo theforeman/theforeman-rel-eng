@@ -2,4 +2,4 @@
 
 . settings
 
-find "$RPMDIR" -name '*.rpm' | xargs $XARGS_JOBS $GIT_DIR/koji/cli/koji import-sig
+find "$RPMDIR" -name '*.rpm' | xargs $XARGS_JOBS koji import-sig
