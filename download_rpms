@@ -8,14 +8,20 @@ cd "$RPMDIR"
 tags=""
 
 for os in $OSES; do
-  tags="foreman-$VERSION-$os"
-  [[ -n $ROR_BASE_TAG ]] && tags="$tags $ROR_BASE_TAG-$os"
-  [[ $os =~ rhel ]] && tags="$tags foreman-$VERSION-nonscl-$os"
+  tags="$PROJECT-$VERSION-$os"
+  if [[ $PROJECT = foreman ]]; then
+    [[ -n $ROR_BASE_TAG ]] && tags="$tags $ROR_BASE_TAG-$os"
+    [[ $os =~ rhel ]] && tags="$tags foreman-$VERSION-nonscl-$os"
+  elif [[ $PROJECT = katello ]]; then
+    [[ $os =~ rhel ]] && tags="$tags katello-$VERSION-thirdparty-candlepin-$os katello-$VERSION-thirdparty-candlepin-$os"
+  fi
 done
 
-for os in $CLIENT_OSES; do
-  tags="$tags foreman-client-$VERSION-$os"
-done
+if [[ $PROJECT = foreman ]]; then
+  for os in $CLIENT_OSES; do
+    tags="$tags foreman-client-$VERSION-$os"
+  done
+fi
 
 for tag in $tags; do
   koji list-tagged --latest --quiet --inherit --sigs $tag

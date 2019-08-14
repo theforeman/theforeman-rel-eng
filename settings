@@ -1,8 +1,18 @@
-VERSION="${VERSION:-1.23}"
+FOREMAN_VERSION="1.23"
+KATELLO_VERSION="3.13"
+PROJECT="${PROJECT:-foreman}"
+if [[ $PROJECT = foreman ]]; then
+  VERSION=$FOREMAN_VERSION
+elif [[ $PROJECT = katello ]]; then
+  VERSION=$KATELLO_VERSION
+else
+  echo "unsupported project: $PROJECT"
+  exit 1
+fi
 SIGNER="packages@theforeman.org"
 OSES="rhel7"
 CLIENT_OSES="rhel5 rhel6 rhel7 sles11 sles12 fedora28 fedora29"
-RELEASEDIR="releases/$VERSION"
+RELEASEDIR="releases/$PROJECT/$VERSION"
 RPMDIR="$RELEASEDIR/rpms"
 KEYDIR="$RELEASEDIR/gnupg"
 GNUPGHOME="$KEYDIR"
@@ -10,15 +20,15 @@ TARDIR="$RELEASEDIR/tarballs"
 EXTRASDIR="$RELEASEDIR/extras"
 HOSTS="theforeman.org,"
 DOCROOT="/var/www/vhosts/downloads/htdocs"
-PASS_NAME_GPG="theforeman/releases/foreman/$VERSION-gpg"
-PASS_NAME_KEY="theforeman/releases/foreman/$VERSION-key"
+PASS_NAME_GPG="theforeman/releases/foreman/$FOREMAN_VERSION-gpg"
+PASS_NAME_KEY="theforeman/releases/foreman/$FOREMAN_VERSION-key"
 XARGS_JOBS="-n 20 -P 4"
 GIT_DIR="$HOME/dev"
 PACKAGING_DIR="$GIT_DIR/foreman-packaging"
 PACKAGING_GIT_REMOTE=origin
 TAR_PROJECTS="foreman foreman-proxy foreman-installer foreman-selinux"
 RPM_PACKAGES="foreman foreman-installer foreman-proxy foreman-release foreman-selinux"
-ROR_BASE_TAG="foreman-rails-$VERSION"
+ROR_BASE_TAG="foreman-rails-$FOREMAN_VERSION"
 PACKAGING_PR=true
 
 # Load settings per release
