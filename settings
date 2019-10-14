@@ -1,6 +1,7 @@
 VERSION="${VERSION:-1.23}"
 PROJECT="${PROJECT:-foreman}"
-RELEASEDIR="releases/$PROJECT/$VERSION"
+PROJECTDIR="releases/$PROJECT"
+RELEASEDIR="${PROJECTDIR}/${VERSION}"
 
 # Prepare settings file
 if [[ ! -d "$RELEASEDIR" ]] ; then
@@ -34,10 +35,15 @@ XARGS_JOBS="-n 20 -P 4"
 GIT_DIR="$HOME/dev"
 PACKAGING_DIR="$GIT_DIR/foreman-packaging"
 PACKAGING_GIT_REMOTE=origin
-TAR_PROJECTS="foreman foreman-proxy foreman-installer foreman-selinux"
-RPM_PACKAGES="foreman foreman-installer foreman-proxy foreman-release foreman-selinux"
-ROR_BASE_TAG="foreman-rails-$FOREMAN_VERSION"
+TAR_PROJECTS=""
+RPM_PACKAGES=""
+ROR_BASE_TAG=""
 PACKAGING_PR=true
+
+# load project specific settings first
+if [[ -f "${PROJECTDIR}/settings" ]]; then
+  . "${PROJECTDIR}/settings"
+fi
 
 # Load settings per release
 # Expected: GPGKEY FULLGPGKEY FULLVERSION
