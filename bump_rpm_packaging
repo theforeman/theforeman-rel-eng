@@ -12,7 +12,10 @@ git checkout -b rpm/release-$FULLVERSION $PACKAGING_GIT_REMOTE/$REMOTE_BRANCH
 for package in $RPM_PACKAGES ; do
 	(
 		cd packages/foreman/$package
+
 		spec_file="${package}.spec"
+		spectool --list-files $spec_file | cut -d' ' -f2 | grep http | xargs --no-run-if-empty -n 1 basename | xargs --no-run-if-empty git rm
+
 		if [[ $FULLVERSION == *-RC* ]] ; then
 			if [[ FULLVERSION == *-RC1 ]] ; then
 				echo "TODO: bump release"
@@ -21,15 +24,10 @@ for package in $RPM_PACKAGES ; do
 		else
 			sed -i 's/^\(Version:\s\+\).\+$/\1'$FULLVERSION'/ ; s/^\(%global release\s\+\).\+$/\11/ ; /^\(%global prerelease\s\)/d' $spec_file
 		fi
-		git add $spec_file
-		if [[ $package != foreman-release ]] ; then
-			git rm --ignore-unmatch --force *.tar.bz2
-			spectool -g $spec_file
-			git annex add *.tar.bz2
-		fi
 	)
 done
 
+obal source $RPM_PACKAGES
 obal changelog --message "- Release $FULLVERSION" $RPM_PACKAGES
 for package in $RPM_PACKAGES ; do
 	git add packages/foreman/$package/$package.spec
