@@ -12,18 +12,19 @@ git checkout -b rpm/release-$FULLVERSION $PACKAGING_GIT_REMOTE/$REMOTE_BRANCH
 for package in $RPM_PACKAGES ; do
 	(
 		cd packages/foreman/$package
+		spec_file="${package}.spec"
 		if [[ $FULLVERSION == *-RC* ]] ; then
 			if [[ FULLVERSION == *-RC1 ]] ; then
 				echo "TODO: bump release"
 			fi
-			sed -i 's/^\(Version:\s\+\).\+$/\1'${FULLVERSION%%-RC*}'/ ; s/^\(%global prerelease\s\+\).\+$/\1'${FULLVERSION##*-}'/' $package.spec
+			sed -i 's/^\(Version:\s\+\).\+$/\1'${FULLVERSION%%-RC*}'/ ; s/^\(%global prerelease\s\+\).\+$/\1'${FULLVERSION##*-}'/' $spec_file
 		else
-			sed -i 's/^\(Version:\s\+\).\+$/\1'$FULLVERSION'/ ; s/^\(%global release\s\+\).\+$/\11/ ; /^\(%global prerelease\s\)/d' $package.spec
+			sed -i 's/^\(Version:\s\+\).\+$/\1'$FULLVERSION'/ ; s/^\(%global release\s\+\).\+$/\11/ ; /^\(%global prerelease\s\)/d' $spec_file
 		fi
-		git add $package.spec
+		git add $spec_file
 		if [[ $package != foreman-release ]] ; then
 			git rm --ignore-unmatch --force *.tar.bz2
-			spectool -g $package.spec
+			spectool -g $spec_file
 			git annex add *.tar.bz2
 		fi
 	)
