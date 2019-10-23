@@ -14,6 +14,9 @@ if [[ $PROJECT != foreman ]]; then
   if [[ -z "$FOREMAN_VERSION" ]]; then
     echo "please set FOREMAN_VERSION in $RELEASEDIR/settings"
     exit 1
+  else
+    # load foreman settings, which will contain keys etc
+    . "releases/foreman/${FOREMAN_VERSION}/settings"
   fi
 else
   FOREMAN_VERSION="$VERSION"
