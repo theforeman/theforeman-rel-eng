@@ -8,14 +8,7 @@ cd "$RPMDIR"
 tags=""
 
 for os in $OSES; do
-  versioned_tags=$(echo ${SERVER_TAGS} | sed "s/@VERSION@/$VERSION/g; s/@OS@/$os/g")
-  for tag in ${versioned_tags}; do
-    tags="$tags $tag"
-  done
-done
-
-for os in $CLIENT_OSES; do
-  versioned_tags=$(echo ${CLIENT_TAGS} | sed "s/@VERSION@/$VERSION/g; s/@OS@/$os/g")
+  versioned_tags=$(echo ${KOJI_TAGS} | sed "s/@VERSION@/$VERSION/g; s/@OS@/$os/g")
   for tag in ${versioned_tags}; do
     tags="$tags $tag"
   done

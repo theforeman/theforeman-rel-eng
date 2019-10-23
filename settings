@@ -21,7 +21,6 @@ fi
 
 SIGNER="packages@theforeman.org"
 OSES="rhel7"
-CLIENT_OSES="rhel5 rhel6 rhel7 sles11 sles12 fedora28 fedora29"
 RPMDIR="$RELEASEDIR/rpms"
 KEYDIR="$RELEASEDIR/gnupg"
 GNUPGHOME="$KEYDIR"
@@ -37,8 +36,7 @@ PACKAGING_DIR="$GIT_DIR/foreman-packaging"
 PACKAGING_GIT_REMOTE=origin
 TAR_PROJECTS=""
 RPM_PACKAGES=""
-SERVER_TAGS=""
-CLIENT_TAGS=""
+KOJI_TAGS=""
 PACKAGING_PR=true
 
 # load project specific settings first
