@@ -40,7 +40,7 @@ PACKAGING_GIT_REMOTE=origin
 TAR_PROJECTS=""
 RPM_PACKAGES=""
 KOJI_TAGS=""
-PACKAGING_PR=true
+PACKAGING_PR=${PACKAGING_PR:-true}
 
 # load project specific settings first
 if [[ -f "${PROJECTDIR}/settings" ]]; then
