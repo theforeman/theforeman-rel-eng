@@ -1,3 +1,4 @@
 TAR_PROJECTS="foreman foreman-proxy foreman-installer foreman-selinux"
 RPM_PACKAGES="foreman foreman-installer foreman-proxy foreman-release foreman-selinux"
-ROR_BASE_TAG="foreman-rails-$FOREMAN_VERSION"
+SERVER_TAGS="foreman-@VERSION@-@OS@ foreman-@VERSION@-nonscl-@OS@ foreman-rails-@VERSION@-@OS@"
+CLIENT_TAGS="foreman-client-@VERSION@-@OS@"
