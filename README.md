@@ -4,7 +4,7 @@ These are the scripts I use while releasing [The Foreman](https://theforeman.org
 
 ## Typical release flow
 
-Make sure `VERSION` is correct in `settings` and `FULLVERSION` in `releases/$VERSION/settings`. This assumes a GPG key is already present.
+Make sure `VERSION` is correct in `settings` and `FULLVERSION` in `releases/$PROJECT/$VERSION/settings`. This assumes a GPG key is already present.
 
 ```bash
 ./tag_project
@@ -23,6 +23,12 @@ Make sure `VERSION` is correct in `settings` and `FULLVERSION` in `releases/$VER
 ./process_rpms
 ```
 
+When handling non-Foreman releases (currently supported: Katello and Client), set `PROJECT` to the lowercase name of the project and `VERSION` to the version of the project (if it differs from the Foreman one).
+
+```bash
+PROJECT=client ./download_rpms
+PROJECT=katello VERSION=3.13 ./download_rpms
+```
 ## GPG keys
 
 This assumes [gopass](https://github.com/gopasspw/gopass) is already set up.
