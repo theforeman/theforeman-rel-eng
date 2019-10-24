@@ -8,7 +8,8 @@ from time import sleep
 import click
 import jenkins
 
-JOBS = ['ping', 'tarballs-release', 'release_packages', 'foreman-release-pipeline']
+JOBS = ['ping', 'tarballs-release', 'release_packages', 'foreman-release-pipeline',
+        'katello-release-pipeline', 'client-release-pipeline']
 
 
 def parse_pass_lines(lines):
@@ -82,6 +83,14 @@ def build(job, version, wait):
         parameters = {
             'expected_version': version,
         }
+    elif job == 'katello-release-pipeline':
+        major, minor, _ = version.split('.', 2)
+        job = f'katello-{major}.{minor}-rpm-pipeline'
+        parameters = None
+    elif job == 'client-release-pipeline':
+        major, minor, _ = version.split('.', 2)
+        job = f'foreman-client-{major}.{minor}-rpm-pipeline'
+        parameters = None
 
     # Get the last build so we can poll later
     build_number_before = get_last_build_number(server, job)

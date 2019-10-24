@@ -2,4 +2,4 @@
 
 . settings
 
-./ci-jobs foreman-release-pipeline $FULLVERSION
+./ci-jobs $PROJECT-release-pipeline $FULLVERSION
