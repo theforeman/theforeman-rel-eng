@@ -1,1 +1,2 @@
+RPM_PACKAGES="katello katello-repos rubygem-katello"
 KOJI_TAGS="katello-@VERSION@-@OS@ katello-@VERSION@-thirdparty-candlepin-@OS@"
