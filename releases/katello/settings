@@ -1,1 +1,2 @@
 KOJI_TAGS="katello-@VERSION@-@OS@ katello-@VERSION@-thirdparty-candlepin-@OS@"
+PACKAGING_SUBDIR="packages/katello"

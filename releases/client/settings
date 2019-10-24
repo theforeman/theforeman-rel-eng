@@ -1,1 +1,2 @@
 KOJI_TAGS="foreman-client-@VERSION@-@OS@"
+PACKAGING_SUBDIR="packages/client"
