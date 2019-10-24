@@ -30,7 +30,7 @@ done
 obal source $RPM_PACKAGES
 obal changelog --message "- Release $FULLVERSION" $RPM_PACKAGES
 for package in $RPM_PACKAGES ; do
-	git ${PACKAGING_SUBDIR}/$package/$package.spec
+	git add ${PACKAGING_SUBDIR}/$package/$package.spec
 done
 
 git commit -m "Release $FULLVERSION"
