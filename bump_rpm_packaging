@@ -2,12 +2,12 @@
 
 . settings
 
-REMOTE_BRANCH=rpm/$VERSION
+REMOTE_BRANCH=rpm/${FOREMAN_VERSION}
 
 cd "$PACKAGING_DIR"
 
 git fetch $PACKAGING_GIT_REMOTE
-git checkout -b rpm/release-$FULLVERSION $PACKAGING_GIT_REMOTE/$REMOTE_BRANCH
+git checkout -b rpm/release-$PROJECT-$FULLVERSION $PACKAGING_GIT_REMOTE/$REMOTE_BRANCH
 
 for package in $RPM_PACKAGES ; do
 	(
