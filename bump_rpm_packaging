@@ -9,19 +9,14 @@ cd "$PACKAGING_DIR"
 git fetch $PACKAGING_GIT_REMOTE
 git checkout -b rpm/release-$PROJECT-$FULLVERSION $PACKAGING_GIT_REMOTE/$REMOTE_BRANCH
 
-for package in $RPM_PACKAGES ; do
-	(
-
-		if [[ $FULLVERSION == *-RC* ]] ; then
-			if [[ FULLVERSION == *-RC1 ]] ; then
-				echo "TODO: bump release"
-			fi
-			obal update $package -e version=${FULLVERSION%%-RC*} -e prerelease=${FULLVERSION##*-}
-		else
-			obal update $package -e version=$FULLVERSION
-		fi
-	)
-done
+if [[ $FULLVERSION == *-RC* ]] ; then
+	if [[ FULLVERSION == *-RC1 ]] ; then
+		echo "TODO: bump release"
+	fi
+	obal update -e version=${FULLVERSION%%-RC*} -e prerelease=${FULLVERSION##*-} $RPM_PACKAGES
+else
+	obal update -e version=$FULLVERSION $RPM_PACKAGES
+fi
 
 if [[ $PACKAGING_PR == true ]] ; then
 	git phr -m "Release $FULLVERSION" -b "$REMOTE_BRANCH"
