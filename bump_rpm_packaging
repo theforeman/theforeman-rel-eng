@@ -11,29 +11,17 @@ git checkout -b rpm/release-$FULLVERSION $PACKAGING_GIT_REMOTE/$REMOTE_BRANCH
 
 for package in $RPM_PACKAGES ; do
 	(
-		cd ${PACKAGING_SUBDIR}/$package
-
-		spec_file="${package}.spec"
-		spectool --list-files $spec_file | cut -d' ' -f2 | grep http | xargs --no-run-if-empty -n 1 basename | xargs --no-run-if-empty git rm
 
 		if [[ $FULLVERSION == *-RC* ]] ; then
 			if [[ FULLVERSION == *-RC1 ]] ; then
 				echo "TODO: bump release"
 			fi
-			sed -i 's/^\(Version:\s\+\).\+$/\1'${FULLVERSION%%-RC*}'/ ; s/^\(%global prerelease\s\+\).\+$/\1'${FULLVERSION##*-}'/' $spec_file
+			obal update $package -e version=${FULLVERSION%%-RC*} -e prerelease=${FULLVERSION##*-}
 		else
-			sed -i 's/^\(Version:\s\+\).\+$/\1'$FULLVERSION'/ ; s/^\(%global release\s\+\).\+$/\11/ ; /^\(%global prerelease\s\)/d' $spec_file
+			obal update $package -e version=$FULLVERSION
 		fi
 	)
 done
-
-obal source $RPM_PACKAGES
-obal changelog --message "- Release $FULLVERSION" $RPM_PACKAGES
-for package in $RPM_PACKAGES ; do
-	git add ${PACKAGING_SUBDIR}/$package/$package.spec
-done
-
-git commit -m "Release $FULLVERSION"
 
 if [[ $PACKAGING_PR == true ]] ; then
 	git phr -m "Release $FULLVERSION" -b "$REMOTE_BRANCH"
