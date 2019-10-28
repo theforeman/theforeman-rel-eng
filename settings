@@ -42,6 +42,11 @@ RPM_PACKAGES=""
 KOJI_TAGS=""
 PACKAGING_PR=${PACKAGING_PR:-true}
 
+# load user local settings
+if [[ -f "settings.local" ]]; then
+  . "settings.local"
+fi
+
 # load project specific settings first
 if [[ -f "${PROJECTDIR}/settings" ]]; then
   . "${PROJECTDIR}/settings"
