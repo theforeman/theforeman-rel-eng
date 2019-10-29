@@ -13,7 +13,7 @@ if [[ $FULLVERSION == *-RC* ]] ; then
 	if [[ FULLVERSION == *-RC1 ]] ; then
 		echo "TODO: bump release"
 	fi
-	obal update -e version=${FULLVERSION%%-RC*} -e prerelease=${FULLVERSION##*-} $RPM_PACKAGES
+	obal update -e version=${FULLVERSION%%-RC*} -e prerelease=${FULLVERSION##*-} -e release=keep $RPM_PACKAGES
 else
 	obal update -e version=$FULLVERSION $RPM_PACKAGES
 fi
