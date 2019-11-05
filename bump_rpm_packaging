@@ -18,7 +18,7 @@ if [[ $FULLVERSION == *-RC* ]] ; then
 	if [[ $PROJECT == katello ]]; then
 		PRERELEASE=".${PRERELEASE,,}"
 	fi
-	obal update --version ${FULLVERSION%%-RC*} --prerelease ${PRERELEASE} -e release=keep $RPM_PACKAGES
+	obal update --version ${FULLVERSION%%-RC*} --prerelease ${PRERELEASE} --release keep $RPM_PACKAGES
 else
 	obal update --version $FULLVERSION $RPM_PACKAGES
 fi
