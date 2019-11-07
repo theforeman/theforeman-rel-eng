@@ -11,13 +11,15 @@ mkdir -m 0700 $KEYDIR
 
 ( gopass show "$PASS_NAME_GPG" 2> /dev/null || gopass generate "$PASS_NAME_GPG" 20 ) > /dev/null
 
+NAME="Foreman Automatic Signing Key"
+
 GPG_SETTINGS=$(mktemp)
 trap "rm -f $GPG_SETTINGS" EXIT
 cat > $GPG_SETTINGS <<EOF
      %echo Generating GPG keys
      Key-Type: RSA
      Key-Length: 4096
-     Name-Real: Foreman Automatic Signing Key
+     Name-Real: $NAME
      Name-Comment: $VERSION
      Name-Email: $SIGNER
      Expire-Date: 1y
@@ -28,5 +30,6 @@ cat > $GPG_SETTINGS <<EOF
 EOF
 gpg2 --homedir $KEYDIR --batch --gen-key $GPG_SETTINGS
 
-echo "Now set FULLGPGKEY in releases/$VERSION/settings"
-gpg2 --homedir "$KEYDIR" --list-key "$SIGNER"
+echo "Setting FULLGPGKEY in ${RELEASEDIR}/settings"
+FULLGPGKEY="$(gpg2 --homedir $KEYDIR --batch --list-keys "${NAME} (${VERSION}) <${SIGNER}>" | sed -n '2s/\s//g p')"
+echo "FULLGPGKEY='$FULLGPGKEY'" >> "${RELEASEDIR}/settings"

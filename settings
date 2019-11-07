@@ -53,7 +53,7 @@ if [[ -f "${PROJECTDIR}/settings" ]]; then
 fi
 
 # Load settings per release
-# Expected: GPGKEY FULLGPGKEY FULLVERSION
+# Expected: FULLGPGKEY FULLVERSION
 . "$RELEASEDIR/settings"
 
 # Short GPGKEY is used by koji and is the last 8 chars or the full key
