@@ -2,4 +2,4 @@
 
 . settings
 
-./ci-jobs release_packages $FULLVERSION
+./ci-jobs release packages $FULLVERSION

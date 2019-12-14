@@ -2,4 +2,4 @@
 
 . settings
 
-./ci-jobs $PROJECT-release-pipeline $FULLVERSION
+./ci-jobs pipeline $PROJECT $FULLVERSION

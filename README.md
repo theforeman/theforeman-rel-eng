@@ -8,7 +8,6 @@ Required dependencies:
 
  * gopass
  * python3
- * click (python package)
  * python-jenkins
 
 ### Gopass
@@ -48,7 +47,7 @@ For commands on the foreman infrastructure, add your `sudo` password:
 gopass edit theforeman/unix --create
 ```
 
-For running jobs in Jenkins, add your Jenkins password:
+For running jobs in Jenkins, add your Jenkins password or API token:
 
 ```
 gopass edit theforeman/jenkins-token --create
