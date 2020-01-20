@@ -1,3 +1,3 @@
-FULLVERSION="1.24.0-RC2"
+FULLVERSION="1.24.1"
 FOREMAN_VERSION="1.24"
 OSES="rhel5 rhel6 rhel7 sles11 sles12 fedora29"
