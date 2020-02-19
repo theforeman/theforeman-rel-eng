@@ -6,7 +6,7 @@ RELEASEDIR="${PROJECTDIR}/${VERSION}"
 # Prepare settings file
 if [[ ! -d "$RELEASEDIR" ]] ; then
 	mkdir -p "$RELEASEDIR"
-	echo "FULLVERSION='${VERSION}.0-RC1'" > "$RELEASEDIR/settings"
+	echo "FULLVERSION='${VERSION}.0-rc1'" > "$RELEASEDIR/settings"
 fi
 
 if [[ $PROJECT != foreman ]]; then
