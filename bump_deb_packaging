@@ -9,7 +9,7 @@ cd "$PACKAGING_DIR"
 git fetch $PACKAGING_GIT_REMOTE
 git checkout -b deb/release-$PROJECT-$FULLVERSION $PACKAGING_GIT_REMOTE/$REMOTE_BRANCH
 
-scripts/changelog.rb -v ${FULLVERSION/-RC/~rc}-1 -m "$FULLVERSION released" debian/*/*/changelog
+scripts/changelog.rb -v ${FULLVERSION/-rc/~rc}-1 -m "$FULLVERSION released" debian/*/*/changelog
 git add debian/*/*/changelog
 
 git commit -m "Release $FULLVERSION"
