@@ -1,0 +1,3 @@
+FULLVERSION="2.0-rc1"
+FOREMAN_VERSION="2.0"
+OSES="rhel5 rhel6 rhel7 el8 sles11 sles12 fedora29"
