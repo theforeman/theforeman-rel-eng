@@ -10,11 +10,7 @@ git fetch $PACKAGING_GIT_REMOTE
 git checkout -b rpm/release-$PROJECT-$FULLVERSION $PACKAGING_GIT_REMOTE/$REMOTE_BRANCH
 
 if [[ $FULLVERSION == *-rc* ]]; then
-	# katello needs dot
 	PRERELEASE=${FULLVERSION##*-}
-	if [[ $PROJECT == katello ]]; then
-		PRERELEASE=".${PRERELEASE}"
-	fi
 	obal update --version ${FULLVERSION%%-rc*} --prerelease ${PRERELEASE} --release keep $RPM_PACKAGES
 else
 	obal update --version $FULLVERSION $RPM_PACKAGES
