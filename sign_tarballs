@@ -18,8 +18,7 @@ upload() {
 	done
 	files+="}}"
 
-	copy_unix_pass
-	ansible-playbook --ask-become-pass --inventory=$HOSTS --extra-vars="$files" upload_tarball_signatures.yaml
+	ansible-playbook --vault-id theforeman/unix@vault-gopass-client --inventory=$HOSTS --extra-vars="$files" upload_tarball_signatures.yaml
 }
 
 if [[ ! -d "$TARDIR" ]] ; then

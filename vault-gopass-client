@@ -1,0 +1,24 @@
+#!/usr/bin/env python3
+
+from argparse import ArgumentParser
+from subprocess import CalledProcessError, check_output
+
+
+def main():
+    parser = ArgumentParser(description='Get a vault password from gopass')
+
+    parser.add_argument('--vault-id', action='store', default=None, dest='vault_id',
+                        help='name of the vault secret to get from gopass')
+
+    args = parser.parse_args()
+
+    try:
+        output = check_output(['gopass', 'show', args.vault_id], universal_newlines=True)
+    except CalledProcessError as exception:
+        raise SystemExit(str(exception))
+
+    print("ansible_become_pass: '{}'".format(output.splitlines()[0]))
+
+
+if __name__ == '__main__':
+    main()

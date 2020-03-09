@@ -63,8 +63,4 @@ copy_gpg_key() {
 	gopass show -c "$PASS_NAME_GPG"
 }
 
-copy_unix_pass() {
-	gopass show -c "theforeman/unix"
-}
-
 # vim: ft=sh
