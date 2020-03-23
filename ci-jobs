@@ -66,15 +66,25 @@ def build_job(job, parameters=None, wait=True):
             break
         sleep(1)
 
-    build_info = server.get_build_info(job, last_build_number)
+    if wait:
+        _poll(server, job, last_build_number)
+    else:
+        build_info = server.get_build_info(job, last_build_number)
+        print(build_info['url'])
+
+
+def _poll(server, job, build_number):
+    build_info = server.get_build_info(job, build_number)
     print(build_info['url'])
 
-    if wait:
-        while build_info['building']:
+    while build_info['building']:
+        try:
             sleep(1)
-            build_info = server.get_build_info(job, last_build_number)
+            build_info = server.get_build_info(job, build_number)
+        except KeyboardInterrupt:
+            raise SystemExit('Aborted')
 
-        print(build_info['result'])
+    print(build_info['result'])
 
 
 def ping(args):  # pylint: disable=unused-argument
@@ -82,6 +92,19 @@ def ping(args):  # pylint: disable=unused-argument
     user = server.get_whoami()
     version = server.get_version()
     print(f'Hello {user["fullName"]} from Jenkins {version}')
+
+
+def poll(args):
+    server = get_connection()
+
+    job = args.job
+
+    if args.build_number:
+        build_number = args.build_number
+    else:
+        build_number = get_last_build_number(server, job)
+
+    _poll(server, job, build_number)
 
 
 def release(args):
@@ -130,6 +153,11 @@ def main():
 
     ping_parser = subparsers.add_parser('ping', help='Ping the Jenkins server')
     ping_parser.set_defaults(func=ping)
+
+    poll_parser = subparsers.add_parser('poll', help='Poll a running job till completion')
+    poll_parser.set_defaults(func=poll)
+    poll_parser.add_argument('job', help='The job to poll')
+    poll_parser.add_argument('build_number', help='The specific job number to poll', nargs='?')
 
     release_parser = subparsers.add_parser('release', help='Run a release job')
     release_parser.set_defaults(func=release)
