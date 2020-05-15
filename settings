@@ -23,7 +23,7 @@ else
 fi
 
 SIGNER="packages@theforeman.org"
-OSES="rhel7"
+OSES="rhel7 el8"
 RPMDIR="$RELEASEDIR/rpms"
 KEYDIR="$RELEASEDIR/gnupg"
 GNUPGHOME="$KEYDIR"
