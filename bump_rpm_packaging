@@ -11,9 +11,9 @@ git checkout -b rpm/release-$PROJECT-$FULLVERSION $PACKAGING_GIT_REMOTE/$REMOTE_
 
 if [[ $FULLVERSION == *-rc* ]]; then
 	PRERELEASE=${FULLVERSION##*-}
-	obal update --version ${FULLVERSION%%-rc*} --prerelease ${PRERELEASE} --release keep $RPM_PACKAGES
+	obal update --commit --version ${FULLVERSION%%-rc*} --prerelease ${PRERELEASE} --release keep $RPM_PACKAGES
 else
-	obal update --version $FULLVERSION $RPM_PACKAGES
+	obal update --commit --version $FULLVERSION $RPM_PACKAGES
 fi
 
 if [[ $PACKAGING_PR == true ]] ; then
