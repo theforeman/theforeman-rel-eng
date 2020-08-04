@@ -17,7 +17,7 @@ CHECKOUT="${GIT_DIR}/theforeman.org"
 
 gpg2 --homedir "$KEYDIR" --armor --export "$FULLGPGKEY" > "${CHECKOUT}/static/keys/${FULLGPGKEY}.pub"
 
-echo "Add this to ${CHECKOUT}/security.md"
+echo "Fill in any FIXME's and then add this to ${CHECKOUT}/security.md"
 gpg2 --homedir "$KEYDIR" --fingerprint "$FULLGPGKEY"
 cat <<EOF
       <tr>
