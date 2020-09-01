@@ -1,0 +1,5 @@
+OSES="el7 el8"
+KOJI_TAGS="pulpcore-@VERSION@-@OS@"
+PASS_NAME_GPG="theforeman/releases/pulpcore/$VERSION-gpg"
+PASS_NAME_KEY="theforeman/releases/pulpcore/$VERSION-key"
+SIGNER_NAME="Pulpcore Automatic Signing Key"

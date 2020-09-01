@@ -14,7 +14,7 @@ if [[ $PROJECT != foreman ]]; then
   if [[ -z "$FOREMAN_VERSION" ]]; then
     echo "please set FOREMAN_VERSION in $RELEASEDIR/settings"
     exit 1
-  else
+  elif [[ "$FOREMAN_VERSION" != "none" ]]; then
     # load foreman settings, which will contain keys etc
     . "releases/foreman/${FOREMAN_VERSION}/settings"
   fi
@@ -23,6 +23,7 @@ else
 fi
 
 SIGNER="packages@theforeman.org"
+SIGNER_NAME="Foreman Automatic Signing Key"
 OSES="rhel7 el8"
 RPMDIR="$RELEASEDIR/rpms"
 KEYDIR="$RELEASEDIR/gnupg"
