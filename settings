@@ -3,6 +3,22 @@ PROJECT="${PROJECT:-foreman}"
 PROJECTDIR="releases/$PROJECT"
 RELEASEDIR="${PROJECTDIR}/${VERSION}"
 
+load_settings() {
+  # load user local settings
+  if [[ -f "settings.local" ]]; then
+    . "settings.local"
+  fi
+
+  # load project specific settings first
+  if [[ -f "${PROJECTDIR}/settings" ]]; then
+    . "${PROJECTDIR}/settings"
+  fi
+
+  # Load settings per release
+  # Expected: FULLGPGKEY FULLVERSION
+  . "$RELEASEDIR/settings"
+}
+
 # Prepare settings file
 if [[ ! -d "$RELEASEDIR" ]] ; then
 	mkdir -p "$RELEASEDIR"
@@ -10,7 +26,7 @@ if [[ ! -d "$RELEASEDIR" ]] ; then
 fi
 
 if [[ $PROJECT != foreman ]]; then
-  . "$RELEASEDIR/settings"
+  load_settings
   if [[ -z "$FOREMAN_VERSION" ]]; then
     echo "please set FOREMAN_VERSION in $RELEASEDIR/settings"
     exit 1
@@ -43,19 +59,7 @@ RPM_PACKAGES=""
 KOJI_TAGS=""
 PACKAGING_PR=${PACKAGING_PR:-true}
 
-# load user local settings
-if [[ -f "settings.local" ]]; then
-  . "settings.local"
-fi
-
-# load project specific settings first
-if [[ -f "${PROJECTDIR}/settings" ]]; then
-  . "${PROJECTDIR}/settings"
-fi
-
-# Load settings per release
-# Expected: FULLGPGKEY FULLVERSION
-. "$RELEASEDIR/settings"
+load_settings
 
 # Short GPGKEY is used by koji and is the last 8 chars or the full key
 GPGKEY="$(echo ${FULLGPGKEY: -8} | tr '[A-Z]' '[a-z]')"
