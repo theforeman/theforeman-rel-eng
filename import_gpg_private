@@ -7,4 +7,4 @@ if [[ ! -d "$KEYDIR" ]] ; then
 fi
 
 copy_gpg_key
-gopass show --password "$PASS_NAME_KEY" | gpg2 --homedir "$KEYDIR" --import
+gopass show "$PASS_NAME_KEY" | gpg2 --homedir "$KEYDIR" --import
