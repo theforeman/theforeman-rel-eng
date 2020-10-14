@@ -1,0 +1,11 @@
+#!/bin/bash -e
+
+if [ -z "$1" ];then
+  echo "Pass Katello version to release, e.g. ./release_katello_rpms 3.16"
+  exit 1
+fi
+
+VERSION=$1
+
+./release_rpms katello $VERSION
+PROJECT=katello VERSION=$VERSION ./release_pipeline

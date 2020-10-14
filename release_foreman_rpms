@@ -1,0 +1,12 @@
+#!/bin/bash -e
+
+if [ -z "$1" ];then
+  echo "Pass Foreman version to release, e.g. ./release_foreman_rpms 2.2"
+  exit 1
+fi
+
+VERSION=$1
+
+./release_rpms foreman $VERSION
+./release_client_rpms $VERSION
+PROJECT=foreman VERSION=$VERSION ./release_pipeline
