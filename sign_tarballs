@@ -17,7 +17,7 @@ upload() {
 		files+="'${TARDIR}/${filename}.sig': '${project}/${filename}.sig',"
 	done
 	files+="},"
-	files+="{'docroot': '${DOCROOT}'}"
+	files+="'docroot': '${DOCROOT}'"
 	files+="}"
 
 	copy_unix_pass
