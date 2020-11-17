@@ -12,6 +12,7 @@ for os in $OSES; do
   for tag in ${versioned_tags}; do
     tags="$tags $tag"
   done
+  tags=$(echo $tags | sed 's/ /\n/g'| sort -u | xargs)
 done
 
 for tag in $tags; do
