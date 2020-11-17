@@ -14,9 +14,11 @@ upload() {
 	local files="{'files': {"
 	for project in $TAR_PROJECTS ; do
 		filename="$project-$FULLVERSION.tar.bz2"
-		files+="'${TARDIR}/${filename}.sig': '${DOCROOT}/${project}/${filename}.sig',"
+		files+="'${TARDIR}/${filename}.sig': '${project}/${filename}.sig',"
 	done
-	files+="}}"
+	files+="},"
+	files+="{'docroot': '${DOCROOT}'}"
+	files+="}"
 
 	copy_unix_pass
 	ansible-playbook --ask-become-pass --inventory=$HOSTS --extra-vars="$files" upload_tarball_signatures.yaml

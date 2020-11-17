@@ -5,5 +5,5 @@
     - name: "Upload signatures"
       copy:
         src: "{{ item.key }}"
-        dest: "{{ item.value }}"
+        dest: "{{ docroot }}/{{ item.value }}"
       loop: "{{ files|dict2items }}"
