@@ -4,6 +4,7 @@
 import argparse
 import getpass
 import subprocess
+import sys
 from time import sleep
 
 import jenkins
@@ -85,6 +86,7 @@ def _poll(server, job, build_number):
             raise SystemExit('Aborted')
 
     print(build_info['result'])
+    return build_info['result']
 
 
 def ping(args):  # pylint: disable=unused-argument
@@ -148,6 +150,18 @@ def pipeline(args):
     build_job(job, parameters, args.wait)
 
 
+def green(args):
+    job = args.job
+
+    print(f'Checking job {job}')
+
+    server = get_connection()
+    last_build_number = server.get_job_info(job)['lastCompletedBuild']['number']
+    result = _poll(server, job, last_build_number)
+    if result != 'SUCCESS':
+        sys.exit(1)
+
+
 def main():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
@@ -173,6 +187,10 @@ def main():
     pipeline_parser.add_argument('version', help='The full version like 1.24.0-RC1')
     pipeline_parser.add_argument('--no-wait', action='store_false', dest='wait',
                                  help="Don't wait for the job to complete and exit immediately")
+
+    job_green_parser = subparsers.add_parser('green', help='Verify a job is green')
+    job_green_parser.set_defaults(func=green)
+    job_green_parser.add_argument('job', help='The job to poll')
 
     args = parser.parse_args()
 
