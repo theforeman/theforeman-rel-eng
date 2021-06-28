@@ -61,6 +61,7 @@ TAR_PROJECTS=""
 RPM_PACKAGES=""
 KOJI_TAGS=""
 PACKAGING_PR=${PACKAGING_PR:-true}
+GPG_EXPIRE="1y"
 
 load_settings
 

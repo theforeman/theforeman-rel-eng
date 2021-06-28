@@ -26,7 +26,7 @@ cat > $GPG_SETTINGS <<EOF
      Name-Real: $SIGNER_NAME
      Name-Comment: $VERSION
      Name-Email: $SIGNER
-     Expire-Date: 1y
+     Expire-Date: $GPG_EXPIRE
      Passphrase: $(gopass show --password "$PASS_NAME_GPG")
      # Do a commit here, so that we can later print "done" :-)
      %commit

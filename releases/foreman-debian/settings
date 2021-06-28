@@ -1,0 +1,3 @@
+PASS_NAME_GPG="theforeman/releases/foreman/debian-$VERSION-gpg"
+PASS_NAME_KEY="theforeman/releases/foreman/debian-$VERSION-key"
+GPG_EXPIRE="2y"
