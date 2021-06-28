@@ -95,7 +95,22 @@ When starting a new release, the following scripts can be used to generate a new
 
 ```bash
 generate_gpg
-# Now set FULLGPGKEY in releases/$VERSION/settings
+export_gpg_private
+export_gpg_public
+sign_gpg
+upload_gpg
+```
+
+### Generating a new GPG Key for signing the Debian repository
+
+Our Debian repository doesn't rotate keys based on releases, but on a time basis.
+
+To generate a new key:
+
+```bash
+export PROJECT=foreman-debian
+export VERSION="$(date '+%Y')"
+generate_gpg
 export_gpg_private
 export_gpg_public
 sign_gpg
