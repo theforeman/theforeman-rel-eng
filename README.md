@@ -101,3 +101,19 @@ export_gpg_public
 sign_gpg
 upload_gpg
 ```
+
+### Generating a new GPG Key for signing the Debian repository
+
+Our Debian repository doesn't rotate keys based on releases, but on a time basis.
+
+To generate a new key:
+
+```bash
+export PROJECT=foreman-debian
+export VERSION=2021 # update to the current year
+generate_gpg
+export_gpg_private
+export_gpg_public
+sing_gpg
+upload_gpg
+```
