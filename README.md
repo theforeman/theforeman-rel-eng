@@ -113,6 +113,6 @@ export VERSION=2021 # update to the current year
 generate_gpg
 export_gpg_private
 export_gpg_public
-sing_gpg
+sign_gpg
 upload_gpg
 ```
