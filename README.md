@@ -109,7 +109,7 @@ To generate a new key:
 
 ```bash
 export PROJECT=foreman-debian
-export VERSION=2021 # update to the current year
+export VERSION="$(date '+%Y')"
 generate_gpg
 export_gpg_private
 export_gpg_public
