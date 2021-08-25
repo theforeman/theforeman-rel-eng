@@ -17,7 +17,7 @@ First, clone this repository to your local machine. [gopass](https://github.com/
 Ensure that `gopass` is initialized after installing the first time (and that your GPG private key is present on the system):
 
 ```
-gopass init
+gopass init <YOUR-PUB-KEY-HASH>
 ```
 
 After installing `gopass`, the shared password stores need to be cloned. This requires setting up SSH configuration to the Foreman puppetmaster:
@@ -35,10 +35,9 @@ Host puppetmaster.theforeman.org
 Now clone:
 
 ```
-gopass clone --sync gitcli puppetmaster.theforeman.org:/srv/secretsgit/theforeman-release.git theforeman/releases
-gopass clone --sync gitcli puppetmaster.theforeman.org:/srv/secretsgit/theforeman-passwords.git theforeman/shared
+gopass clone puppetmaster.theforeman.org:/srv/secretsgit/theforeman-release.git theforeman/releases
+gopass clone puppetmaster.theforeman.org:/srv/secretsgit/theforeman-passwords.git theforeman/shared
 ```
-
 You will need to create a few gopass passwords for jobs:
 
 For commands on the foreman infrastructure, add your `sudo` password:
