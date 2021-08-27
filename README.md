@@ -52,6 +52,20 @@ For running jobs in Jenkins, add your Jenkins password or API token:
 gopass edit theforeman/jenkins-token --create
 ```
 
+To add a new "recipient" (user who can decrypt the secrets):
+
+```console
+$ gopass sync
+
+$ gopass recipients add --store theforeman/releases 1234567890ABCDEF
+Do you want to add '0x1234567890ABCDEF - Example Admin <admin@example.com>' as a recipient to the store 'theforeman/releases'? [y/N/q]: y
+Reencrypting existing secrets. This may take some time ...
+Starting reencrypt
+…
+
+$ gopass sync
+```
+
 ### Importing an existing release
 
 When a key has already been generated, it can be imported from the backups:
