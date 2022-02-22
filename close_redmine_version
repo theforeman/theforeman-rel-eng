@@ -1,0 +1,7 @@
+#!/bin/bash -e
+
+. settings
+
+if [[ $FULLVERSION != *-rc* ]]; then
+	./redmine version set-status "$PROJECT" "$FULLVERSION" closed
+fi
