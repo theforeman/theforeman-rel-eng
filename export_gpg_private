@@ -13,5 +13,11 @@ if [[ -z $FULLGPGKEY ]] ; then
 	exit 2
 fi
 
+if [[ $1 == "force" ]] ; then
+	FORCE="--force"
+else
+	FORCE=""
+fi
+
 copy_gpg_key
-gpg2 --homedir "$KEYDIR" --export-secret-keys -a "$FULLGPGKEY" | gopass insert --multiline "$PASS_NAME_KEY"
+gpg2 --homedir "$KEYDIR" --export-secret-keys -a "$FULLGPGKEY" | gopass insert --multiline $FORCE "$PASS_NAME_KEY"
