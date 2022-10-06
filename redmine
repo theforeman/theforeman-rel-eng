@@ -44,6 +44,7 @@ def set_status_version(args: argparse.Namespace) -> None:
     except IndexError:
         raise SystemExit('Version not found')
 
+    print('Setting', args.name, 'to closed')
     version.save(status=args.status)
 
 
