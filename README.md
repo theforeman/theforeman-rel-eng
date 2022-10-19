@@ -20,23 +20,11 @@ Ensure that `gopass` is initialized after installing the first time (and that yo
 gopass init <YOUR-PUB-KEY-HASH>
 ```
 
-After installing `gopass`, the shared password stores need to be cloned. This requires setting up SSH configuration to the Foreman puppetmaster:
-
-Add to ~/.ssh/config:
+After installing `gopass`, the shared password stores need to be cloned:
 
 ```
-Host puppetmaster.theforeman.org
-  Port 8122
-  User <your SSH user>
-  LocalForward 9443 localhost:443
-  ExitOnForwardFailure yes
-```
-
-Now clone:
-
-```
-gopass clone puppetmaster.theforeman.org:/srv/secretsgit/theforeman-release.git theforeman/releases
-gopass clone puppetmaster.theforeman.org:/srv/secretsgit/theforeman-passwords.git theforeman/shared
+gopass clone secrets.theforeman.org:/srv/secretsgit/theforeman-release.git theforeman/releases
+gopass clone secrets.theforeman.org:/srv/secretsgit/theforeman-passwords.git theforeman/shared
 ```
 You will need to create a few gopass passwords for jobs:
 
