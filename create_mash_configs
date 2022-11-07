@@ -1,0 +1,9 @@
+#!/bin/bash -e
+
+. settings
+
+./ensure_clean_git_checkouts tool_belt > /dev/null
+
+CONFIG_DIR="${GIT_DIR}/tool_belt/configs/${PROJECT}"
+
+./build_tool_belt_config "$VERSION" "$GPGKEY" "$PROJECT" < "${CONFIG_DIR}/nightly.yaml" > "${CONFIG_DIR}/${VERSION}.yaml"
