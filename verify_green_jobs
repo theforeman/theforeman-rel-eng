@@ -3,4 +3,4 @@
 . settings
 
 ./ci-jobs green test_${VERSION/./_}_stable
-./ci-jobs green test_proxy_${VERSION/./_}_stable
+./ci-jobs green smart-proxy-${VERSION}-stable-test
