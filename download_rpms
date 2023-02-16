@@ -16,9 +16,9 @@ for os in $OSES; do
 done
 
 for tag in $tags; do
-  koji list-tagged --latest --quiet --inherit --sigs $tag
+  $KOJI_CMD list-tagged --latest --quiet --inherit --sigs $tag
 done \
   | sed 's!^!:!' \
   | perl -ane '$F[1] =~ s!\.src$!! or next; $R{$F[1]} = 1; $S{$F[1]} = 1 if lc($F[0]) eq lc(":'$GPGKEY'");
     END { print map "$_\n", grep { not exists $S{$_} } sort keys %R }' \
-  | xargs --no-run-if-empty -P 2 -n 1 koji download-build --debuginfo
+  | xargs --no-run-if-empty -P 2 -n 1 $KOJI_CMD download-build --debuginfo

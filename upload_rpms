@@ -2,4 +2,4 @@
 
 . settings
 
-find "$RPMDIR" -name '*.src.rpm' | xargs -n1 -I@@ basename @@ .src.rpm | xargs -t $XARGS_JOBS koji write-signed-rpm $(echo $GPGKEY | tr 'A-Z' 'a-z')
+find "$RPMDIR" -name '*.src.rpm' | xargs -n1 -I@@ basename @@ .src.rpm | xargs -t $XARGS_JOBS $KOJI_CMD write-signed-rpm $(echo $GPGKEY | tr 'A-Z' 'a-z')
