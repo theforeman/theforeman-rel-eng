@@ -1,0 +1,17 @@
+---
+- hosts: all
+  become: true
+  become_user: yumrepo
+  gather_facts: false
+  vars:
+    releasedir: "/var/www/vhosts/yum/htdocs/releases"
+  tasks:
+    - name: "Ensure release directory"
+      file:
+        state: directory
+        path: "{{ releasedir }}/{{ release }}"
+
+    - name: "Ensure GPG key"
+      copy:
+        src: "{{ gpg_key }}"
+        dest: "{{ releasedir }}/{{ release }}/RPM-GPG-KEY-{{ project }}"

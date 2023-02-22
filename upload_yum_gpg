@@ -1,0 +1,25 @@
+#!/bin/bash -e
+
+. settings
+
+if [[ ! -d $KEYDIR ]] ; then
+	echo "Keydir $KEYDIR doesn't exist"
+	exit 1
+fi
+
+if [[ -z $FULLGPGKEY ]] ; then
+	echo "FULLGPGKEY is not set"
+	exit 2
+fi
+
+upload() {
+	local gpg_key
+	gpg_key=$(mktemp)
+	trap "rm -f $gpg_key" EXIT
+	gpg2 --homedir "$KEYDIR" --armor --export "$FULLGPGKEY" > "$gpg_key"
+
+	copy_unix_pass
+	ansible-playbook --ask-become-pass --inventory=$HOSTS --extra-vars="release=${VERSION} gpg_key=${gpg_key} project=${PROJECT}" upload_rpm_gpg_key.yaml
+}
+
+upload
