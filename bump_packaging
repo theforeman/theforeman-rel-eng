@@ -12,7 +12,24 @@ fi
 REMOTE_BRANCH="${FLAVOR}/${FOREMAN_VERSION}"
 FULL_REMOTE_BRANCH="$PACKAGING_GIT_REMOTE/$REMOTE_BRANCH"
 
-cd "$PACKAGING_DIR"
+if [[ $GIT_USE_WORKTREES == true ]] ; then
+	RELEASE_PACKAGING_DIR="${PACKAGING_DIR}/${FLAVOR}-$VERSION"
+
+	if [[ ! -d "$RELEASE_PACKAGING_DIR" ]] ; then
+		(
+			cd "${PACKAGING_DIR}/master"
+			git worktree add "$RELEASE_PACKAGING_DIR" "$PACKAGING_GIT_REMOTE/$REMOTE_BRANCH"
+		)
+	fi
+else
+	RELEASE_PACKAGING_DIR="${PACKAGING_DIR}"
+
+	if [[ ! -d "$RELEASE_PACKAGING_DIR" ]] ; then
+		git clone --quiet -o "$PACKAGING_GIT_REMOTE" https://github.com/theforeman/foreman-packaging "${RELEASE_PACKAGING_DIR}"
+	fi
+fi
+
+cd "$RELEASE_PACKAGING_DIR"
 
 git fetch $PACKAGING_GIT_REMOTE
 git checkout -b "${FLAVOR}/release-$PROJECT-$FULLVERSION" "${FULL_REMOTE_BRANCH}"
