@@ -1,0 +1,12 @@
+#!/bin/bash -e
+
+. settings
+
+if [[ $PROJECT == pulpcore ]] ; then
+	./ci-jobs poll "pulpcore-packaging-rpm-${VERSION}-release"
+else
+	./ci-jobs poll "foreman-packaging-deb-${FOREMAN_VERSION}-release" &
+	./ci-jobs poll "foreman-packaging-rpm-${FOREMAN_VERSION}-release" &
+
+	wait
+fi
