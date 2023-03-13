@@ -6,5 +6,4 @@ if [[ ! -d "$KEYDIR" ]] ; then
 	mkdir -p -m 0700 "$KEYDIR"
 fi
 
-copy_gpg_key
-gopass show "$PASS_NAME_KEY" | gpg2 --homedir "$KEYDIR" --import
+gopass show "$PASS_NAME_KEY" | gpg_with_password --batch --homedir "$KEYDIR" --import

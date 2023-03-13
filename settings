@@ -74,8 +74,12 @@ load_settings
 # Short GPGKEY is used by koji and is the last 8 chars or the full key
 GPGKEY="$(echo ${FULLGPGKEY: -8} | tr '[A-Z]' '[a-z]')"
 
-copy_gpg_key() {
-	gopass show -c "$PASS_NAME_GPG"
+show_gpg_password() {
+	gopass show --password "$PASS_NAME_GPG"
+}
+
+gpg_with_password() {
+	show_gpg_password | gpg2 --pinentry-mode loopback --passphrase-fd 0 "$@"
 }
 
 # Invoke ansible-playbook with ansible_become_password set safely
