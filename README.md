@@ -117,3 +117,14 @@ export_gpg_public
 sign_gpg
 upload_gpg
 ```
+
+## Settings and customizing them
+
+Settings can be customized in `settings.local`. The following settings are supported:
+
+```sh
+GIT_DIR=$HOME/dev # Projects are cloned here
+GIT_REMOTE=upstream # Git remote for cloned projects
+KOJI_CMD=koji # Invoke koji. Change this if you also have Koji set up for Fedora development
+PACKAGING_PR=true # Create a PR in bump_{deb,rpm}_packaging
+```

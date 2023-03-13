@@ -20,7 +20,7 @@ for project in $PROJECTS ; do
 				exit 1
 			fi
 		else
-			git clone -o upstream "https://github.com/theforeman/${project}" "${project_dir}"
+			git clone -o "$GIT_REMOTE" "https://github.com/theforeman/${project}" "${project_dir}"
 		fi
 	)
 done
