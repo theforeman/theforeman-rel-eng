@@ -20,8 +20,7 @@ upload() {
 	files+="'docroot': '${DOCROOT}'"
 	files+="}"
 
-	copy_unix_pass
-	ansible-playbook --ask-become-pass --inventory=$HOSTS --extra-vars="$files" upload_tarball_signatures.yaml
+	ansible_playbook --inventory=$HOSTS --extra-vars="$files" upload_tarball_signatures.yaml
 }
 
 if [[ ! -d "$TARDIR" ]] ; then
