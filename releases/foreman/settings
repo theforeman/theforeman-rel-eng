@@ -1,4 +1,4 @@
-TAR_PROJECTS="foreman foreman-proxy foreman-installer foreman-selinux"
+TAR_PROJECTS="foreman smart-proxy foreman-installer foreman-selinux"
 RPM_PACKAGES="foreman foreman-installer foreman-proxy foreman-release foreman-selinux"
 KOJI_TAGS="foreman-@VERSION@-@OS@"
 PACKAGING_SUBDIR="packages/foreman"
