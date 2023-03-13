@@ -6,5 +6,4 @@ if [[ ! -d "$KEYDIR" ]] ; then
 	mkdir -p -m 0700 "$KEYDIR"
 fi
 
-copy_gpg_key
-gpg2 --homedir "$KEYDIR" --edit-key "$FULLGPGKEY"
+gpg_with_password --homedir "$KEYDIR" --edit-key "$FULLGPGKEY"

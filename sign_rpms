@@ -2,9 +2,12 @@
 
 . settings
 
-copy_gpg_key
+gpg_pass=$(mktemp)
+trap 'shred --remove "${gpg_pass}"' EXIT
+chmod 0700 "$gpg_pass"
+show_gpg_password > "$gpg_pass"
 
-SIGN_FLAGS=(--define "_gpg_path $KEYDIR" --define="_gpg_name $SIGNER")
+SIGN_FLAGS=(--define "_gpg_sign_cmd_extra_args --pinentry-mode loopback --passphrase-file ${gpg_pass}" --define "_gpg_path $KEYDIR" --define="_gpg_name $SIGNER")
 
 rpmdev-vercmp $(rpm --query --queryformat='%{EVR}' rpm) 4.16.0 || RESULT=$?
 if [[ $RESULT == "11" ]]; then

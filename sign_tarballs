@@ -3,10 +3,9 @@
 . settings
 
 sign() {
-	copy_gpg_key
 	for project in $TAR_PROJECTS ; do
 		filename="$project-$FULLVERSION.tar.bz2"
-		gpg2 --homedir "$KEYDIR" -b -u "$SIGNER" "$TARDIR/$filename"
+		gpg_with_password --batch --homedir "$KEYDIR" -b -u "$SIGNER" "$TARDIR/$filename"
 	done
 }
 
