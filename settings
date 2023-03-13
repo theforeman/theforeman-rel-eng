@@ -78,8 +78,16 @@ copy_gpg_key() {
 	gopass show -c "$PASS_NAME_GPG"
 }
 
-copy_unix_pass() {
-	gopass show -c "theforeman/unix"
+# Invoke ansible-playbook with ansible_become_password set safely
+ansible_playbook() {
+        local password_file
+        password_file=$(mktemp --suffix=.json)
+        chmod 0600 "$password_file"
+
+	gopass show --password "theforeman/unix" | ruby -rjson -e 'puts({"ansible_become_password" => STDIN.read}.to_json)' > "$password_file"
+
+	ansible-playbook --extra-vars="@${password_file}" "$@"
+	shred --remove "${password_file}"
 }
 
 # vim: ft=sh
