@@ -1,0 +1,5 @@
+#!/bin/bash -e
+
+. settings
+
+echo "Short GPG key to be used for Koji: ${GPGKEY}"
