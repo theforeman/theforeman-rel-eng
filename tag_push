@@ -2,25 +2,7 @@
 
 . settings
 
-if [[ -z $1 ]] ; then
-	PROJECTS=$TAR_PROJECTS
-else
-	PROJECTS=$*
-fi
-
-PROJECTS=${PROJECTS/foreman-proxy/smart-proxy}
-
-for project in $PROJECTS ; do
-	(
-		cd "$GIT_DIR/$project"
-		if ! git diff --quiet --exit-code ; then
-			echo "Checkout in $PWD is dirty"
-			exit 1
-		fi
-	)
-done
-
-for project in $PROJECTS ; do
+for project in $(./ensure_clean_git_checkouts "$@") ; do
 	(
 		cd "$GIT_DIR/$project"
 		echo "Pushing ${project} ${VERSION}-stable"
