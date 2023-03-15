@@ -5,7 +5,7 @@
 if [[ -z $1 ]] ; then
 	PROJECTS=$TAR_PROJECTS
 else
-	PROJECTS=$@
+	PROJECTS=$*
 fi
 
 PROJECTS=${PROJECTS/foreman-proxy/smart-proxy}
