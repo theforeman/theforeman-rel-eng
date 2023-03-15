@@ -9,6 +9,11 @@ Required dependencies:
  * gopass
  * python3
  * python-jenkins
+ * obal
+
+Recommended:
+
+ * hub
 
 ### Gopass
 
