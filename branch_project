@@ -1,0 +1,19 @@
+#!/bin/bash -e
+
+. settings
+
+for project in $(./ensure_clean_git_checkouts "$@") ; do
+	(
+		cd "$GIT_DIR/$project"
+		git fetch --quiet "$GIT_REMOTE"
+		git checkout -b "${VERSION}-stable" "${GIT_REMOTE}/develop"
+
+		if [[ $project == foreman-installer ]]; then
+			bundle exec rake pin_modules
+			sed -i '/Puppetfile.lock/d' .gitignore
+			bundle exec librarian-puppet install
+			git add .gitignore Puppetfile*
+			git commit --message "Pin Puppet modules for ${VERSION}"
+		fi
+	)
+done

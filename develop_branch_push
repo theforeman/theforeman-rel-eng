@@ -1,0 +1,11 @@
+#!/bin/bash -e
+
+. settings
+
+for project in $(./ensure_clean_git_checkouts "$@") ; do
+	(
+		cd "$GIT_DIR/$project"
+		echo "Pushing ${project} $GIT_DEVELOP_BRANCH"
+		git push "${GIT_REMOTE}" "$GIT_DEVELOP_BRANCH"
+	)
+done
