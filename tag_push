@@ -23,7 +23,6 @@ done
 for project in $PROJECTS ; do
 	(
 		cd "$GIT_DIR/$project"
-		git checkout "${VERSION}-stable"
 		echo "Pushing ${project} ${VERSION}-stable"
 		git push "${GIT_REMOTE}" "${VERSION}-stable" --follow-tags
 	)
