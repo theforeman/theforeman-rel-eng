@@ -4,7 +4,7 @@
 
 if [[ -z $REDMINE_API_KEY ]] ; then
 	echo "No API key set. Get it from https://projects.theforeman.org/my/account"
-	read -p "Redmine API KEY: " REDMINE_API_KEY
+	read -s -r -p "Redmine API KEY: " REDMINE_API_KEY
 	export REDMINE_API_KEY
 fi
 
