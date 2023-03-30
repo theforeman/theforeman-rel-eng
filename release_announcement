@@ -1,0 +1,54 @@
+#!/bin/bash -e
+
+. settings
+
+ANNOUNCEMENT=$(mktemp)
+trap 'rm -f ${ANNOUNCEMENT}' EXIT
+
+if [[ $FULLVERSION == *-rc* ]] ; then
+	echo "# ${PROJECT} ${FULLVERSION} is now ready for testing" >> "$ANNOUNCEMENT"
+else
+	echo "# ${PROJECT} ${FULLVERSION} is now available" >> "$ANNOUNCEMENT"
+fi
+echo >> "$ANNOUNCEMENT"
+
+if [[ $PROJECT == foreman ]] ; then
+	# TODO: inform the user input is expected?
+	cat >> "$ANNOUNCEMENT"
+
+	if [[ $FULLVERSION == *-rc* ]] ; then
+		read -r -p "Discourse feedback URL: " FEEDBACK
+		cat >> "$ANNOUNCEMENT" <<-EOF
+
+		Please help by testing and getting it release-ready, and let us know if you hit any issue when upgrading or installing the release candidate either [here](${FEEDBACK}) or on our [issue tracker](https://projects.theforeman.org/).
+		EOF
+	fi
+
+	cat >> "$ANNOUNCEMENT" <<-EOF
+
+	* [Installation quick start](https://theforeman.org/manuals/${VERSION}/quickstart_guide.html)
+	* [Upgrade instructions](https://theforeman.org/manuals/${VERSION}/index.html#3.6Upgradeto${VERSION})
+	* [Release notes](https://theforeman.org/manuals/${VERSION}/index.html#Releasenotesfor${FULLVERSION%-rc*})
+	EOF
+
+	if [[ $FULLVERSION == *-rc* ]] ; then
+		read -r -p "Discourse translations URL: " TRANSLATIONS
+		cat >> "$ANNOUNCEMENT" <<-EOF
+
+		This is also a good time to improve translations for existing locales to ensure full coverage. Help out at: [Foreman localization](https://www.transifex.com/foreman/foreman/dashboard). See ${TRANSLATIONS} as well.
+		EOF
+	fi
+
+	cat >> "$ANNOUNCEMENT" <<-EOF
+
+	Packages may be found in the ${VERSION} directories on both [deb.theforeman.org](https://deb.theforeman.org) and [yum.theforeman.org](https://yum.theforeman.org), and tarballs are on [downloads.theforeman.org](https://downloads.theforeman.org).
+
+	The GPG key used for signing RPMs and tarballs has the following fingerprint:
+	[${FULLGPGKEY}](https://theforeman.org/static/keys/${FULLGPGKEY}.pub)
+
+	The GPG key used for signing DEBs has the following fingerprint:
+	[5B7C3E5A735BCB4D615829DC0BDDA991FD7AAC8A](https://theforeman.org/static/keys/5B7C3E5A735BCB4D615829DC0BDDA991FD7AAC8A.pub).
+	EOF
+fi
+
+cat "$ANNOUNCEMENT"
