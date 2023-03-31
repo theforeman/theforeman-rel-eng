@@ -1,0 +1,71 @@
+#!/usr/bin/env python
+
+from datetime import date, datetime
+from dateutil.relativedelta import relativedelta
+
+RC = relativedelta(weeks=2)
+
+def parse_date(value: str) -> date:
+    try:
+        return datetime.strptime(value, '%Y-%m-%d').date()
+    except ValueError as exc:
+        raise SystemExit('Invalid date: ', str(exc)) from exc
+
+
+def week_range(day: date) -> str:
+    weekday = day.weekday()
+    monday = day - relativedelta(days=weekday)
+    friday = day + relativedelta(days=5 - weekday)
+    return f'{monday} - {friday}'
+
+
+def print_table(table: list[list]) -> None:
+    """
+    Print a markdown compatible table
+    """
+    table = [[str(column) for column in row] for row in table]
+
+    headers = table[0]
+    # Insert a row of dashes after the headers
+    table = [headers, ['---'] * len(headers)] + table[1:]
+
+    widths = [max(len(x) for x in col) for col in zip(*table)]
+    for row in table:
+        print("|", " | ".join(f"{cell:{width}}" for cell, width in zip(row, widths)), "|")
+
+
+def main():
+    # Dev start is after previous branching
+    dev_start = parse_date(input("Dev start date (YYYY-MM-DD): "))
+
+    branching = dev_start + relativedelta(months=3)
+    # Align it to Tuesday
+    branching += relativedelta(days=1 - branching.weekday())
+    ga_date = branching + (2 * RC)
+
+    print('Suggested GA date', ga_date)
+    ga_date_str = input(f'GA date [{ga_date}] ')
+    if ga_date_str:
+        ga_date = parse_date(ga_date_str)
+        branching = ga_date - (2 * RC)
+
+    table = [
+        ('Event', 'Date'),
+        ('Dev start', dev_start),
+        ('Half way point', dev_start + ((branching - dev_start) / 2)),
+        ('Installer module release week', week_range(branching - relativedelta(weeks=2))),
+        ('Stabilization week', week_range(branching - relativedelta(weeks=1))),
+        ('Branching', branching),
+        ('Release Candidate 1', branching),
+        ('Release Candidate 2', ga_date - RC),
+        ('General Availability', ga_date),
+    ]
+
+    print()
+    print_table(table)
+
+if __name__ == '__main__':
+    try:
+        main()
+    except KeyboardInterrupt:
+        raise SystemExit()  # pylint:disable=raise-missing-from
