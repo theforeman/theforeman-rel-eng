@@ -4,6 +4,22 @@
 
 ./ensure_clean_git_checkouts tool_belt > /dev/null
 
-CONFIG_DIR="${GIT_DIR}/tool_belt/configs/${PROJECT}"
+TOOL_BELT="${GIT_DIR}/tool_belt"
+CONFIG_DIR="${TOOL_BELT}/configs/${PROJECT}"
+OUTPUT_FILE="${CONFIG_DIR}/${VERSION}.yaml"
+OUTPUT_DIR="${TOOL_BELT}/mash_scripts/${PROJECT}/${VERSION}.0"
 
-./build_tool_belt_config "$VERSION" "$GPGKEY" "$PROJECT" < "${CONFIG_DIR}/nightly.yaml" > "${CONFIG_DIR}/${VERSION}.yaml"
+./build_tool_belt_config "$VERSION" "$GPGKEY" "$PROJECT" < "${CONFIG_DIR}/nightly.yaml" > "${OUTPUT_FILE}"
+
+cd "${TOOL_BELT}"
+
+git fetch --quiet "${GIT_REMOTE}"
+git checkout -b "mash-${PROJECT}-${VERSION}" "${GIT_REMOTE}/master"
+
+./tools.rb mash-scripts "${OUTPUT_FILE}"
+
+if [[ $PROJECT == foreman ]] ; then
+	sed -i '/strict_keys/ s/True/False/' "${OUTPUT_DIR}/foreman-plugins-${VERSION}"-*.mash
+fi
+
+git add "${OUTPUT_FILE}" "${OUTPUT_DIR}"
