@@ -63,6 +63,7 @@ TAR_PROJECTS=""
 RPM_PACKAGES=""
 KOJI_CMD="${KOJI_CMD:-koji}"
 KOJI_TAGS=""
+KOJI_SSH_TARGET="root@koji.katello.org"
 PACKAGING_PR=${PACKAGING_PR:-true}
 GPG_EXPIRE="1y"
 
