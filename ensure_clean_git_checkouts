@@ -16,7 +16,7 @@ for project in $PROJECTS ; do
 		if [[ -d "$project_dir" ]] ; then
 			cd "$project_dir"
 			if ! git diff --quiet --exit-code ; then
-				echo "Checkout in $PWD is dirty"
+				echo "Checkout in $PWD is dirty" >&2
 				exit 1
 			fi
 		else
