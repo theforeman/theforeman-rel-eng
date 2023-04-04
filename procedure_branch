@@ -1,0 +1,28 @@
+#!/bin/bash -e
+
+. settings
+
+TARGET_DATE="$1"
+OWNER="$2"
+ENGINEER="$3"
+
+if [[ -z $TARGET_DATE ]] ; then
+	read -r -p "Target date (YYYY-MM-DD): " TARGET_DATE
+	READ=1
+fi
+if [[ -z $OWNER ]] ; then
+	read -r -p "Release owner (Discourse usernmame): " OWNER
+	READ=1
+fi
+if [[ -z $ENGINEER ]] ; then
+	read -r -p "Release engineer (Discourse usernmame): " ENGINEER
+	READ=1
+fi
+if [[ $READ == 1 ]] ; then
+	echo >&2
+fi
+
+./ensure_clean_git_checkouts tool_belt > /dev/null
+# TODO: ensure checkout is up to date?
+
+"${GIT_DIR}/tool_belt/tools.rb" procedure branch "$PROJECT" "$VERSION" "$TARGET_DATE" "$OWNER" "$ENGINEER"

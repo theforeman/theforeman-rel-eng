@@ -1,62 +1,132 @@
 # The Foreman Release Engineering scripts
 
-These are the scripts I use while releasing [The Foreman](https://theforeman.org). They automate most of the [release process](https://github.com/theforeman/tool_belt/blob/master/procedures/foreman/release.md.erb).
+A collection of small scripts, adhering to the [Unix philosophy](https://en.wikipedia.org/wiki/Unix_philosophy), used to release [The Foreman](https://theforeman.org).
+They automate parts of the [branch](https://github.com/theforeman/tool_belt/blob/master/procedures/foreman/branch.md.erb) and [release](https://github.com/theforeman/tool_belt/blob/master/procedures/foreman/release.md.erb) processes.
+It is also used for the [Katello](https://theforeman.org/plugins/katello/) [branch](https://github.com/theforeman/tool_belt/blob/master/procedures/katello/branch.md.erb) and [release](https://github.com/theforeman/tool_belt/blob/master/procedures/katello/release.md.erb) processes.
+
+The most important environment variables are `PROJECT` and `VERSION`.
+
+## Procedures
+
+Procedures are kept in [tool_belt](https://github.com/theforeman/tool_belt) with small wrappers in this repository.
+
+### Roles
+
+Both the branch and release procedures defines two roles: an owner and an engineer.
+Someone can be both owner and engineer at the same time, and it is preferable for a fast process.
+Having both in (very) different timezones can lengthen the process.
+Sometimes it's just not possible and multiple people perform the procedures.
+Below is a listing of access used.
+
+#### Foreman release owner
+
+* Belong to the [Foreman GitHub release-managers team](https://github.com/orgs/theforeman/teams/release-managers)
+* [Discourse](https://community.theforeman.org/) trust level 3 to post to [Release announcements](https://community.theforeman.org/c/release-announcements/8). See [Understanding Discourse Trust Levels](https://blog.discourse.org/2018/06/understanding-discourse-trust-levels/) for more information. Discourse admins can manually raise a user's trust level.
+* IRC: permission to change the topic in [#theforeman on Libera.Chat](ircs://irc.libera.chat/theforeman). See [Libera.Chat permissions](https://libera.chat/guides/creatingchannels#setting-up-permissions) on how channel owners can grant this.
+* Redmine access: be added to the [Developers group](https://projects.theforeman.org/groups/44213/edit?tab=users)
+* Transifex account (unclear on the exact permissions to extract translations)
+
+#### Foreman release engineer
+
+* Belong to the [Foreman GitHub release-engineering team](https://github.com/orgs/theforeman/teams/release-engineering)
+* [Foreman infrastructure access](https://theforeman.github.io/foreman-infra/#access) including [secrets](https://theforeman.github.io/foreman-infra/secrets/)
+* [Jenkins access](https://theforeman.github.io/foreman-infra/jenkins/#access)
+* [Koji access](https://theforeman.github.io/foreman-infra/koji/#using-koji-as-a-user)
+
+#### Katello release owner
+
+* Write permission to [Katello/katello](https://github.com/Katello/katello)
+* Push access to the [Katello gem](https://rubygems.org/gems/katello)
+* [Discourse](https://community.theforeman.org/) account level 3 to post to [Release announcements](https://community.theforeman.org/c/release-announcements/8)
+
+#### Katello release engineer
+
+These are the same as Foreman's release engineer.
+
+### Branching
+
+Use `procedure_branch` to display the steps. Modify `PROJECT` and `VERSION` as needed.
+
+```sh
+PROJECT=foreman VERSION=3.7 ./procedure_branch
+```
+
+It will have created `releases/${PROJECT}/${VERSION}/settings`, which should be submitted as a pull request.
+
+A more advanced invocation is to specify the parameters directly and copy the output.
+This uses `wl-copy` for Wayland; `xclip` achieves the same for Xorg.
+
+```
+PROJECT=foreman VERSION=3.7 ./procedure_branch 2023-05-23 TheOwner TheEngineer | wl-copy
+```
+
+Now post this to [Discourse Development/Releases](https://community.theforeman.org/c/development/releases/20) as `$PROJECT $VERSION branching process`.
+Follow the process as instructed.
+
+### Release
+
+First ensure `releases/${PROJECT}/${VERSION}/settings` contains the correct `FULLVERSION`. Modify as needed and submit as a pull request.
+Then generate the procedure, similar to the branching process:
+
+```sh
+PROJECT=foreman VERSION=3.7 ./procedure_release
+```
+
+Or the complete version:
+```
+PROJECT=foreman VERSION=3.7 ./procedure_release 2023-05-23 TheOwner TheEngineer | wl-copy
+```
+
+Now post this to [Discourse Development/Releases](https://community.theforeman.org/c/development/releases/20) as `$PROJECT $FULLVERSION release process`.
+Follow the process as instructed.
 
 ## Setup
 
-Required dependencies:
+Python and [python-jenkins](https://pypi.org/project/python-jenkins/) are needed.
+On Fedora this can be installed:
 
- * gopass
- * python3
- * python-jenkins
+```sh
+dnf install python3-jenkins
+```
 
 ### Gopass
 
-First, clone this repository to your local machine. [gopass](https://github.com/gopasspw/gopass) will need to be installed and then set up on your machine for the release environment.
+For storing secrets, [gopass](https://github.com/gopasspw/gopass) is used.
+On Fedora it can be installed:
 
-Ensure that `gopass` is initialized after installing the first time (and that your GPG private key is present on the system):
+```sh
+dnf install gopass
+```
+
+Then make sure you have a GPG key on your system and initialize gopass with your key:
 
 ```
 gopass init <YOUR-PUB-KEY-HASH>
 ```
 
-After installing `gopass`, the shared password stores need to be cloned:
-
-```
-gopass clone secrets.theforeman.org:/srv/secretsgit/theforeman-release.git theforeman/releases
-gopass clone secrets.theforeman.org:/srv/secretsgit/theforeman-passwords.git theforeman/shared
-```
-You will need to create a few gopass passwords for jobs:
-
-For commands on the foreman infrastructure, add your `sudo` password:
-
-```
-gopass edit theforeman/unix --create
-```
-
-For running jobs in Jenkins, add your Jenkins password or API token:
+For running jobs in Jenkins, make sure you have [access](https://theforeman.github.io/foreman-infra/jenkins/#access) and add your Jenkins password or API token:
 
 ```
 gopass edit theforeman/jenkins-token --create
 ```
 
-To add a new "recipient" (user who can decrypt the secrets):
+#### Release engineers
 
-```console
-$ gopass sync
+For commands on the Foreman infrastructure, add your personal `sudo` password:
 
-$ gopass recipients add --store theforeman/releases 1234567890ABCDEF
-Do you want to add '0x1234567890ABCDEF - Example Admin <admin@example.com>' as a recipient to the store 'theforeman/releases'? [y/N/q]: y
-Reencrypting existing secrets. This may take some time ...
-Starting reencrypt
-…
+```
+gopass edit theforeman/unix --create
+```
 
-$ gopass sync
+The releases store from the [shared secret storage](https://theforeman.github.io/foreman-infra/secrets/) is also needed:
+
+```
+gopass clone secrets.theforeman.org:/srv/secretsgit/theforeman-release.git theforeman/releases
 ```
 
 ### Importing an existing release
 
-When a key has already been generated, it can be imported from the backups:
+When a GPG key has already been generated, it can be imported from the backups:
 
 ```bash
 import_gpg_private
