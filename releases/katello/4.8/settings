@@ -1,4 +1,4 @@
-FULLVERSION='4.8.0-rc2'
+FULLVERSION='4.8.0'
 FOREMAN_VERSION='3.6'
 OSES="el8"
 KOJI_TAGS="katello-@VERSION@-@OS@ katello-candlepin-@VERSION@-el8"
