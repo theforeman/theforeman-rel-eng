@@ -19,7 +19,7 @@ upload() {
 	gpg2 --homedir "$KEYDIR" --armor --export "$FULLGPGKEY" > "$gpg_key"
 
 	copy_unix_pass
-	ansible-playbook --ask-become-pass --inventory=$HOSTS --extra-vars="release=${VERSION} gpg_key=${gpg_key} project=${PROJECT}" upload_rpm_gpg_key.yaml
+	ansible-playbook --ask-become-pass --inventory=$HOSTS --extra-vars="release=${VERSION} gpg_key=${gpg_key} project=${PROJECT}" upload_yum_gpg_public_key.yaml
 }
 
 upload
