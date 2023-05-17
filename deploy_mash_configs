@@ -4,4 +4,4 @@
 
 ./ensure_clean_git_checkouts tool_belt > /dev/null
 
-scp "${TOOL_BELT}/mash_scripts/${PROJECT}/${VERSION}.0"/*.mash "${KOJI_SSH_TARGET}:/etc/ash/"
+scp "${GIT_DIR}/tool_belt/mash_scripts/${PROJECT}/${VERSION}.0"/*.mash "${KOJI_SSH_TARGET}:/etc/mash/"
