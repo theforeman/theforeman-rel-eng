@@ -40,6 +40,13 @@ def create_mash_config(version: str, gpg_key: str, redmine_project: str) -> None
     for tag in data[':tags']:
         tag['based_off'] = tag['name'].replace(version, 'nightly')
 
+        try:
+            group_source_tag = tag['build_package_group_source_tag'].replace(version, 'nightly')
+        except KeyError:
+            pass
+        else:
+            tag['build_package_group_source_tag'] = group_source_tag
+
     yaml.dump(data, sys.stdout)
 
 def main() -> None:
