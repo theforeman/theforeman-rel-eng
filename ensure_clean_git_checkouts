@@ -3,16 +3,16 @@
 . settings
 
 if [[ -z $1 ]] ; then
-	PROJECTS=$TAR_PROJECTS
+	REPOS=$TAR_PROJECTS
 else
-	PROJECTS=$*
+	REPOS=$*
 fi
 
-PROJECTS=${PROJECTS/foreman-proxy/smart-proxy}
+REPOS=${REPOS/foreman-proxy/smart-proxy}
 
-for project in $PROJECTS ; do
+for repo in $REPOS ; do
 	(
-		project_dir="$GIT_DIR/$project"
+		project_dir="$GIT_DIR/$repo"
 		if [[ -d "$project_dir" ]] ; then
 			cd "$project_dir"
 			if ! git diff --quiet --exit-code ; then
@@ -20,9 +20,9 @@ for project in $PROJECTS ; do
 				exit 1
 			fi
 		else
-			git clone --quiet -o "$GIT_REMOTE" "https://github.com/theforeman/${project}" "${project_dir}"
+			git clone --quiet -o "$GIT_REMOTE" "https://github.com/theforeman/${repo}" "${project_dir}"
 		fi
 	)
 done
 
-echo "$PROJECTS"
+echo "$REPOS"

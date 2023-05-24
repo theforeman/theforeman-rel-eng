@@ -2,13 +2,13 @@
 
 . settings
 
-for project in $(./ensure_clean_git_checkouts "$@") ; do
+for repo in $(./ensure_clean_git_checkouts "$@") ; do
 	(
-		cd "$GIT_DIR/$project"
+		cd "$GIT_DIR/$repo"
 		git fetch --quiet "$GIT_REMOTE"
 		git checkout -b "${VERSION}-stable" "${GIT_REMOTE}/develop"
 
-		if [[ $project == foreman-installer ]]; then
+		if [[ $repo == foreman-installer ]]; then
 			bundle exec rake pin_modules
 			sed -i '/Puppetfile.lock/d' .gitignore
 			bundle exec librarian-puppet install

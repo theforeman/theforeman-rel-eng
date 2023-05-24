@@ -2,9 +2,9 @@
 
 . settings
 
-for project in $(./ensure_clean_git_checkouts "$@") ; do
+for repo in $(./ensure_clean_git_checkouts "$@") ; do
 	(
-		cd "$GIT_DIR/$project"
+		cd "$GIT_DIR/$repo"
 		git push --set-upstream "$GIT_REMOTE" "${VERSION}-stable"
 	)
 done
