@@ -22,7 +22,4 @@ if [[ $READ == 1 ]] ; then
 	echo >&2
 fi
 
-./ensure_clean_git_checkouts tool_belt > /dev/null
-# TODO: ensure checkout is up to date?
-
-"${GIT_DIR}/tool_belt/tools.rb" procedure branch "$PROJECT" "$VERSION" "$TARGET_DATE" "$OWNER" "$ENGINEER"
+./procedure branch --project "$PROJECT" --release "$VERSION" --target-date "$TARGET_DATE" --owner "$OWNER" --engineer "$ENGINEER"
