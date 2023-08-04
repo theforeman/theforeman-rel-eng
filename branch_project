@@ -6,7 +6,7 @@ for repo in $(./ensure_clean_git_checkouts "$@") ; do
 	(
 		cd "$GIT_DIR/$repo"
 		git fetch --quiet "$GIT_REMOTE"
-		git checkout -b "${VERSION}-stable" "${GIT_REMOTE}/develop"
+		git checkout -b "$GIT_STABLE_BRANCH" "${GIT_REMOTE}/${GIT_DEVELOP_BRANCH}"
 
 		if [[ $repo == foreman-installer ]]; then
 			bundle exec rake pin_modules

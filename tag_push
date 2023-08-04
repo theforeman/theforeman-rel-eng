@@ -5,7 +5,7 @@
 for project in $(./ensure_clean_git_checkouts "$@") ; do
 	(
 		cd "$GIT_DIR/$project"
-		echo "Pushing ${project} ${VERSION}-stable"
-		git push "${GIT_REMOTE}" "${VERSION}-stable" --follow-tags
+		echo "Pushing ${project} ${GIT_STABLE_BRANCH}"
+		git push "${GIT_REMOTE}" "${GIT_STABLE_BRANCH}" --follow-tags
 	)
 done

@@ -20,7 +20,7 @@ for repo in $REPOS ; do
 				exit 1
 			fi
 		else
-			git clone --quiet -o "$GIT_REMOTE" "https://github.com/theforeman/${repo}" "${project_dir}"
+			git clone --quiet -o "$GIT_REMOTE" "https://github.com/${GITHUB_NAMESPACE}/${repo}" "${project_dir}"
 		fi
 	)
 done

@@ -5,6 +5,6 @@
 for repo in $(./ensure_clean_git_checkouts "$@") ; do
 	(
 		cd "$GIT_DIR/$repo"
-		git push --set-upstream "$GIT_REMOTE" "${VERSION}-stable"
+		git push --set-upstream "$GIT_REMOTE" "$GIT_STABLE_BRANCH"
 	)
 done

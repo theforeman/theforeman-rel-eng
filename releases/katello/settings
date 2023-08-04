@@ -1,3 +1,10 @@
 RPM_PACKAGES="katello katello-repos rubygem-katello"
 KOJI_TAGS="katello-@VERSION@-@OS@ katello-@VERSION@-thirdparty-candlepin-@OS@"
 PACKAGING_SUBDIR="packages/katello"
+
+GIT_DEVELOP_BRANCH=master
+GIT_STABLE_BRANCH="KATELLO-${VERSION}"
+GITHUB_NAMESPACE=Katello
+
+# Not really delivered as tarballs, but it's what ensure_clean_git_checkouts uses
+TAR_PROJECTS=katello
