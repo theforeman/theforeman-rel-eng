@@ -12,8 +12,12 @@ for project in $(./ensure_clean_git_checkouts "$@") ; do
 		git checkout "$GIT_DEVELOP_BRANCH"
 		git pull --quiet
 
-		echo "${DEVELOP}.0-develop" > VERSION
-		git add VERSION
+		if [[ $project == katello ]] ; then
+			sed -i '/VERSION/ s/[0-9]\+\.[0-9]\+\.[0-9]\+/'"${DEVELOP}".0'/' lib/katello/version.rb
+		else
+			echo "${DEVELOP}.0-develop" > VERSION
+			git add VERSION
+		fi
 
 		if [[ $project == foreman ]] ; then
 			sed -i '/"version": "/ s/"[0-9]\+\.[0-9]\+\.[0-9]\+"/"'"${DEVELOP}".0'"/' package.json
