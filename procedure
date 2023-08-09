@@ -6,10 +6,16 @@ require 'optparse'
 require 'optparse/date'
 require 'ostruct'
 
+class Context < OpenStruct
+  def rel_eng_script(name)
+    "[#{name}](https://github.com/theforeman/theforeman-rel-eng/blob/master/#{name})"
+  end
+end
+
 def self.render_file(filename, context)
   erb = ERB.new(File.read(filename), trim_mode: '-')
   erb.filename = File.expand_path(filename)
-  erb.result(OpenStruct.new(context).instance_eval { binding })
+  erb.result(Context.new(context).instance_eval { binding })
 end
 
 def render(project, procedure, context)

@@ -64,14 +64,14 @@
 
 ## Release Owner
 
-- [ ] Create the KATELLO-<%= release %> branch using [branch_project](https://github.com/theforeman/theforeman-rel-eng/blob/master/branch_project)
-- [ ] Push the KATELLO-<%= release %> branch using [branch_push](https://github.com/theforeman/theforeman-rel-eng/blob/master/branch_push)
-- [ ] Bump versions to <%= develop %>-master using [develop_branch_bump](https://github.com/theforeman/theforeman-rel-eng/blob/master/develop_branch_bump)
-- [ ] Push version bumps to <%= develop %>-master using [develop_branch_push](https://github.com/theforeman/theforeman-rel-eng/blob/master/develop_branch_push)
+- [ ] Create the KATELLO-<%= release %> branch using <%= rel_eng_script('branch_project') %>
+- [ ] Push the KATELLO-<%= release %> branch using <%= rel_eng_script('branch_push') %>
+- [ ] Bump versions to <%= develop %>-master using <%= rel_eng_script('develop_branch_bump') %>
+- [ ] Push version bumps to <%= develop %>-master using <%= rel_eng_script('develop_branch_push') %>
 - [] Bump Katello related packages to their next versions
   - [] [packaging](https://github.com/theforeman/foreman-packaging/pull/8729/files)
 - [ ] Generate and post the release procedure, if not already posted:
-  - [ ] Use [procedure_release](https://github.com/theforeman/theforeman-rel-eng/blob/master/procedure_release): `PROJECT=katello VERSION=<%= release %> "<%= target_date %>" "<%= owner %>" "<%= engineer %>"
+  - [ ] Use <%= rel_eng_script('procedure_release') %>: `PROJECT=katello VERSION=<%= release %> ./procedure_release "<%= target_date %>" "<%= owner %>" "<%= engineer %>"
   - [ ] Post the output in [Development/Releases](https://community.theforeman.org/c/development/releases/20) using `Katello <%= release %>.0-rc1 release process`
   - [ ] Clone https://github.com/theforeman/apidocs and follow the Katello README section to update the API documentation.
 - [ ] Prepare "Katello Next" and future redmine versions

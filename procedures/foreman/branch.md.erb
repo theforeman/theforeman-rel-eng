@@ -54,17 +54,17 @@
 ## Release Engineer
 
 - Create new GPG key for release. See [GPG_Keys](https://projects.theforeman.org/projects/foreman/wiki/GPG_Keys) if needed.
-  - [ ] [Generate](https://github.com/theforeman/theforeman-rel-eng/blob/master/generate_gpg)
-  - [ ] [Backup](https://github.com/theforeman/theforeman-rel-eng/blob/master/export_gpg_private)
-  - [ ] [Sign](https://github.com/theforeman/theforeman-rel-eng/blob/master/sign_gpg)
-  - [ ] [Upload](https://github.com/theforeman/theforeman-rel-eng/blob/master/upload_gpg)
-- [ ] Publish the key by [exporting](https://github.com/theforeman/theforeman-rel-eng/blob/master/export_gpg_public) the GPG key
-  - [ ] Update the website's [security.md](https://github.com/theforeman/theforeman.org/blob/gh-pages/security.md) and create a file in [static/keys](https://github.com/theforeman/theforeman.org/tree/gh-pages/static/keys)
-  - [ ] Use [upload_yum_gpg](https://github.com/theforeman/theforeman-rel-eng/blob/master/upload_yum_gpg) to create [releases/<%= release %>/RPM-GPG-KEY-foreman](https://yum.theforeman.org/releases/<%= release %>/RPM-GPG-KEY-foreman) on yum.theforeman.org
+  - [ ] <%= rel_eng_script('generate_gpg') %>
+  - [ ] <%= rel_eng_script('export_gpg_private') %> to back up
+  - [ ] <%= rel_eng_script('sign_gpg') %>
+  - [ ] <%= rel_eng_script('upload_gpg') %>
+- Publish the key
+  - [ ] Use <%= rel_eng_script('export_gpg_public') %> to show the GPG key and update the website's [security.md](https://github.com/theforeman/theforeman.org/blob/gh-pages/security.md) and create a file in [static/keys](https://github.com/theforeman/theforeman.org/tree/gh-pages/static/keys)
+  - [ ] Use <%= rel_eng_script('upload_yum_gpg') %> to create [releases/<%= release %>/RPM-GPG-KEY-foreman](https://yum.theforeman.org/releases/<%= release %>/RPM-GPG-KEY-foreman) on yum.theforeman.org
   - [ ] Commit the [settings file](https://github.com/theforeman/theforeman-rel-eng/blob/master/releases/foreman/<%= release %>/settings) to the `theforeman-rel-eng` repository
 - [ ] Create new settings files for [client](https://github.com/theforeman/theforeman-rel-eng/blob/master/releases/client/<%= release %>/settings), ensure it has the rights `OSES` list and commit it too.
-- [ ] Create mash configs in [tool_belt](https://github.com/theforeman/tool_belt/tree/master/configs/foreman) using [create_mash_configs](https://github.com/theforeman/theforeman-rel-eng/blob/master/create_mash_configs) and submit this as a PR.
-- [ ] Once merged, deploy mash configuration on Koji using [deploy_mash_configs](https://github.com/theforeman/theforeman-rel-eng/blob/master/deploy_mash_configs)
+- [ ] Create mash configs in [tool_belt](https://github.com/theforeman/tool_belt/tree/master/configs/foreman) using <%= rel_eng_script('create_mash_configs') %> and submit this as a PR.
+- [ ] Once merged, deploy mash configuration on Koji using <%= rel_eng_script('deploy_mash_configs') %>
 - [ ] Update [collection-mash-split.py](https://github.com/theforeman/foreman-infra/blob/master/koji/collection-mash-split.py)
   - Add a Katello version mapping
   - Make any changes if needed (usually happens when there are tag changes)
@@ -87,15 +87,15 @@
 
 ## Release Owner
 
-- [ ] Create <%= release %>-stable branches using [branch_project](https://github.com/theforeman/theforeman-rel-eng/blob/master/branch_project)
-- [ ] Push <%= release %>-stable branches using [branch_push](https://github.com/theforeman/theforeman-rel-eng/blob/master/branch_push)
+- [ ] Create <%= release %>-stable branches using <%= rel_eng_script('branch_project') %>
+- [ ] Push <%= release %>-stable branches using <%= rel_eng_script('branch_push') %>
 - [ ] Branch foreman-documentation git repository and update website for new release by following the [README instructions](https://github.com/theforeman/foreman-documentation#branching-new-release)
 - [ ] Ask Hammer maintainer to branch [hammer-cli](https://github.com/theforeman/hammer-cli) and [hammer-cli-foreman](https://github.com/theforeman/hammer-cli-foreman)
 
 The next step should only be done after all branching, including packaging, has completed.
 
-- [ ] Bump versions to <%= develop %>-develop using [develop_branch_bump](https://github.com/theforeman/theforeman-rel-eng/blob/master/develop_branch_bump)
-- [ ] Push version bumps to <%= develop %>-develop using [develop_branch_push](https://github.com/theforeman/theforeman-rel-eng/blob/master/develop_branch_push)
+- [ ] Bump versions to <%= develop %>-develop using <%= rel_eng_script('develop_branch_bump') %>
+- [ ] Push version bumps to <%= develop %>-develop using <%= rel_eng_script('develop_branch_push') %>
 - [ ] Ask Hammer maintainer to bump [hammer-cli](https://github.com/theforeman/hammer-cli) and [hammer-cli-foreman](https://github.com/theforeman/hammer-cli-foreman)
 
 # Preparing build systems: <%= target_date %>
@@ -121,7 +121,7 @@ The next step should only be done after all branching, including packaging, has 
 ## Release Owner
 
 - [ ] Create the <%= release %>.0-rc release procedure in [Development/Releases](https://community.theforeman.org/c/development/releases/20): `PROJECT=foreman VERSION=<%= release %> ./procedure_release <%= target_date %> '<%= owner %>' '<%= engineer %>' | wl-copy`
-- [ ] Create a `Foreman <%= develop %> Schedule and Planning` post on [Development/Releases](https://community.theforeman.org/c/development/releases/20) using [schedule](https://github.com/theforeman/theforeman-rel-eng/blob/master/schedule)
+- [ ] Create a `Foreman <%= develop %> Schedule and Planning` post on [Development/Releases](https://community.theforeman.org/c/development/releases/20) using <%= rel_eng_script('schedule') %>
 - [ ] Create Redmine version <%= develop %>.0 and make sure it is shared with subprojects in [foreman](https://projects.theforeman.org/projects/foreman/settings/versions)
 - [ ] Ensure current Foreman deprecations for the next release are removed in __develop__
 
