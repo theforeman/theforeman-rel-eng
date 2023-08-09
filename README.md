@@ -1,14 +1,14 @@
 # The Foreman Release Engineering scripts
 
 A collection of small scripts, adhering to the [Unix philosophy](https://en.wikipedia.org/wiki/Unix_philosophy), used to release [The Foreman](https://theforeman.org).
-They automate parts of the [branch](https://github.com/theforeman/tool_belt/blob/master/procedures/foreman/branch.md.erb) and [release](https://github.com/theforeman/tool_belt/blob/master/procedures/foreman/release.md.erb) processes.
-It is also used for the [Katello](https://theforeman.org/plugins/katello/) [branch](https://github.com/theforeman/tool_belt/blob/master/procedures/katello/branch.md.erb) and [release](https://github.com/theforeman/tool_belt/blob/master/procedures/katello/release.md.erb) processes.
+They automate parts of the [branch](https://github.com/theforeman/theforeman-rel-eng/blob/master/procedures/foreman/branch.md.erb) and [release](https://github.com/theforeman/theforeman-rel-eng/blob/master/procedures/foreman/release.md.erb) processes.
+It is also used for the [Katello](https://theforeman.org/plugins/katello/) [branch](https://github.com/theforeman/theforeman-rel-eng/blob/master/procedures/katello/branch.md.erb) and [release](https://github.com/theforeman/theforeman-rel-eng/blob/master/procedures/katello/release.md.erb) processes.
 
 The most important environment variables are `PROJECT` and `VERSION`.
 
 ## Procedures
 
-Procedures are kept in [tool_belt](https://github.com/theforeman/tool_belt) with small wrappers in this repository.
+Procedures are kept in the `procedures` directory.
 
 ### Roles
 
