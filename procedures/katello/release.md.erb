@@ -22,7 +22,7 @@
   - [ ] For any cherry-picks that are not needed (including Redmine trackers) you can add them to the `:ignores:` section of `tool_belt` in `configs/katello/<%= short_version %>.yaml`
 <% end -%>
 <% unless is_rc -%>
-- [ ] Change Redmine version <%= full_version %> state to Closed using [close_redmine_version](https://github.com/theforeman/theforeman-rel-eng/blob/master/close_redmine_version): `./close_redmine_version`
+- [ ] Change Redmine version <%= full_version %> state to Closed using <%= rel_eng_script('close_redmine_version') %>
 <% end -%>
 - [ ] Check for outdated deprecation warnings in the current and next release with `./tools check-deprecation-warnings configs/katello/<%= short_version %>.yaml`. Follow the instructions in the output of the command. Don't forget to create any Redmine issues needed!
 - [ ] Update [docs.theforeman.org](https://github.com/theforeman/foreman-documentation)
@@ -65,11 +65,11 @@
 
 - [ ] Update release version similar to [here](https://github.com/theforeman/theforeman-rel-eng/commit/2029a9688da00d9c385c3438dd71b594ba5f728e)
 - [ ] Update `katello`, `katello-repos` and `rubygem-katello` 
-  - [ ] [`PROJECT=katello VERSION=<%= short_version %> ./bump_rpm_packaging`](https://github.com/theforeman/theforeman-rel-eng/blob/master/bump_rpm_packaging)
+  - [ ] Use <%= rel_eng_script('bump_rpm_packaging') %>: `PROJECT=katello VERSION=<%= short_version %> ./bump_rpm_packaging`
 - [ ] Merge packaging PR once job is green
 - [ ] Wait for [Jenkins to build the packages](https://ci.theforeman.org/job/foreman-packaging-rpm-<%= short_version %>-release/) (replace <%= short_version %> with the matching Foreman version)
-- [ ] [Download](https://github.com/theforeman/theforeman-rel-eng/blob/master/download_rpms), [sign](https://github.com/theforeman/theforeman-rel-eng/blob/master/sign_rpms), [upload RPM signatures](https://github.com/theforeman/theforeman-rel-eng/blob/master/upload_rpm_signatures) and [upload RPMs](https://github.com/theforeman/theforeman-rel-eng/blob/master/upload_rpms)
-- [ ] Kick off the [release pipeline](https://ci.theforeman.org/job/katello-<%= short_version %>-rpm-pipeline/) by calling [release_pipeline](https://github.com/theforeman/theforeman-rel-eng/blob/master/release_pipeline)
+- [ ] <%= rel_eng_script('download_rpms') %>, <%= rel_eng_script('sign_rpms') %>, <%= rel_eng_script('upload_rpm_signatures') %>, <%= rel_eng_script('upload_rpms') %>
+- [ ] Use <%= rel_eng_script('release_pipeline') %> to kick off the [release pipeline](https://ci.theforeman.org/job/katello-<%= short_version %>-rpm-pipeline/)
 
 # Once release is out
 ## Release Owner
