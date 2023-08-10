@@ -1,0 +1,77 @@
+#!/usr/bin/env ruby
+
+require 'set'
+require 'uri'
+require 'net/http'
+require 'json'
+
+URL = 'https://projects.theforeman.org'
+
+unless ARGV.size == 3
+  puts "Usage: #{$0} PROJECT RELEASE_NAME PREV_RELEASE_NAME"
+  puts "Example: #{$0} foreman 3.7.0 3.6.0"
+  exit 1
+end
+
+@project_name = ARGV[0]
+current_release_name = ARGV[1]
+prev_release_name = ARGV[2]
+
+git_issues = Set.new(`git log #{prev_release_name}.. | grep -i fixes | egrep -o \"[ ,]#[0-9]*\" | sed -e 's/[ ,]#//g'`.split.map(&:to_i))
+
+def url_to_json(uri)
+  response = Net::HTTP.get(uri)
+  JSON.parse(response)
+end
+
+# Determine version
+def get_version_id(project, release)
+  uri = URI("#{URL}/projects/#{project}/versions.json")
+  result = url_to_json(uri)
+  return nil if result['versions'].nil?
+  result = result['versions'].detect{|v| v['name'] == release }
+  return nil if result.nil?
+  result['id']
+rescue StandardError => e
+  puts "Error getting version list from #{uri}: #{e}"
+  exit 1
+end
+
+current_release_id = get_version_id(@project_name, current_release_name)
+prev_release_id = get_version_id(@project_name, prev_release_name)
+
+
+if current_release_id.nil?
+  puts "Release #{current_release_name} not found in the project #{@project_name}"
+  exit 1
+end
+
+def gather_issues(release_id, offset = 0)
+  params = [
+    ['offset', offset],
+    ['limit', '100'],
+    ['f[]', 'subproject_id'],
+    ['op[subproject_id]', '!*'],
+    ['f[]', 'status_id'],
+    ['op[status_id]', '='],
+    ['v[status_id][]', '5'],
+    ['f[]', 'cf_12'],
+    ['op[cf_12]', '='],
+    ['v[cf_12][]', release_id],
+  ]
+  uri = URI("#{URL}/projects/#{@project_name}/issues.json?#{URI.encode_www_form(params)}")
+  result = url_to_json(uri)
+  if result['total_count'].to_i - offset - 100 <= 0
+    result['issues']
+  else
+    result['issues'] += gather_issues(release_id, offset + 100)
+  end
+end
+redmine = Set.new(gather_issues(current_release_id).map{|issue| issue['id']})
+redmine_prev = Set.new(gather_issues(prev_release_id).map{|issue| issue['id']})
+
+puts "Issues only in redmine:"
+puts (redmine - git_issues).sort.map{|id| "#{URL}/issues/#{id}"}.join("\n")
+
+puts "Issues only in git:"
+puts (git_issues - redmine - redmine_prev).sort.map{|id| "#{URL}/issues/#{id}"}.join("\n")
