@@ -23,7 +23,7 @@
 - [ ] Add a new [Redmine version](https://projects.theforeman.org/projects/foreman/settings/versions) for the next minor, unless the series is EOL. Be sure the version is set to sharing with subprojects.
 <% end -%>
 - [ ] Remove/change target version field for any open Redmine tickets assigned to the release still (next minor, unset it or reject)
-- [ ] Ensure that code in git matches issues fixed in <%= full_version %> in redmine. [issues.rb](https://gist.github.com/tbrisker/3320097f1d8c9abfb2dbcf8d8e216bba) can be used to generate a comparison between the two.
+- [ ] Ensure that code in git matches issues fixed in <%= full_version %> in redmine. [issues](https://github.com/theforeman/theforeman-rel-eng/blob/master/issues) can be used to generate a comparison between the two.
 <% unless is_rc -%>
 - [ ] Change Redmine version <%= full_version %> state to Closed using <%= rel_eng_script('close_redmine_version') %>
 <% end -%>
