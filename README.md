@@ -21,7 +21,7 @@ Below is a listing of access used.
 #### Foreman release owner
 
 * Belong to the [Foreman GitHub release-managers team](https://github.com/orgs/theforeman/teams/release-managers)
-* [Discourse](https://community.theforeman.org/) trust level 3 to post to [Release announcements](https://community.theforeman.org/c/release-announcements/8). See [Understanding Discourse Trust Levels](https://blog.discourse.org/2018/06/understanding-discourse-trust-levels/) for more information. Discourse admins can manually raise a user's trust level.
+* Belong to the `releases` group on [Discourse](https://community.theforeman.org/)
 * IRC: permission to change the topic in [#theforeman on Libera.Chat](ircs://irc.libera.chat/theforeman). See [Libera.Chat permissions](https://libera.chat/guides/creatingchannels#setting-up-permissions) on how channel owners can grant this.
 * Redmine access: be added to the [Developers group](https://projects.theforeman.org/groups/44213/edit?tab=users)
 * Transifex account (unclear on the exact permissions to extract translations)
