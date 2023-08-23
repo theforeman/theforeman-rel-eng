@@ -1,4 +1,4 @@
 FULLGPGKEY="CE3159AAC3EC09E51614775446020A10694FA479"
 FULLVERSION="1.19.1"
-RPM_PACKAGES=foreman foreman-installer foreman-proxy foreman-selinux
+RPM_PACKAGES=(foreman foreman-installer foreman-proxy foreman-selinux)
 OSES="rhel7"
