@@ -37,7 +37,9 @@ Below is a listing of access used.
 
 * Write permission to [Katello/katello](https://github.com/Katello/katello)
 * Push access to the [Katello gem](https://rubygems.org/gems/katello)
-* [Discourse](https://community.theforeman.org/) account level 3 to post to [Release announcements](https://community.theforeman.org/c/release-announcements/8)
+* Belong to the [Foreman GitHub katello-release-owners team](https://github.com/orgs/theforeman/teams/katello-release-owners)
+* Belong to the `releases` group on [Discourse](https://community.theforeman.org/)
+* Redmine access: be added to the [Developers group](https://projects.theforeman.org/groups/44213/edit?tab=users)
 
 #### Katello release engineer
 
