@@ -1,21 +1,3 @@
 #!/bin/bash -e
 
-. settings
-
-REMOTE_BRANCH=deb/${FOREMAN_VERSION}
-
-cd "$PACKAGING_DIR"
-
-git fetch $PACKAGING_GIT_REMOTE
-git checkout -b deb/release-$PROJECT-$FULLVERSION $PACKAGING_GIT_REMOTE/$REMOTE_BRANCH
-
-scripts/changelog.rb -v ${FULLVERSION/-rc/~rc}-1 -m "$FULLVERSION released" debian/*/*/changelog
-git add debian/*/*/changelog
-
-git commit -m "Release $FULLVERSION"
-
-if [[ $PACKAGING_PR == true ]] ; then
-	git phr -m "Release $FULLVERSION" -b "$REMOTE_BRANCH"
-else
-	git push $PACKAGING_GIT_REMOTE HEAD:$REMOTE_BRANCH
-fi
+./bump_packaging deb

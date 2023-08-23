@@ -1,0 +1,40 @@
+#!/bin/bash -e
+
+. settings
+
+FLAVOR=$1
+
+if [[ $FLAVOR != deb ]] && [[ $FLAVOR != rpm ]] ; then
+	echo "Usage: $0 [deb|rpm]" >&2
+	exit 1
+fi
+
+REMOTE_BRANCH="${FLAVOR}/${FOREMAN_VERSION}"
+FULL_REMOTE_BRANCH="$PACKAGING_GIT_REMOTE/$REMOTE_BRANCH"
+
+cd "$PACKAGING_DIR"
+
+git fetch $PACKAGING_GIT_REMOTE
+git checkout -b "${FLAVOR}/release-$PROJECT-$FULLVERSION" "${FULL_REMOTE_BRANCH}"
+
+if [[ $FLAVOR == deb ]] ; then
+	scripts/changelog.rb -v "${FULLVERSION/-rc/~rc}-1" -m "$FULLVERSION released" debian/*/*/changelog
+	git add debian/*/*/changelog
+else
+	if [[ $FULLVERSION == *-rc* ]]; then
+		PRERELEASE=${FULLVERSION##*-}
+		obal update --version "${FULLVERSION%%-rc*}" --prerelease "${PRERELEASE}" --release keep "${RPM_PACKAGES[@]}"
+	else
+		obal update --version "${FULLVERSION}" "${RPM_PACKAGES[@]}"
+	fi
+
+	git add "${RPM_PACKAGES[@]/#/packages\/${PROJECT}/}"
+fi
+
+git commit -m "Release $FULLVERSION"
+
+if [[ $PACKAGING_PR == true ]] ; then
+	git phr -m "Release $FULLVERSION" -b "$REMOTE_BRANCH"
+else
+	git push "$PACKAGING_GIT_REMOTE" "HEAD:$REMOTE_BRANCH"
+fi

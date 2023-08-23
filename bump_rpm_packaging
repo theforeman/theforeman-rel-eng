@@ -1,27 +1,3 @@
 #!/bin/bash -e
 
-. settings
-
-REMOTE_BRANCH=rpm/${FOREMAN_VERSION}
-
-cd "$PACKAGING_DIR"
-
-git fetch $PACKAGING_GIT_REMOTE
-git checkout -b rpm/release-$PROJECT-$FULLVERSION $PACKAGING_GIT_REMOTE/$REMOTE_BRANCH
-
-if [[ $FULLVERSION == *-rc* ]]; then
-	PRERELEASE=${FULLVERSION##*-}
-	obal update --version ${FULLVERSION%%-rc*} --prerelease ${PRERELEASE} --release keep "${RPM_PACKAGES[@]}"
-else
-	obal update --version $FULLVERSION "${RPM_PACKAGES[@]}"
-fi
-
-git add "${RPM_PACKAGES[@]/#/packages\/${PROJECT}/}"
-
-git commit -m "Release $FULLVERSION"
-
-if [[ $PACKAGING_PR == true ]] ; then
-	git phr -m "Release $FULLVERSION" -b "$REMOTE_BRANCH"
-else
-	git push $PACKAGING_GIT_REMOTE HEAD:$REMOTE_BRANCH
-fi
+./bump_packaging rpm
