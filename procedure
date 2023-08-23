@@ -5,6 +5,7 @@ require 'erb'
 require 'optparse'
 require 'optparse/date'
 require 'ostruct'
+require 'pathname'
 
 class Context < OpenStruct
   def rel_eng_script(name)
@@ -12,10 +13,20 @@ class Context < OpenStruct
   end
 end
 
+def header(filename)
+  git_commit = `git rev-parse HEAD`.strip
+  git_filename = Pathname.new(filename).relative_path_from(`git rev-parse --show-toplevel`.strip)
+  <<~HEADER
+    This procedure was generated from [#{git_filename} at #{git_commit}](https://github.com/theforeman/theforeman-rel-eng/blob/#{git_commit}/#{git_filename})
+
+    [ ] Make this post a wiki ([help](https://meta.discourse.org/t/create-a-wiki-post/30802))
+  HEADER
+end
+
 def render_file(filename, context)
   erb = ERB.new(File.read(filename), trim_mode: '-')
   erb.filename = File.expand_path(filename)
-  erb.result(Context.new(context).instance_eval { binding })
+  header(filename) + erb.result(Context.new(context).instance_eval { binding })
 end
 
 def render(project, procedure, context)
