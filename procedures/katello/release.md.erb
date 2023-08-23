@@ -67,7 +67,7 @@
 - [ ] Update `katello`, `katello-repos` and `rubygem-katello` 
   - [ ] Use <%= rel_eng_script('bump_rpm_packaging') %>: `PROJECT=katello VERSION=<%= short_version %> ./bump_rpm_packaging`
 - [ ] Merge packaging PR once job is green
-- [ ] Wait for [Jenkins to build the packages](https://ci.theforeman.org/job/foreman-packaging-rpm-<%= short_version %>-release/) (replace <%= short_version %> with the matching Foreman version)
+- [ ] Use <%= rel_eng_script('wait_packaging') %> to wait for [Jenkins to build the packages](https://ci.theforeman.org/job/foreman-packaging-rpm-<%= short_version %>-release/) (replace <%= short_version %> with the matching Foreman version)
 - [ ] <%= rel_eng_script('download_rpms') %>, <%= rel_eng_script('sign_rpms') %>, <%= rel_eng_script('upload_rpm_signatures') %>, <%= rel_eng_script('upload_rpms') %>
 - [ ] Use <%= rel_eng_script('release_pipeline') %> to kick off the [release pipeline](https://ci.theforeman.org/job/katello-<%= short_version %>-rpm-pipeline/)
 
