@@ -5,3 +5,4 @@ releases/**/rpms.processed
 releases/**/tarballs
 *.retry
 settings.local
+tmp/

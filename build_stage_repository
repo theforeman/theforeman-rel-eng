@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from subprocess import check_output, STDOUT, CalledProcessError
+from urllib.request import urlretrieve
 import os
 import yaml
 import glob
@@ -8,9 +9,10 @@ import shutil
 import time
 import hashlib
 import sys
+import tempfile
 
 
-def move_rpms_from_copr_to_stage(collection, version, src_folder, dest_folder, source=False):
+def move_rpms_from_copr_to_stage(collection, version, src_folder, dest_folder, dist, arch, source=False):
     if source:
         print(f"Moving {collection} Source RPMs from Copr directory to stage repository")
     else:
@@ -19,7 +21,7 @@ def move_rpms_from_copr_to_stage(collection, version, src_folder, dest_folder, s
     if not os.path.exists(dest_folder):
         os.mkdir(dest_folder)
 
-    repo_folder = f"{src_folder}/el8-{collection}-{version}"
+    repo_folder = f"{src_folder}/{dist}-{collection}-{version}-{arch}"
 
     if source:
         files = glob.glob(repo_folder + f"/**/*.src.rpm")
@@ -33,8 +35,10 @@ def move_rpms_from_copr_to_stage(collection, version, src_folder, dest_folder, s
     shutil.rmtree(src_folder)
 
 
-def modulemd_yaml(collection):
-    return f"modulemd/modulemd-{collection}-el8.yaml"
+def modulemd_yaml(collection, version):
+    branch = 'develop' if version == 'nightly' else version
+    path, headers = urlretrieve(f"https://raw.githubusercontent.com/theforeman/foreman-packaging/rpm/{branch}/modulemd/modulemd-{collection}-el8.yaml")
+    return path
 
 
 def generate_modulemd_version(version):
@@ -65,9 +69,9 @@ def create_modulemd(collection, version, stage_dir):
         f"{stage_dir}/*.rpm",
         "--queryformat=%{name}-%{epochnum}:%{version}-%{release}.%{arch}\n"
     ]
-    output = check_output(cmd)
+    output = check_output(cmd, universal_newlines=True)
 
-    with open(modulemd_yaml(collection), 'r') as file:
+    with open(modulemd_yaml(collection, version), 'r') as file:
         modules = yaml.safe_load(file)
 
     modules['data']['artifacts'] = {'rpms': output.splitlines()}
@@ -85,7 +89,7 @@ def create_repository(repo_dir):
     check_output(['createrepo', repo_dir])
 
 
-def sync_copr_repository(collection, version, target_dir, source=False):
+def sync_copr_repository(collection, version, target_dir, dist, arch, source=False):
     if source:
         print(f"Syncing {collection} {version} Source RPM repository from Copr")
     else:
@@ -96,9 +100,9 @@ def sync_copr_repository(collection, version, target_dir, source=False):
         'reposync',
         '--newest-only',
         '--repo',
-        f"el8-{collection}-{version}",
-        '--config',
-        'reposync_config.conf',
+        f"{dist}-{collection}-{version}-{arch}",
+        '--repofrompath',
+        f"{dist}-{collection}-{version}-{arch},https://download.copr.fedorainfracloud.org/results/@theforeman/{collection}-{version}-staging/rhel-{dist.replace('el', '')}-{arch}/",
         '--download-path',
         target_dir
     ]
@@ -120,7 +124,8 @@ def main():
     try:
         collection = sys.argv[1]
         version = sys.argv[2]
-        operating_system = sys.argv[3]
+        dist = sys.argv[3]
+        arch = 'x86_64'
     except IndexError:
         raise SystemExit(f"Usage: {sys.argv[0]} collection version os")
 
@@ -128,8 +133,8 @@ def main():
     rpm_sync_dir = f"{base_dir}/rpms"
     srpm_sync_dir = f"{base_dir}/srpms"
 
-    stage_dir = f"{base_dir}/{collection}/{version}/{operating_system}/"
-    rpm_dir = f"{stage_dir}/x86_64"
+    stage_dir = f"{base_dir}/{collection}/{version}/{dist}/"
+    rpm_dir = f"{stage_dir}/{arch}"
     srpm_dir = f"{stage_dir}/source"
 
     if not os.path.exists(rpm_sync_dir):
@@ -144,16 +149,16 @@ def main():
     if not os.path.exists(srpm_dir):
         os.makedirs(srpm_dir)
 
-    sync_copr_repository(collection, version, rpm_sync_dir)
-    sync_copr_repository(collection, version, srpm_sync_dir, source=True)
+    sync_copr_repository(collection, version, rpm_sync_dir, dist, arch)
+    sync_copr_repository(collection, version, srpm_sync_dir, dist, arch, source=True)
 
-    move_rpms_from_copr_to_stage(collection, version, srpm_sync_dir, srpm_dir, source=True)
-    move_rpms_from_copr_to_stage(collection, version, rpm_sync_dir, rpm_dir)
+    move_rpms_from_copr_to_stage(collection, version, srpm_sync_dir, srpm_dir, dist, arch, source=True)
+    move_rpms_from_copr_to_stage(collection, version, rpm_sync_dir, rpm_dir, dist, arch)
 
     create_repository(rpm_dir)
     create_repository(srpm_dir)
 
-    if collection in ['foreman', 'katello'] and operating_system == 'el8':
+    if collection in ['foreman', 'katello'] and dist == 'el8':
         create_modulemd(collection, version, rpm_dir)
 
 
