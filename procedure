@@ -97,10 +97,11 @@ procedures = {
             /^(?<version>(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+))([-.](?<extra>rc\d+))?$/,
             'Version that the branch will have - like 1.20.0-rc1') do |full_version, version, major, minor, patch, extra|
       debian_full_version = version + (extra ? "~#{extra.downcase}" : '') + '-1'
+      is_rc = !extra.nil?
       context.merge!(
-        is_rc: !extra.nil?,
+        is_rc: is_rc,
         is_first_rc: extra == 'rc1',
-        is_first_ga: patch == 0 && !is_rc,
+        is_first_ga: patch == '0' && !is_rc,
         extra: extra,
         short_version: "#{major}.#{minor}", # 1.20
         debian_full_version: debian_full_version, # 1.20.0~rc1-1
