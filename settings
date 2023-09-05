@@ -79,7 +79,7 @@ show_gpg_password() {
 }
 
 gpg_with_password() {
-	show_gpg_password | gpg2 --pinentry-mode loopback --passphrase-fd 0 "$@"
+	gpg2 --pinentry-mode loopback --passphrase-file <(show_gpg_password) "$@"
 }
 
 # Invoke ansible-playbook with ansible_become_password set safely
