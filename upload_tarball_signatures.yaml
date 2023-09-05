@@ -1,6 +1,8 @@
+---
 - hosts: all
   become: true
   become_user: downloads
+  gather_facts: false
   tasks:
     - name: "Upload signatures"
       copy:
