@@ -9,7 +9,13 @@ CONFIG_DIR="${TOOL_BELT}/configs/${PROJECT}"
 OUTPUT_FILE="${CONFIG_DIR}/${VERSION}.yaml"
 OUTPUT_DIR="${TOOL_BELT}/mash_scripts/${PROJECT}/${VERSION}.0"
 
-./build_tool_belt_config "$VERSION" "$GPGKEY" "$PROJECT" < "${CONFIG_DIR}/nightly.yaml" > "${OUTPUT_FILE}"
+(
+	if [[ $PROJECT == katello ]] ; then
+		sed "s/\(foreman\(-plugins\)\?\)-nightly/\1-${FOREMAN_VERSION}/" "${CONFIG_DIR}/nightly.yaml"
+	else
+		cat "${CONFIG_DIR}/nightly.yaml"
+	fi | ./build_tool_belt_config "$VERSION" "$GPGKEY" "$PROJECT"
+) > "${OUTPUT_FILE}"
 
 cd "${TOOL_BELT}"
 

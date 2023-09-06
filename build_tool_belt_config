@@ -2,13 +2,14 @@
 
 import argparse
 import sys
+from typing import Union, Tuple
 
 from redminelib import Redmine
 from ruamel.yaml import YAML
 
 REDMINE_URL = 'https://projects.theforeman.org'
 
-def find_redmine_versions(project_id: str, prefix: str) -> dict[str, int]:
+def find_redmine_versions(project_id: str, prefix: Union[str, Tuple[str, ...]]) -> dict[str, int]:
     """
     Find all X.Y.Z versions in Redmine based on version X.Y
     """
@@ -33,9 +34,20 @@ def create_mash_config(version: str, gpg_key: str, redmine_project: str) -> None
     data[':gpg_key'] = gpg_key
     data[':repos'] = []
 
+    # Foreman uses 'x.y.z' while Katello uses 'Katello x.y.z'
+    prefixes = (f'{version}.', f'{redmine_project.title()} {version}.')
+
     data[':releases'] = {}
-    for version_name, version_id in find_redmine_versions(redmine_project, f'{version}.').items():
-        data[':releases'][f':{version_name}'] = {':redmine_version_id': version_id}
+    for version_name, version_id in find_redmine_versions(redmine_project, prefixes).items():
+        # Katello x.y.z -> x.y.z
+        release = version_name.split()[-1]
+        data[':releases'][f':{release}'] = {':redmine_version_id': version_id}
+
+    if redmine_project == 'katello':
+        # TODO: a list of closed projects in x.(y-1) with the same structure as releases
+        data[':prior_releases'] = None
+        data[':ignores'] = None
+        data[':code_name'] = 'FIXME'
 
     for tag in data[':tags']:
         tag['based_off'] = tag['name'].replace(version, 'nightly')
