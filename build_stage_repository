@@ -158,7 +158,7 @@ def main():
     create_repository(rpm_dir)
     create_repository(srpm_dir)
 
-    if collection in ['foreman', 'katello'] and dist == 'el8':
+    if collection in ['foreman', 'foreman-katello'] and dist == 'el8':
         create_modulemd(collection, version, rpm_dir)
 
 
