@@ -10,6 +10,7 @@ import time
 import hashlib
 import sys
 import tempfile
+import dnf.comps
 
 
 def move_rpms_from_copr_to_stage(collection, version, src_folder, dest_folder, dist, arch, source=False):
@@ -22,6 +23,7 @@ def move_rpms_from_copr_to_stage(collection, version, src_folder, dest_folder, d
         os.mkdir(dest_folder)
 
     repo_folder = f"{src_folder}/{dist}-{collection}-{version}-{arch}"
+    packages_to_include = packages_from_comps(comps(collection, version, dist))
 
     if source:
         files = glob.glob(repo_folder + f"/**/*.src.rpm")
@@ -30,14 +32,47 @@ def move_rpms_from_copr_to_stage(collection, version, src_folder, dest_folder, d
 
     for file in files:
         file_name = os.path.basename(file)
-        shutil.move(file, os.path.join(dest_folder, file_name))
+        rpm_name = get_rpm_name(file)
+
+        if rpm_name in packages_to_include:
+            shutil.move(file, os.path.join(dest_folder, file_name))
 
     shutil.rmtree(src_folder)
+
+
+def get_rpm_name(rpm):
+    command = [
+        'rpmquery',
+        '--nosignature',
+        '--queryformat',
+        '%{name}',
+        '--package',
+        rpm
+    ]
+
+    return check_output(command, universal_newlines=True)
 
 
 def modulemd_yaml(collection, version):
     branch = 'develop' if version == 'nightly' else version
     path, headers = urlretrieve(f"https://raw.githubusercontent.com/theforeman/foreman-packaging/rpm/{branch}/modulemd/modulemd-{collection}-el8.yaml")
+    return path
+
+
+def comps(collection, version, dist):
+    branch = 'develop' if version == 'nightly' else version
+
+    if collection == 'foreman-katello':
+        name = 'katello'
+    elif collection == 'foreman-candlepin':
+        name = 'katello-candlepin'
+    else:
+        name = collection
+
+    if collection == 'foreman-client' and dist == 'el7':
+        dist = 'rhel7'
+
+    path, headers = urlretrieve(f"https://raw.githubusercontent.com/theforeman/foreman-packaging/rpm/{branch}/comps/comps-{name}-{dist}.xml")
     return path
 
 
@@ -118,6 +153,23 @@ def sync_copr_repository(collection, version, target_dir, dist, arch, source=Fal
         ])
 
     check_output(cmd)
+
+
+def packages_from_comps(comps):
+    dnf_comps = dnf.comps.Comps()
+
+    try:
+        dnf_comps._add_from_xml_filename(comps)
+    except libcomps.ParserError:
+        errors = comps.get_last_errors()
+        raise CompsError(' '.join(errors))
+
+    packages = set()
+    for group in dnf_comps.groups:
+        for package in group.default_packages:
+            packages.add(package.name)
+
+    return packages
 
 
 def main():
