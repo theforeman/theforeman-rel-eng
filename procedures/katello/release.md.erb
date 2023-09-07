@@ -20,7 +20,7 @@
   - [ ] For any cherry-picks that are not needed (including Redmine trackers) you can add them to the `:ignores:` section of `tool_belt` in `configs/katello/<%= short_version %>.yaml`
 <% end -%>
 <% unless is_rc -%>
-- [ ] Change Redmine version <%= full_version %> state to Closed using <%= rel_eng_script('close_redmine_version') %>
+- [ ] Change Redmine version <%= full_version %> state to Closed using <%= rel_eng_script('close_redmine_version') %>: `PROJECT=katello VERSION=<%= short_version %> ./close_redmine_version` and enter your Redmine API Key when prompted.
 <% end -%>
 - [ ] Check for outdated deprecation warnings in the current and next release with `./tools check-deprecation-warnings configs/katello/<%= short_version %>.yaml`. Follow the instructions in the output of the command. Don't forget to create any Redmine issues needed!
 - [ ] Update the `<%= foreman_version %>` branch in [foreman-documentation](https://github.com/theforeman/foreman-documentation)
