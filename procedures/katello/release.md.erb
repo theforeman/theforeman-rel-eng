@@ -38,7 +38,7 @@
 - [ ] Open a PR (or use cherry-pick PR) against the release branch which updates `lib/katello/version.rb` to <%= full_version %>:
   - [ ] `git pull` to make sure you have the latest changes
   - [ ] `sed '/VERSION/ s/".\+"/"<%= full_version %>"/' lib/katello/version.rb`
-  - [ ] Update/add the CHANGELOG.md file: `GITHUB_ACCESS_TOKEN=<secret> ./tools changelog configs/katello/<%= short_version %>.yaml`
+  - [ ] Update/add the CHANGELOG.md file: `GITHUB_ACCESS_TOKEN=<secret> ./tools changelog --version <%= full_version %> configs/katello/<%= short_version %>.yaml`
   - [ ] Commit: `git commit -m "Release <%= full_version %>"`
   - [ ] Ensure that the commit above is the _last_ commit and there are no commits after it. This is the commit that will get tagged. (Rearrange commits with `git rebase -i` if needed.)
 - [ ] Once the PR is merged, perform the following in the Katello release branch (the real one, not your fork):
