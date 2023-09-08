@@ -27,7 +27,7 @@ def get_pass(name):
         return None, {}
 
     password = lines[0]
-    extras = {key: value for key, value in parse_pass_lines(lines[1:])}
+    extras = dict(parse_pass_lines(lines[1:]))
     return password, extras
 
 
