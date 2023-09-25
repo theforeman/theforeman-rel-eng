@@ -65,7 +65,7 @@ Follow the process as instructed.
 
 ### Release
 
-First ensure `releases/${PROJECT}/${VERSION}/settings` contains the correct `FULLVERSION`. Modify as needed and submit as a pull request.
+First make sure you have fetched, pulled in the latest commits and rebased your fork. Secondly ensure `releases/${PROJECT}/${VERSION}/settings` contains the correct `FULLVERSION`. Modify as needed and submit as a pull request.
 Then generate the procedure, similar to the branching process:
 
 ```sh
