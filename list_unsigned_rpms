@@ -1,0 +1,56 @@
+#!/usr/bin/env python3
+
+from subprocess import check_output, STDOUT, CalledProcessError
+import argparse
+import glob
+
+
+def find_unsigned_packages(target_dir, gpgkey):
+    packages = glob.glob(f"{target_dir}/*.rpm")
+
+    for package in packages:
+        cmd = [
+            'rpm',
+            '--query',
+            '--queryformat',
+            '%{SIGPGP:pgpsig}',
+            package
+        ]
+
+        output = check_output(cmd, universal_newlines=True, stderr=STDOUT)
+
+        if gpgkey.lower() not in output:
+            yield package
+
+
+def handle_args():
+    parser = argparse.ArgumentParser(description='Sign unsigned RPMs in local stage repository')
+    parser.add_argument(
+        'repository_path',
+        help='Path to repository to sign unsigned RPMs'
+    )
+    parser.add_argument(
+        'gpgkey',
+        help='Short form gpgkey for the version being generated'
+    )
+
+    args = parser.parse_args()
+
+    if len(args.gpgkey) != 16:
+        raise SystemExit("GPG key must be the last 16 characters")
+
+    return args
+
+
+def main():
+    args = handle_args()
+
+    repository_path = args.repository_path
+    gpgkey = args.gpgkey
+
+    for rpm in find_unsigned_packages(repository_path, gpgkey):
+        print(rpm)
+
+
+if __name__ == '__main__':
+    main()

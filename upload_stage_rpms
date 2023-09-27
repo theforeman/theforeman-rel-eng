@@ -1,0 +1,8 @@
+#!/bin/bash -e
+
+. settings
+
+USER='yumrepostage'
+HOST='web01.osuosl.theforeman.org'
+
+rsync --archive --verbose --partial --one-file-system --delete-after "tmp/$PROJECT/$VERSION" "$USER@$HOST:rsync_cache/$PROJECT"

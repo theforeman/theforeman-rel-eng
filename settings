@@ -73,6 +73,7 @@ load_settings
 
 # Short GPGKEY is used by koji and is the last 8 chars or the full key
 GPGKEY="$(echo ${FULLGPGKEY: -8} | tr '[A-Z]' '[a-z]')"
+HALFGPGKEY="$(echo ${FULLGPGKEY: -16} | tr '[A-Z]' '[a-z]')"
 
 show_gpg_password() {
 	gopass show --password "$PASS_NAME_GPG"
