@@ -200,3 +200,38 @@ GIT_REMOTE=upstream # Git remote for cloned projects
 KOJI_CMD=koji # Invoke koji. Change this if you also have Koji set up for Fedora development
 PACKAGING_PR=true # Create a PR in bump_{deb,rpm}_packaging
 ```
+
+## Generating Stage Repository
+
+The `build_stage_repository` script generates a stage repository locally that can then be uploaded to the staging repository server or used locally for testing. This is done for RPMs and SRPMs. The workflow for each is:
+
+For releases (executed by release owner):
+
+    1. Uses reposync to copy all RPMs from production (yum.theforeman.org) to a local repository
+    2. Run repodiff comparing the local copy of production and Copr for the release
+    3. Download the new packages from Copr
+    4. Filter all packages through comps file, removing anything not in the comps file
+    5. Runs createrepo
+    6. Generates a new module metadata file based upon the local repository
+    7. Generate list of unsigned RPMs
+    8. Sign the unsigned RPMs
+    9. Update the repository metadata
+
+For nightly (executed by Jenkins):
+
+    1. Copy all RPMs from Copr for the given repository to local
+    2. Filter the downloaded RPMs through comps file, removing anything not in the comps file
+    3. Runs createrepo
+    4. Generates a new module metadata file based upon the local repository
+
+The local repository can then be uploaded to the server backing stagingyum.theforeman.org using rsync. Where any RPM found locally already in staging is kept, and any RPM found in staging not in the local repository is removed.
+
+### Performing the release workflow
+
+The release workflow is execute using the following actions:
+
+```
+generate_stage_repository
+sign_stage_repository
+upload_stage_repository
+```

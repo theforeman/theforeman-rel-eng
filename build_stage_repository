@@ -11,33 +11,19 @@ import hashlib
 import sys
 import tempfile
 import dnf.comps
+import argparse
 
 
-def move_rpms_from_copr_to_stage(collection, version, src_folder, dest_folder, dist, arch, source=False):
-    if source:
-        print(f"Moving {collection} Source RPMs from Copr directory to stage repository")
-    else:
-        print(f"Moving {collection} RPMs from Copr directory to stage repository")
-
-    if not os.path.exists(dest_folder):
-        os.mkdir(dest_folder)
-
-    repo_folder = f"{src_folder}/{dist}-{collection}-{version}-{arch}"
-    packages_to_include = packages_from_comps(comps(collection, version, dist))
-
-    if source:
-        files = glob.glob(repo_folder + f"/**/*.src.rpm")
-    else:
-        files = glob.glob(repo_folder + f"/**/*.rpm")
+def filter_packages(target_dir, packages):
+    files = glob.glob(f"{target_dir}/*.rpm")
 
     for file in files:
         file_name = os.path.basename(file)
         rpm_name = get_rpm_name(file)
 
-        if rpm_name in packages_to_include:
-            shutil.move(file, os.path.join(dest_folder, file_name))
-
-    shutil.rmtree(src_folder)
+        if rpm_name not in packages:
+            print(f"Removed {rpm_name}. Package not in comps.")
+            os.remove(os.path.join(target_dir, file_name))
 
 
 def get_rpm_name(rpm):
@@ -61,18 +47,24 @@ def modulemd_yaml(collection, version):
 
 def comps(collection, version, dist):
     branch = 'develop' if version == 'nightly' else version
+    repo = 'foreman-packaging'
+    name = collection
 
-    if collection == 'foreman-katello':
-        name = 'katello'
-    elif collection == 'foreman-candlepin':
-        name = 'katello-candlepin'
-    else:
-        name = collection
+    if collection == 'client':
+        name = 'foreman-client'
+    elif collection == 'plugins':
+        name = 'foreman-plugins'
+    elif collection == 'candlepin':
+        repo = 'candlepin-packaging'
+    elif collection == 'pulpcore':
+        repo = 'pulpcore-packaging'
 
-    if collection == 'foreman-client' and dist == 'el7':
+    if collection == 'client' and dist == 'el7':
         dist = 'rhel7'
 
-    path, headers = urlretrieve(f"https://raw.githubusercontent.com/theforeman/foreman-packaging/rpm/{branch}/comps/comps-{name}-{dist}.xml")
+    url = f"https://raw.githubusercontent.com/theforeman/{repo}/rpm/{branch}/comps/comps-{name}-{dist}.xml"
+    print(f"Fetching comps: {url}")
+    path, headers = urlretrieve(url)
     return path
 
 
@@ -121,28 +113,32 @@ def create_modulemd(collection, version, stage_dir):
 
 
 def create_repository(repo_dir):
-    check_output(['createrepo', repo_dir])
+    check_output(['createrepo_c', repo_dir], stderr=STDOUT)
 
 
-def sync_copr_repository(collection, version, target_dir, dist, arch, source=False):
-    if source:
-        print(f"Syncing {collection} {version} Source RPM repository from Copr")
+def sync_prod_repository(collection, version, target_dir, dist, arch):
+    repository_url = prod_repository(collection, version, dist, arch)
+
+    if arch == 'source':
+        print(f"Syncing {collection} {version} Source RPM repository from {repository_url}")
     else:
-        print(f"Syncing {collection} {version} RPM repository from Copr")
+        print(f"Syncing {collection} {version} RPM repository from {repository_url}")
 
     cmd = [
         'dnf',
         'reposync',
-        '--newest-only',
+        '--refresh',
+        '--download-metadata',
+        '--norepopath',
         '--repo',
         f"{dist}-{collection}-{version}-{arch}",
         '--repofrompath',
-        f"{dist}-{collection}-{version}-{arch},https://download.copr.fedorainfracloud.org/results/@theforeman/{collection}-{version}-staging/rhel-{dist.replace('el', '')}-{arch}/",
+        f"{dist}-{collection}-{version}-{arch},{repository_url}",
         '--download-path',
         target_dir
     ]
 
-    if source:
+    if arch == 'source':
         cmd.extend([
             '--source',
         ])
@@ -172,28 +168,160 @@ def packages_from_comps(comps):
     return packages
 
 
+def copr_repository(collection, version, dist, arch):
+    return f"https://download.copr.fedorainfracloud.org/results/@theforeman/{collection}-{version}-staging/rhel-{dist.replace('el', '')}-{arch}"
+
+
+def prod_repository(collection, version, dist, arch):
+    if collection == "foreman":
+        subdir = "releases"
+    else:
+        subdir = collection.replace('foreman-', '')
+
+    return f"https://yum.theforeman.org/{subdir}/{version}/{dist}/{arch}"
+
+
+def copr_repository_urls(repository):
+    cmd = [
+        'dnf',
+        'reposync',
+        '--urls',
+        '--refresh',
+        '--repofrompath',
+        f"copr,{repository}",
+        '--repo',
+        'copr'
+    ]
+
+    urls = check_output(cmd, universal_newlines=True, stderr=STDOUT)
+    return urls.split("\n")
+
+
+def compare_repositories(new_repository, old_repository, arch, source=False):
+    cmd = [
+        'dnf',
+        'repodiff',
+        '--simple',
+        '--refresh',
+        '--compare-arch',
+        '--repofrompath',
+        f"new,{new_repository}",
+        '--repofrompath',
+        f"old,{old_repository}",
+        '--repo-old',
+        'old',
+        '--repo-new',
+        'new'
+    ]
+
+    if not source:
+        cmd.extend(['--arch', f'noarch,{arch}'])
+
+    print(' '.join(cmd))
+    return check_output(cmd, universal_newlines=True)
+
+
+def parse_repodiff(diff):
+    split_diff = diff.split("\n")
+    packages = []
+
+    for line in split_diff:
+        if line.startswith('Added package  :'):
+            packages.append(line.replace('Added package  : ', ''))
+        elif ' -> ' in line:
+            packages.append(line.split(' -> ')[1])
+
+    return packages
+
+
+def download_copr_packages(packages, urls, repository, downloads_dir, included_packages):
+    for package in packages:
+        name, version, release = package.rsplit('-', 2)
+
+        if name in included_packages:
+            if ':' in version:
+                version_without_epoch = version.rsplit(':')[1]
+            else:
+                version_without_epoch = version
+
+            name = f"{name}-{version_without_epoch}-{release}.rpm"
+
+            for url in urls:
+                if name == os.path.basename(url):
+                    download_url = url
+
+            if not os.path.exists(f"{downloads_dir}/{name}"):
+                print(f"Downloading {repository}/{name} to {downloads_dir}")
+                urlretrieve(download_url, f"{downloads_dir}/{name}")
+            else:
+                print(f"Skipping {repository}/{name}. Already downloaded.")
+        else:
+            print(f"Skipping {package}. Package not present in comps.")
+
+
+def handle_args():
+    parser = argparse.ArgumentParser(description='Generate a stage repository')
+    parser.add_argument(
+        'collection',
+        help='Repository to generate for (e.g. foreman)'
+    )
+    parser.add_argument(
+        'version',
+        help='Version to generate the repository for (e.g. nightly)'
+    )
+    parser.add_argument(
+        'dist',
+        help='Dist to generate repository for (e.g. el8)'
+    )
+
+    return parser.parse_args()
+
+
+def initialize_repository(collection, version, dist, arch, rpm_dir, srpm_dir):
+    if version != 'nightly':
+        sync_prod_repository(collection, version, rpm_dir, dist, arch)
+        sync_prod_repository(collection, version, srpm_dir, dist, 'source')
+    else:
+        create_repository(rpm_dir)
+        create_repository(srpm_dir)
+
+
+def add_packages_from_copr(collection, version, dist, arch, rpm_dir, srpm_dir):
+    packages_to_include = packages_from_comps(comps(collection, version, dist))
+    copr_repo = copr_repository(collection, version, dist, arch)
+    copr_package_urls = copr_repository_urls(copr_repo)
+
+    rpm_diff = compare_repositories(copr_repo, rpm_dir, arch)
+    packages = parse_repodiff(rpm_diff)
+    download_copr_packages(packages, copr_package_urls, copr_repo, rpm_dir, packages_to_include)
+    filter_packages(rpm_dir, packages_to_include)
+
+    srpm_diff = compare_repositories(copr_repo, srpm_dir, arch, True)
+    srpm_packages = parse_repodiff(srpm_diff)
+    download_copr_packages(srpm_packages, copr_package_urls, copr_repo, srpm_dir, packages_to_include)
+    filter_packages(srpm_dir, packages_to_include)
+
+
+def update_repositories(collection, version, dist, rpm_dir, srpm_dir):
+    create_repository(rpm_dir)
+    create_repository(srpm_dir)
+
+    if collection in ['foreman', 'katello'] and dist == 'el8':
+        create_modulemd(collection, version, rpm_dir)
+
+
 def main():
-    try:
-        collection = sys.argv[1]
-        version = sys.argv[2]
-        dist = sys.argv[3]
-        arch = 'x86_64'
-    except IndexError:
-        raise SystemExit(f"Usage: {sys.argv[0]} collection version os")
+    args = handle_args()
+
+    collection = args.collection
+    version = args.version
+    dist = args.dist
+    arch = 'x86_64'
 
     base_dir = 'tmp'
-    rpm_sync_dir = f"{base_dir}/rpms"
-    srpm_sync_dir = f"{base_dir}/srpms"
-
-    stage_dir = f"{base_dir}/{collection}/{version}/{dist}/"
+    stage_dir = f"{base_dir}/{collection}/{version}/{dist}"
     rpm_dir = f"{stage_dir}/{arch}"
     srpm_dir = f"{stage_dir}/source"
-
-    if not os.path.exists(rpm_sync_dir):
-        os.makedirs(rpm_sync_dir)
-
-    if not os.path.exists(srpm_sync_dir):
-        os.makedirs(srpm_sync_dir)
 
     if not os.path.exists(rpm_dir):
         os.makedirs(rpm_dir)
@@ -201,17 +329,9 @@ def main():
     if not os.path.exists(srpm_dir):
         os.makedirs(srpm_dir)
 
-    sync_copr_repository(collection, version, rpm_sync_dir, dist, arch)
-    sync_copr_repository(collection, version, srpm_sync_dir, dist, arch, source=True)
-
-    move_rpms_from_copr_to_stage(collection, version, srpm_sync_dir, srpm_dir, dist, arch, source=True)
-    move_rpms_from_copr_to_stage(collection, version, rpm_sync_dir, rpm_dir, dist, arch)
-
-    create_repository(rpm_dir)
-    create_repository(srpm_dir)
-
-    if collection in ['foreman', 'foreman-katello'] and dist == 'el8':
-        create_modulemd(collection, version, rpm_dir)
+    initialize_repository(collection, version, dist, arch, rpm_dir, srpm_dir)
+    add_packages_from_copr(collection, version, dist, arch, rpm_dir, srpm_dir)
+    update_repositories(collection, version, dist, rpm_dir, srpm_dir)
 
 
 if __name__ == '__main__':

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+set -e
+
+. settings
+
+set -x
+
+for os in $OSES; do
+  ./build_stage_repository "$PROJECT" "$VERSION" "$os"
+done
