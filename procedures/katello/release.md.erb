@@ -61,6 +61,9 @@
 
 ## Release Engineer
 
+<% if is_first_ga -%>
+- [ ] Wait for Foreman's GA to be packaged and built before proceeding
+<% end -%>
 - [ ] Update release version similar to [here](https://github.com/theforeman/theforeman-rel-eng/commit/2029a9688da00d9c385c3438dd71b594ba5f728e)
 - [ ] Update `katello`, `katello-repos` and `rubygem-katello` 
   - [ ] Use <%= rel_eng_script('bump_rpm_packaging') %>: `PROJECT=katello VERSION=<%= short_version %> ./bump_rpm_packaging`
@@ -72,6 +75,9 @@
 # Once release is out
 ## Release Owner
 
+<% if is_first_ga -%>
+- [ ] Wait for Foreman's GA to be announced before proceeding
+<% end -%>
 - [ ] Confirm response that the build succeeded (or if necessary, do more cherry-picks and version bumps repeating the steps above)
 - [ ] Test the install and upgrade documentation for both the Katello server and smart proxy
 - [ ] Post a [release announcement](https://community.theforeman.org/c/release-announcements/8)
