@@ -32,6 +32,8 @@ Below is a listing of access used.
 * [Foreman infrastructure access](https://theforeman.github.io/foreman-infra/#access) including [secrets](https://theforeman.github.io/foreman-infra/secrets/)
 * [Jenkins access](https://theforeman.github.io/foreman-infra/jenkins/#access)
 * [Koji access](https://theforeman.github.io/foreman-infra/koji/#using-koji-as-a-user)
+* [web01 stagingyum access](https://github.com/theforeman/foreman-infra/blob/master/puppet/modules/web/manifests/vhost/stagingyum.pp#L9)
+* [theforeman Fedora group member](https://copr.fedorainfracloud.org/groups/g/theforeman/coprs/) which can be viewed [through Fedora Account System](https://accounts.fedoraproject.org/?next=/group/theforeman/%3F)
 
 #### Katello release owner
 
@@ -111,6 +113,14 @@ For running jobs in Jenkins, make sure you have [access](https://theforeman.gith
 ```
 gopass edit theforeman/jenkins-token --create
 ```
+
+### Copr
+
+Copr is where all packages are built and the stage repositories are generated from for releases. API access is needed in order to perform release activities. To ensure you have Copr access setup:
+
+ 1. Go to https://copr.fedorainfracloud.org/api/
+ 2. Login if you are not already
+ 3. Follow the directions
 
 #### Release engineers
 

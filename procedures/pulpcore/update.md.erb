@@ -36,6 +36,16 @@ The `python-pulp_2to3_migration` package is named differently due to a tito bug 
 
 Any change to packaging requires signing, as otherwise the repo can't be published.
 
+
+If working with Pulpcore 3.29+:
+
+* [ ] Sign the RPMs in the release, pass `PROJECT=pulpcore` and `VERSION=<%= release %>` to every invocation.
+  * [ ] <%= rel_eng_script('generate_stage_repository') %>
+  * [ ] <%= rel_eng_script('sign_stage_rpms') %>
+  * [ ] <%= rel_eng_script('upload_stage_rpms') %>
+
+If working with Pulpcore 3.28 or less:
+
 * [ ] Sign the RPMs in the release, pass `PROJECT=pulpcore` and `VERSION=<%= release %>` to every invocation.
   * [ ] [Download](https://github.com/theforeman/theforeman-rel-eng/blob/master/download_rpms)
   * [ ] [Sign](https://github.com/theforeman/theforeman-rel-eng/blob/master/sign_rpms)

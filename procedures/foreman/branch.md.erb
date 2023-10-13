@@ -60,12 +60,6 @@
   - [ ] Use <%= rel_eng_script('upload_yum_gpg') %> to create [releases/<%= release %>/RPM-GPG-KEY-foreman](https://yum.theforeman.org/releases/<%= release %>/RPM-GPG-KEY-foreman) on yum.theforeman.org
   - [ ] Commit the [settings file](https://github.com/theforeman/theforeman-rel-eng/blob/master/releases/foreman/<%= release %>/settings) to the `theforeman-rel-eng` repository
 - [ ] Create new settings files for [client](https://github.com/theforeman/theforeman-rel-eng/blob/master/releases/client/<%= release %>/settings), ensure it has the rights `OSES` list and commit it too.
-- [ ] Create mash configs in [tool_belt](https://github.com/theforeman/tool_belt/tree/master/configs/foreman) using <%= rel_eng_script('create_mash_configs') %> and submit this as a PR.
-- [ ] Once merged, deploy mash configuration on Koji using <%= rel_eng_script('deploy_mash_configs') %>
-- [ ] Update [collection-mash-split.py](https://github.com/theforeman/foreman-infra/blob/master/koji/collection-mash-split.py)
-  - Add a Katello version mapping
-  - Make any changes if needed (usually happens when there are tag changes)
-  - Deploy using `scp collection-mash-split.py root@koji.katello.org:/usr/local/bin`
 - [ ] Open a PR with the result of [jenkins-jobs](https://github.com/theforeman/jenkins-jobs) branching: `./branch-foreman <%= release %> KATELLO_VERSION`
 - [ ] Open PR to remove any jobs that are related to end of life versions
 - [ ] Open PR to add <%= release %> to [Forklift versions config](https://github.com/theforeman/forklift/blob/master/vagrant/config/versions.yaml). Once the PR is merged, upgrade pipelines will fail, so do not merge it before packaging has been branched.
@@ -74,10 +68,12 @@
 
 ## Release Engineer
 
-- Branch RPM packaging using [tool_belt](https://github.com/theforeman/tool_belt)
-  - [ ] Clone tags and create build targets in Koji: `bundle exec ./tools.rb koji --commit configs/foreman/<%= release %>.yaml`
-    Note that you must use koji client < 1.30 since clone-tag was changed and our Koji server is too old. See https://docs.pagure.org/koji/release_notes/release_notes_1.30/#system-changes for details.
-  - [ ] Create a `rpm/<%= release %>` branch in [foreman-packaging](https://github.com/theforeman/foreman-packaging) based on `rpm/develop`
+- Branch RPM packaging
+  - [ ] Create a `rpm/<%= release %>` branch in [foreman-packaging](https://github.com/theforeman/foreman-packaging) based on `rpm/develop`: `git checkout rpm/develop && git pull && git checkout -b rpm/<%= release %>`
+  - [ ] Update `foreman_version` in `package_manifest.yaml` on the `rpm/<%= release %>` branch: `sed -i '/foreman_version:/ s/nightly/<%= release %>/' package_manifest.yaml`
+  - [ ] Update `katello_version` in `package_manifest.yaml` on the `rpm/<%= release %>` branch: `sed -i '/katello_version:/ s/nightly/KATELLO_VERSION_HERE/' package_manifest.yaml
+  - [ ] Create release repositories in Copr by forking nightly repositories `obal copr-project copr_projects` on the `rpm/<%= release %>` branch
+  - [ ] Push the `rpm/<%= release %>` branch
 - Branch Debian packaging
   - [ ] Clone Debian nightly repos to <%= release %> using [copy/freight instructions](https://projects.theforeman.org/projects/foreman/wiki/Debian_Packaging#Branching-for-release)
   - [ ] Create a `deb/<%= release %>` branch in [foreman-packaging](https://github.com/theforeman/foreman-packaging) based on `deb/develop`
