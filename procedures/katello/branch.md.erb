@@ -1,7 +1,6 @@
 ## Roles
 
 * Release Owner: <%= owner %>
-* Release Engineer: <%= engineer %>
 
 # One Month Prior to Branch Date
 
@@ -39,10 +38,8 @@
   - [ ] Manually update the following sections:
     - [ ] releases: update to current release.  Move the previous 'current' release to prior_releases below.
     - [ ] prior_releases: Remove the oldest prior_release (check with that release owner first to see if there's a reason it should stay)
-    - [ ] mash_scripts: update Katello version number in all values
     - [ ] repos: Update branch names to current versions, including any new releases that need to happen
     - [ ] ignores: Delete all items from this list and start fresh (this will be used for cherry-picks later)
-    - [ ] gpg-key: When it becomes available, get the new Foreman GPG key for the corresponding Foreman version ([example here](https://github.com/theforeman/theforeman-rel-eng/blob/master/releases/foreman/2.5/settings) and put the last 8 characters here
     - [ ] tags: update Katello version number in all values.  Check the nightly config to see if any tags/repos need to be updated
   - [ ] Open a PR to [tool_belt](https://github.com/theforeman/tool_belt) with the new config file
 - [ ] Coordinate with installer maintainers that expected changes are completed.
@@ -51,10 +48,6 @@
   - [ ] [foreman_proxy_content](https://github.com/theforeman/puppet-foreman_proxy_content)
   - [ ] [katello](https://github.com/theforeman/puppet-katello)
 - [ ] Review the Foreman schedule and planning ([example](https://community.theforeman.org/t/foreman-2-5-schedule-and-planning/22219)) and note the date of the first scheduled release candidate.
-
-## Release Engineer
-
-- [ ] Ensure tool_belt config is merged and output from `./tools.rb koji configs/katello/<%= release %>.yaml` matches expectations
 
 # On Branch Date
 
@@ -74,10 +67,3 @@
   - [ ] Rename the "Katello Next" release to Katello <%= develop %>.0
   - [ ] Recreate the "Katello Next" release and indicate that it is a placeholder for issues belonging to the next version of Katello
   - [ ] Create the "Katello <%= release %>.1 TODO" custom query using the last one as a template
-
-
-## Release Engineer
-
-- [ ] Run `./tools.rb koji configs/katello/<%= release %>.yaml --confirm` from [tool_belt](https://github.com/theforeman/tool_belt) to create Koji tags
-- [ ] Run `./tools.rb mash-scripts configs/katello/<%= release %>.yaml` from [tool_belt](https://github.com/theforeman/tool_belt) to create Koji mash configs and open PR to tool_belt to commit
-- [ ] Copy mash configs to Koji using <%= rel_eng_script('deploy_mash_configs') %>
