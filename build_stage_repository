@@ -239,11 +239,7 @@ def download_copr_packages(packages, urls, repository, downloads_dir, included_p
         name, version, release = package.rsplit('-', 2)
 
         if name in included_packages:
-            if ':' in version:
-                version_without_epoch = version.rsplit(':')[1]
-            else:
-                version_without_epoch = version
-
+            version_without_epoch = version.rsplit(':', 1)[-1]
             name = f"{name}-{version_without_epoch}-{release}.rpm"
 
             for url in urls:
