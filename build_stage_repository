@@ -295,7 +295,6 @@ def add_packages_from_copr(collection, version, dist, arch, rpm_dir, srpm_dir):
     srpm_diff = compare_repositories(copr_repo, srpm_dir, arch, True)
     srpm_packages = parse_repodiff(srpm_diff)
     download_copr_packages(srpm_packages, copr_package_urls, copr_repo, srpm_dir, packages_to_include)
-    filter_packages(srpm_dir, packages_to_include)
 
 
 def update_repositories(collection, version, dist, rpm_dir, srpm_dir):
