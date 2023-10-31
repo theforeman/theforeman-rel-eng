@@ -240,11 +240,11 @@ def parse_repodiff(diff):
     return packages
 
 
-def download_copr_packages(packages, urls, repository, downloads_dir, included_packages):
+def download_copr_packages(packages, urls, repository, downloads_dir, included_packages=None):
     for package in packages:
         name, version, release = package.rsplit('-', 2)
 
-        if name in included_packages:
+        if included_packages is None or name in included_packages:
             version_without_epoch = version.rsplit(':', 1)[-1]
             name = f"{name}-{version_without_epoch}-{release}.rpm"
 
@@ -300,7 +300,7 @@ def add_packages_from_copr(collection, version, dist, arch, rpm_dir, srpm_dir):
 
     srpm_diff = compare_repositories(copr_repo, srpm_dir, arch, True)
     srpm_packages = parse_repodiff(srpm_diff)
-    download_copr_packages(srpm_packages, copr_package_urls, copr_repo, srpm_dir, packages_to_include)
+    download_copr_packages(srpm_packages, copr_package_urls, copr_repo, srpm_dir)
 
 
 def update_repositories(collection, version, dist, rpm_dir, srpm_dir):
