@@ -99,15 +99,21 @@ def create_modulemd(collection, version, stage_dir):
     output = check_output(cmd, universal_newlines=True)
 
     with open(modulemd_yaml(collection, version), 'r') as file:
-        modules = yaml.safe_load(file)
+        modules = list(yaml.safe_load_all(file))
 
-    modules['data']['artifacts'] = {'rpms': output.splitlines()}
-    modules['data']['version'] = generate_modulemd_version(version)
-    modules['data']['context'] = generate_modulemd_context(collection, version)
+    module_version = generate_modulemd_version(version)
+    module_context = generate_modulemd_context(collection, version)
+
+    for module in modules:
+        module['data']['version'] = module_version
+        module['data']['context'] = module_context
+        if module['data']['name'] == collection:
+            module['data']['artifacts'] = {'rpms': output.splitlines()}
+
     modules_yaml = os.path.join(stage_dir, 'repodata', 'modules.yaml')
 
     with open(modules_yaml, 'w') as modules_file:
-        yaml.dump(modules, modules_file, default_flow_style=False, explicit_start=True, explicit_end=True)
+        yaml.dump_all(modules, modules_file, default_flow_style=False, explicit_start=True, explicit_end=True)
 
     check_output(['modifyrepo_c', '--mdtype=modules', modules_yaml, f"{stage_dir}/repodata"])
 
