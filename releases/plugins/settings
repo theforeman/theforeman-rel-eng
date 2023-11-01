@@ -1,0 +1,3 @@
+FOREMAN_VERSION=$VERSION
+OSES="el8"
+PACKAGING_SUBDIR="packages/plugins"
