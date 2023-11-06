@@ -140,6 +140,8 @@ Note: If for some reason there was an issue with the tarballs that required uplo
 - [ ] Update the [docs.theforeman.org](https://github.com/theforeman/foreman-documentation) [index page](https://github.com/theforeman/foreman-documentation/blob/master/web/content/index.adoc) and [versions](https://github.com/theforeman/foreman-documentation/blob/master/web/content/js/versions.js)
   - Update <%= short_version %> as `supported`
   - Update <%= short_version_minus_two %> as `unsupported`
+- [ ] Update the [docs.theforeman.org](https://github.com/theforeman/foreman-documentation) <%= short_version %> DocState as `stable` in [attributes.adoc](https://github.com/theforeman/foreman-documentation/blob/<%= short_version %>/guides/common/attributes.adoc?plain=1): `sed -i '/:DocState:/ s/ .\+/ stable/' guides/common/attributes.adoc`
+- [ ] Update the [docs.theforeman.org](https://github.com/theforeman/foreman-documentation) <%= short_version_minus_two %> DocState as `unsupported` in [attributes.adoc](https://github.com/theforeman/foreman-documentation/blob/<%= short_version_minus_two %>/guides/common/attributes.adoc?plain=1): `sed -i '/:DocState:/ s/ .\+/ unsupported/' guides/common/attributes.adoc`
 <% end -%>
 - [ ] Announce the release on [Discourse](https://community.theforeman.org/c/release-announcements/8) using <%= rel_eng_script('release_announcement') %>
 - [ ] Update the topic in #theforeman channel on Libera.Chat
