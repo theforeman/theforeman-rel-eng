@@ -39,8 +39,10 @@ def create_version(args: argparse.Namespace) -> None:
 def set_status_version(args: argparse.Namespace) -> None:
     redmine = get_redmine()
     versions = redmine.version.filter(project_id=args.project_id)
+    # Katello uses 'Katello x.y.z' instead of 'x.y.z'
+    matches = (args.name, f'{args.project_id.capitalize()} {args.name})')
     try:
-        version = [version for version in versions if version.name == args.name][0]
+        version = [version for version in versions if version.name in matches][0]
     except IndexError:
         raise SystemExit('Version not found')
 
