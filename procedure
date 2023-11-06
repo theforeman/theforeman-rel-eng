@@ -89,9 +89,6 @@ procedures = {
     opts.on('--project [PROJECT]', ['foreman', 'katello'],
             'Project to generate release procedure for') do |project|
       context[:project] = project
-      if project == 'katello'
-        context[:foreman_version] = 'FOREMAN_VERSION'
-      end
     end
     opts.on('--version [FULL_VERSION]',
             /^(?<version>(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+))([-.](?<extra>rc\d+))?$/,
@@ -109,6 +106,9 @@ procedures = {
         version: version, # 1.20.0
         short_version_minus_two: "#{major}.#{minor.to_i - 2}"
       )
+    end
+    opts.on('--foreman-version [X.Y]', /^\d+\.\d+$/, 'Foreman version, for Katello') do |foreman_version|
+      context[:foreman_version] = foreman_version
     end
     opts.on('--target-date [YYYY-MM-DD]', Date,
             'Target date that the procedure should be completed on') do |date|
@@ -133,7 +133,7 @@ if procedures.key?(procedure)
   command = procedures[procedure]
   command.order!
 
-  unless context[:project] && context[:target_date] && context[:owner]
+  unless context[:project] && context[:target_date] && context[:owner] && (context[:project] != 'katello' || context[:foreman_version])
     STDERR.puts command.help
     exit 1
   end

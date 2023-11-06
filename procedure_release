@@ -22,4 +22,4 @@ if [[ $READ == 1 ]] ; then
 	echo >&2
 fi
 
-./procedure release --project "$PROJECT" --version "$FULLVERSION" --target-date "$TARGET_DATE" --owner "$OWNER" --engineer "$ENGINEER"
+./procedure release --project "$PROJECT" --version "$FULLVERSION" --foreman-version "$FOREMAN_VERSION" --target-date "$TARGET_DATE" --owner "$OWNER" --engineer "$ENGINEER"
