@@ -23,12 +23,12 @@
 - [ ] Change Redmine version <%= full_version %> state to Closed using <%= rel_eng_script('close_redmine_version') %>
 <% end -%>
 - [ ] Check for outdated deprecation warnings in the current and next release with `./tools check-deprecation-warnings configs/katello/<%= short_version %>.yaml`. Follow the instructions in the output of the command. Don't forget to create any Redmine issues needed!
-- [ ] Update [docs.theforeman.org](https://github.com/theforeman/foreman-documentation)
+- [ ] Update the `<%= foreman_version %>` branch in [foreman-documentation](https://github.com/theforeman/foreman-documentation)
   - Ensure [release notes](https://github.com/theforeman/foreman-documentation/blob/<%= foreman_version %>/guides/doc-Release_Notes/katello.adoc) are correct
     - Headline features: important features with a few sentences description each
     - Upgrade notes: all important notices that users must be aware of before upgrading
     - Deprecations: features that will be removed or changed in a future version
-  - Using [redmine_release_notes](https://github.com/theforeman/foreman-documentation/blob/<%= foreman_version %>/guides/doc-Release_Notes/redmine_release_notes) script (see [README](https://github.com/theforeman/foreman-documentation/blob/<%= short_version %>/guides/doc-Release_Notes/README.md) as well): `./guides/doc-Release_Notes/redmine_release_notes katello <%= version %> > ./guides/doc-Release_Notes/topics/katello-<%= version %>.adoc`
+  - Using [redmine_release_notes](https://github.com/theforeman/foreman-documentation/blob/<%= foreman_version %>/guides/doc-Release_Notes/redmine_release_notes) (see [README](https://github.com/theforeman/foreman-documentation/blob/<%= foreman_version %>/guides/doc-Release_Notes/README.md) as well): `./guides/doc-Release_Notes/redmine_release_notes katello <%= version %> > ./guides/doc-Release_Notes/topics/katello-<%= version %>.adoc`
 <% unless is_rc && !full_version.end_with?('1') -%>
   - Add `topics/katello-<%= version %>.adoc` to `guides/doc-Release_Notes/master.adoc`: `sed '/x.y.z releases here/a include::topics/katello-<%= version %>.adoc[leveloffset=+1]' master.adoc`
 <% end -%>
@@ -62,13 +62,13 @@
 ## Release Engineer
 
 <% if is_first_ga -%>
-- [ ] Wait for Foreman's GA to be packaged and built before proceeding
+- [ ] Wait for Foreman <%= foreman_version %>.0 GA to be packaged and built before proceeding
 <% end -%>
 - [ ] Update release version similar to [here](https://github.com/theforeman/theforeman-rel-eng/commit/2029a9688da00d9c385c3438dd71b594ba5f728e)
 - [ ] Update `katello`, `katello-repos` and `rubygem-katello` 
   - [ ] Use <%= rel_eng_script('bump_rpm_packaging') %>: `PROJECT=katello VERSION=<%= short_version %> ./bump_rpm_packaging`
 - [ ] Merge packaging PR once job is green
-- [ ] Use <%= rel_eng_script('wait_packaging') %> to wait for [Jenkins to build the packages](https://ci.theforeman.org/job/foreman-packaging-rpm-<%= short_version %>-release/) (replace <%= short_version %> with the matching Foreman version)
+- [ ] Use <%= rel_eng_script('wait_packaging') %> to wait for [Jenkins to build the packages](https://ci.theforeman.org/job/foreman-packaging-rpm-<%= foreman_version %>-release/)
 - [ ] <%= rel_eng_script('download_rpms') %>, <%= rel_eng_script('sign_rpms') %>, <%= rel_eng_script('upload_rpm_signatures') %>, <%= rel_eng_script('upload_rpms') %>
 - [ ] Use <%= rel_eng_script('release_pipeline') %> to kick off the [release pipeline](https://ci.theforeman.org/job/katello-<%= short_version %>-rpm-pipeline/)
 
@@ -76,7 +76,7 @@
 ## Release Owner
 
 <% if is_first_ga -%>
-- [ ] Wait for Foreman's GA to be announced before proceeding
+- [ ] Wait for Foreman <%= foreman_version %>.0 GA to be announced before proceeding
 <% end -%>
 - [ ] Confirm response that the build succeeded (or if necessary, do more cherry-picks and version bumps repeating the steps above)
 - [ ] Test the install and upgrade documentation for both the Katello server and smart proxy
