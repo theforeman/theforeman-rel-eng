@@ -78,8 +78,8 @@ Note: If for some reason there was an issue with the tarballs that required uplo
   - [ ] <%= rel_eng_script('sign_rpms') %>
   - [ ] <%= rel_eng_script('upload_rpm_signatures') %>
   - [ ] <%= rel_eng_script('upload_rpms') %>
-- [ ] Kick off the [release pipeline](https://ci.theforeman.org/job/foreman-<%= short_version %>-release-pipeline/) by calling `<%= rel_eng_script('release_pipeline') %>`
-- [ ] Kick off the [client pipeline](https://ci.theforeman.org/job/foreman-client-<%= short_version %>-rpm-pipeline/) by calling `PROJECT=client <%= rel_eng_script('release_pipeline') %>`
+- [ ] Kick off the [release pipeline](https://ci.theforeman.org/job/foreman-<%= short_version %>-release-pipeline/) by calling <%= rel_eng_script('release_pipeline') %>
+- [ ] Kick off the [client pipeline](https://ci.theforeman.org/job/foreman-client-<%= short_version %>-rpm-pipeline/) by calling `PROJECT=client ./release_pipeline`
 - [ ] Kick off the [plugins pipeline](https://ci.theforeman.org/job/foreman-plugins-<%= short_version %>-rpm-pipeline/) by calling <%= rel_eng_script('plugins_pipeline') %>
 
 # Manual updates: <%= target_date %>
