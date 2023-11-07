@@ -55,6 +55,7 @@ PASS_NAME_GPG="theforeman/releases/foreman/$FOREMAN_VERSION-gpg"
 PASS_NAME_KEY="theforeman/releases/foreman/$FOREMAN_VERSION-key"
 XARGS_JOBS="-n 20 -P 4"
 GIT_DIR="${GIT_DIR:-$HOME/dev}"
+GIT_USE_WORKTREES=false
 GIT_REMOTE="${GIT_REMOTE:-upstream}"
 GIT_DEVELOP_BRANCH=develop
 GIT_STABLE_BRANCH="${VERSION}-stable"
