@@ -1,0 +1,7 @@
+#!/bin/bash -e
+
+PROJECT=$1 VERSION=$2 ./download_rpms
+PROJECT=$1 VERSION=$2 ./sign_rpms
+PROJECT=$1 VERSION=$2 ./upload_rpm_signatures
+PROJECT=$1 VERSION=$2 ./upload_rpms
+PROJECT=$1 VERSION=$2 ./process_rpms
