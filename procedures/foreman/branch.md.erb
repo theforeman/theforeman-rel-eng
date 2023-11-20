@@ -71,7 +71,7 @@
 - Branch RPM packaging
   - [ ] Create a `rpm/<%= release %>` branch in [foreman-packaging](https://github.com/theforeman/foreman-packaging) based on `rpm/develop`: `git checkout rpm/develop && git pull && git checkout -b rpm/<%= release %>`
   - [ ] Update `foreman_version` in `package_manifest.yaml` on the `rpm/<%= release %>` branch: `sed -i '/foreman_version:/ s/nightly/<%= release %>/' package_manifest.yaml`
-  - [ ] Update `katello_version` in `package_manifest.yaml` on the `rpm/<%= release %>` branch: `sed -i '/katello_version:/ s/nightly/KATELLO_VERSION_HERE/' package_manifest.yaml
+  - [ ] Update `katello_version` in `package_manifest.yaml` on the `rpm/<%= release %>` branch: `sed -i '/katello_version:/ s/nightly/KATELLO_VERSION_HERE/' package_manifest.yaml`
   - [ ] Create release repositories in Copr by forking nightly repositories `obal copr-project copr_projects` on the `rpm/<%= release %>` branch
   - [ ] Push the `rpm/<%= release %>` branch
 - Branch Debian packaging
