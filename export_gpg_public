@@ -24,7 +24,7 @@ cat <<EOF
         <td><a href="{{ site.baseurl }}/static/keys/${FULLGPGKEY}.pub">${FULLGPGKEY}</a></td>
         <td>FIXME: fingerprint</td>
         <td>${SIGNER_NAME} (${VERSION})</td>
-        <td style='white-space:nowrap'>$(date +%Y-%m-%d) (FIXME: check)</td>
+        <td style='white-space:nowrap'>$(date +%Y-%m-%d)</td>
         <td style='white-space:nowrap'>FIXME: end date</td>
         <td style='white-space:nowrap'></td>
         <td></td>
