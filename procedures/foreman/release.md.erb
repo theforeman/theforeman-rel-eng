@@ -30,6 +30,7 @@
 
 ## Release Owner
 
+- [ ] Check for open pull requests in [Foreman](https://github.com/theforeman/foreman/pulls?q=is%3Apr+is%3Aopen+branch%3A<%= short_version %>-stable), [smart-proxy](https://github.com/theforeman/smart-proxy/pulls?q=is%3Apr+is%3Aopen+branch%3A<%= short_version %>-stable), [foreman-installer](https://github.com/theforeman/foreman-installer/pulls?q=is%3Apr+is%3Aopen+branch%3A<%= short_version %>-stable) and [foreman-selinux](https://github.com/theforeman/foreman-selinux/pulls?q=is%3Apr+is%3Aopen+branch%3A<%= short_version %>-stable)
 - [ ] Make sure [test_<%= short_version.tr('.', '_') %>_stable](https://ci.theforeman.org/job/test_<%= short_version.tr('.', '_') %>_stable/) and [smart-proxy<%= short_version %>-stable-test](https://ci.theforeman.org/job/smart-proxy-<%= short_version %>-stable-test/) are green using <%= rel_eng_script('verify_green_jobs') %>
 <% if is_rc || is_first_ga -%>
 - [ ] Run `make -C locale tx-update` in foreman <%= short_version %>-stable
