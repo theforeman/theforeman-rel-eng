@@ -22,7 +22,7 @@ Below is a listing of access used.
 
 * Belong to the [Foreman GitHub release-managers team](https://github.com/orgs/theforeman/teams/release-managers)
 * Belong to the `releases` group on [Discourse](https://community.theforeman.org/)
-* IRC: permission to change the topic in [#theforeman on Libera.Chat](ircs://irc.libera.chat/theforeman). See [Libera.Chat permissions](https://libera.chat/guides/creatingchannels#setting-up-permissions) on how channel owners can grant this.
+* Matrix: permission to change the topic in [#theforeman on matrix.org](https://matrix.to/#/#theforeman:matrix.org). See [Matrix moderation](https://matrix.org/docs/communities/moderation/) on how channel admins can grant this.
 * Redmine access: be added to the [Developers group](https://projects.theforeman.org/groups/44213/edit?tab=users)
 * Transifex account (unclear on the exact permissions to extract translations)
 
