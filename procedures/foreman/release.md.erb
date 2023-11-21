@@ -155,6 +155,9 @@ Note: If for some reason there was an issue with the tarballs that required uplo
 - [ ] Update the [docs.theforeman.org](https://github.com/theforeman/foreman-documentation) <%= short_version %> DocState as `stable` in [attributes.adoc](https://github.com/theforeman/foreman-documentation/blob/<%= short_version %>/guides/common/attributes.adoc?plain=1): `sed -i '/:DocState:/ s/ .\+/ stable/' guides/common/attributes.adoc`
 - [ ] Update the [docs.theforeman.org](https://github.com/theforeman/foreman-documentation) <%= short_version_minus_two %> DocState as `unsupported` in [attributes.adoc](https://github.com/theforeman/foreman-documentation/blob/<%= short_version_minus_two %>/guides/common/attributes.adoc?plain=1): `sed -i '/:DocState:/ s/ .\+/ unsupported/' guides/common/attributes.adoc`
 <% end -%>
+<% if is_first_rc -%>
+- [ ] Create a feedback post on [Discourse](https://community.theforeman.org/) (like https://community.theforeman.org/t/foreman-3-8-release-candidate-feedback/35196)
+<% end -%>
 - [ ] Announce the release on [Discourse](https://community.theforeman.org/c/release-announcements/8) using <%= rel_eng_script('release_announcement') %>
 - [ ] Update the topic in #theforeman channel on Libera.Chat
 - [ ] Share the release announcement on Twitter
