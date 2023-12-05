@@ -7,5 +7,5 @@ set -e
 set -x
 
 for os in $OSES; do
-  ./build_stage_repository "$PROJECT" "$VERSION" "$os"
+  ./build_stage_repository "$PROJECT" "$VERSION" "$os" "$FOREMAN_VERSION"
 done

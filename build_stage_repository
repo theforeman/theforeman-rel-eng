@@ -39,13 +39,17 @@ def get_rpm_name(rpm):
     return check_output(command, universal_newlines=True)
 
 
-def modulemd_yaml(collection, version):
+def modulemd_yaml(collection, version, foreman_version):
     branch = 'develop' if version == 'nightly' else version
+
+    if collection == 'katello':
+        branch = foreman_version
+
     path, headers = urlretrieve(f"https://raw.githubusercontent.com/theforeman/foreman-packaging/rpm/{branch}/modulemd/modulemd-{collection}-el8.yaml")
     return path
 
 
-def comps(collection, version, dist):
+def comps(collection, version, dist, foreman_version):
     branch = 'develop' if version == 'nightly' else version
     repo = 'foreman-packaging'
     name = collection
@@ -58,6 +62,8 @@ def comps(collection, version, dist):
         repo = 'candlepin-packaging'
     elif collection == 'pulpcore':
         repo = 'pulpcore-packaging'
+    elif collection == 'katello':
+        branch = foreman_version
 
     if collection == 'client' and dist == 'el7':
         dist = 'rhel7'
@@ -86,7 +92,7 @@ def generate_modulemd_context(collection, version):
     return digest[:8]
 
 
-def create_modulemd(collection, version, stage_dir):
+def create_modulemd(collection, version, stage_dir, foreman_version):
     print("Adding modulemd to stage repository")
     cmd = [
         'rpm',
@@ -98,7 +104,7 @@ def create_modulemd(collection, version, stage_dir):
     ]
     output = check_output(cmd, universal_newlines=True)
 
-    with open(modulemd_yaml(collection, version), 'r') as file:
+    with open(modulemd_yaml(collection, version, foreman_version), 'r') as file:
         modules = list(yaml.safe_load_all(file))
 
     module_version = generate_modulemd_version(version)
@@ -275,7 +281,10 @@ def handle_args():
         'dist',
         help='Dist to generate repository for (e.g. el8)'
     )
-
+    parser.add_argument(
+        'foreman_version',
+        help='Foreman Version for one specefic katello verseion'
+    )
     return parser.parse_args()
 
 
@@ -288,8 +297,8 @@ def initialize_repository(collection, version, dist, arch, rpm_dir, srpm_dir):
         create_repository(srpm_dir)
 
 
-def add_packages_from_copr(collection, version, dist, arch, rpm_dir, srpm_dir):
-    packages_to_include = packages_from_comps(comps(collection, version, dist))
+def add_packages_from_copr(collection, version, dist, arch, rpm_dir, srpm_dir, foreman_version):
+    packages_to_include = packages_from_comps(comps(collection, version, dist, foreman_version))
     copr_repo = copr_repository(collection, version, dist, arch)
     copr_package_urls = copr_repository_urls(copr_repo)
 
@@ -303,12 +312,12 @@ def add_packages_from_copr(collection, version, dist, arch, rpm_dir, srpm_dir):
     download_copr_packages(srpm_packages, copr_package_urls, copr_repo, srpm_dir)
 
 
-def update_repositories(collection, version, dist, rpm_dir, srpm_dir):
+def update_repositories(collection, version, dist, rpm_dir, srpm_dir, foreman_version):
     create_repository(rpm_dir)
     create_repository(srpm_dir)
 
     if collection in ['foreman', 'katello'] and dist == 'el8':
-        create_modulemd(collection, version, rpm_dir)
+        create_modulemd(collection, version, rpm_dir, foreman_version)
 
 
 def main():
@@ -318,6 +327,7 @@ def main():
     version = args.version
     dist = args.dist
     arch = 'x86_64'
+    foreman_version = args.foreman_version
 
     base_dir = 'tmp'
     stage_dir = f"{base_dir}/{collection}/{version}/{dist}"
@@ -331,8 +341,8 @@ def main():
         os.makedirs(srpm_dir)
 
     initialize_repository(collection, version, dist, arch, rpm_dir, srpm_dir)
-    add_packages_from_copr(collection, version, dist, arch, rpm_dir, srpm_dir)
-    update_repositories(collection, version, dist, rpm_dir, srpm_dir)
+    add_packages_from_copr(collection, version, dist, arch, rpm_dir, srpm_dir, foreman_version)
+    update_repositories(collection, version, dist, rpm_dir, srpm_dir, foreman_version)
 
 
 if __name__ == '__main__':
