@@ -119,7 +119,7 @@ def create_modulemd(collection, version, stage_dir):
 
 
 def create_repository(repo_dir):
-    check_output(['createrepo_c', repo_dir], stderr=STDOUT)
+    check_output(['createrepo_c', "--general-compress-type=gz", "--database" ,repo_dir], stderr=STDOUT)
 
 
 def sync_prod_repository(collection, version, target_dir, dist, arch):
