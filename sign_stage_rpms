@@ -14,7 +14,7 @@ for os in $OSES; do
 
     if [[ -n "$UNSIGNED_RPMS" ]]; then
       echo "$UNSIGNED_RPMS" | xargs ./sign_rpms
-      createrepo_c --update "$BASE/$arch"
+      createrepo_c --general-compress-type gz --database --update "$BASE/$arch"
     fi
   done
 done
