@@ -17,7 +17,7 @@ end
 current_release_name = ARGV[1]
 prev_release_name = ARGV[2]
 
-git_issues = Set.new(`git log #{prev_release_name}.. | grep -i fixes | egrep -o \"[ ,]#[0-9]*\" | sed -e 's/[ ,]#//g'`.split.map(&:to_i))
+git_issues = Set.new(`git log --oneline #{prev_release_name}.. | grep -i fixes | grep -E -o \"[ ,]#[0-9]*\" | sed -e 's/[ ,]#//g'`.split.map(&:to_i))
 
 def url_to_json(uri)
   response = Net::HTTP.get(uri)
