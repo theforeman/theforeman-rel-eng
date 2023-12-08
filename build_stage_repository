@@ -121,7 +121,7 @@ def create_modulemd(collection, version, stage_dir, foreman_version):
     with open(modules_yaml, 'w') as modules_file:
         yaml.dump_all(modules, modules_file, default_flow_style=False, explicit_start=True, explicit_end=True)
 
-    check_output(['modifyrepo_c', '--mdtype=modules', modules_yaml, f"{stage_dir}/repodata"])
+    check_output(['modifyrepo_c', '--compress-type=gz', '--mdtype=modules', modules_yaml, f"{stage_dir}/repodata"])
 
 
 def create_repository(repo_dir):
