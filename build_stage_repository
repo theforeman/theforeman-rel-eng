@@ -50,7 +50,7 @@ def modulemd_yaml(collection, version, foreman_version):
 
 
 def comps(collection, version, dist, foreman_version):
-    branch = 'develop' if version == 'nightly' else version
+    branch = 'develop' if foreman_version == 'nightly' else foreman_version
     repo = 'foreman-packaging'
     name = collection
 
@@ -62,8 +62,6 @@ def comps(collection, version, dist, foreman_version):
         repo = 'candlepin-packaging'
     elif collection == 'pulpcore':
         repo = 'pulpcore-packaging'
-    elif collection == 'katello':
-        branch = foreman_version
 
     if collection == 'client' and dist == 'el7':
         dist = 'rhel7'
