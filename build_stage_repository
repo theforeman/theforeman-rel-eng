@@ -40,10 +40,7 @@ def get_rpm_name(rpm):
 
 
 def modulemd_yaml(collection, version, foreman_version):
-    branch = 'develop' if version == 'nightly' else version
-
-    if collection == 'katello':
-        branch = foreman_version
+    branch = 'develop' if foreman_version == 'nightly' else foreman_version
 
     path, headers = urlretrieve(f"https://raw.githubusercontent.com/theforeman/foreman-packaging/rpm/{branch}/modulemd/modulemd-{collection}-el8.yaml")
     return path
