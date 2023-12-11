@@ -283,7 +283,8 @@ def handle_args():
     )
     parser.add_argument(
         'foreman_version',
-        help='Foreman Version for one specefic katello verseion'
+        nargs='?',
+        help='Foreman Version for one specefic katello version'
     )
     return parser.parse_args()
 
@@ -327,7 +328,7 @@ def main():
     version = args.version
     dist = args.dist
     arch = 'x86_64'
-    foreman_version = args.foreman_version
+    foreman_version = args.foreman_version or args.version
 
     base_dir = 'tmp'
     stage_dir = f"{base_dir}/{collection}/{version}/{dist}"
