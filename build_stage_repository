@@ -59,6 +59,7 @@ def comps(collection, version, dist, foreman_version):
         repo = 'candlepin-packaging'
     elif collection == 'pulpcore':
         repo = 'pulpcore-packaging'
+        branch = version
 
     if collection == 'client' and dist == 'el7':
         dist = 'rhel7'
