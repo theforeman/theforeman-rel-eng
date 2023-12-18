@@ -18,7 +18,8 @@ load_settings() {
   fi
 
   # Load settings per release
-  # Expected: FULLGPGKEY FULLVERSION
+  # Expected: FULLGPGKEY
+  # Optional: FULLVERSION
   . "$RELEASEDIR/settings"
 }
 
@@ -94,6 +95,13 @@ ansible_playbook() {
 
 	ansible-playbook --extra-vars="@${password_file}" "$@"
 	shred --remove "${password_file}"
+}
+
+require_fullversion() {
+	if [[ -z $FULLVERSION ]] ; then
+		echo "FULLVERSION is required for this script"
+		exit 1
+	fi
 }
 
 # vim: ft=sh

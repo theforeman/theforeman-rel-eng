@@ -2,6 +2,8 @@
 
 . settings
 
+require_fullversion
+
 filenames=()
 for project in $TAR_PROJECTS ; do
 	filenames+=("${TARDIR}/${project}-${FULLVERSION}.tar.bz2")
