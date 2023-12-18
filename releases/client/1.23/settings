@@ -1,3 +1,2 @@
-FULLVERSION='1.23.1'
 FOREMAN_VERSION='1.23'
 OSES="rhel5 rhel6 rhel7 sles11 sles12 fedora28 fedora29"
