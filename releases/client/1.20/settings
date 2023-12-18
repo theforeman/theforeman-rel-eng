@@ -1,3 +1,2 @@
 FOREMAN_VERSION="1.20"
-FULLVERSION="1.20.3"
 OSES="rhel5 rhel6 rhel7 sles11 sles12 fedora27 fedora28"
