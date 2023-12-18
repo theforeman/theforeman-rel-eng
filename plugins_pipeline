@@ -2,4 +2,6 @@
 
 . settings
 
-./ci-jobs pipeline plugins $FULLVERSION
+require_fullversion
+
+./ci-jobs pipeline plugins "$FULLVERSION"

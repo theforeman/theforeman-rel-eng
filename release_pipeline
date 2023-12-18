@@ -2,4 +2,6 @@
 
 . settings
 
-./ci-jobs pipeline $PROJECT $FULLVERSION
+require_fullversion
+
+./ci-jobs pipeline "$PROJECT" "$FULLVERSION"

@@ -2,6 +2,8 @@
 
 . settings
 
+require_fullversion
+
 for project in $(./ensure_clean_git_checkouts "$@") ; do
 	(
 		cd "$GIT_DIR/$project"

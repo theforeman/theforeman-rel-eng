@@ -2,4 +2,6 @@
 
 . settings
 
-./ci-jobs release tarballs $FULLVERSION
+require_fullversion
+
+./ci-jobs release tarballs "$FULLVERSION"
