@@ -17,6 +17,7 @@
   - [ ] Run `GITHUB_ACCESS_TOKEN=<secret> ./tools.rb cherry-picks --version <%= full_version %> configs/katello/<%= short_version %>.yaml`
   - [ ] Open a PR in Katello release branch.  Make sure the PR name starts with [CP] to prevent our automations from adding it to Redmine issues.
   - [ ] Using `git cherry-pick -x` as needed, verify tickets in the cherry_picks_<%= full_version %> file are accounted for, or additionally cherry-pick them.  Recommended: Do this in tool_belt's checkout of Katello, in `repos/katello/<%= full_version %>/katello`. This way when you run cherry-picks again, tool_belt will be aware of any picks already completed.
+  - [ ] Update the "Fixed in Releases" field for each Redmine to include the version that is receiving the cherry-picks.
   - [ ] For any cherry-picks that are not needed (including Redmine trackers) you can add them to the `:ignores:` section of `tool_belt` in `configs/katello/<%= short_version %>.yaml`
 <% end -%>
 <% unless is_rc -%>
