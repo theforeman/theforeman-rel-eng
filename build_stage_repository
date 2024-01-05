@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from email.utils import parsedate_to_datetime
 from subprocess import check_output, STDOUT, CalledProcessError
 from urllib.request import urlretrieve
 import os
@@ -136,6 +137,7 @@ def sync_prod_repository(collection, version, target_dir, dist, arch):
         'dnf',
         'reposync',
         '--refresh',
+        '--remote-time',
         '--download-metadata',
         '--norepopath',
         '--repo',
@@ -256,7 +258,10 @@ def download_copr_packages(packages, urls, repository, downloads_dir, included_p
 
             if not os.path.exists(f"{downloads_dir}/{name}"):
                 print(f"Downloading {repository}/{name} to {downloads_dir}")
-                urlretrieve(download_url, f"{downloads_dir}/{name}")
+                filename, headers = urlretrieve(download_url, f"{downloads_dir}/{name}")
+                if 'Last-Modified' in headers:
+                  modification_ts = parsedate_to_datetime(headers['Last-Modified']).timestamp()
+                  os.utime(filename, (modification_ts, modification_ts))
             else:
                 print(f"Skipping {repository}/{name}. Already downloaded.")
         else:
