@@ -51,7 +51,9 @@ fi
 git commit -m "Release $FULLVERSION"
 
 if [[ $PACKAGING_PR == true ]] ; then
-	git phr -m "Release $FULLVERSION" -b "$REMOTE_BRANCH"
+	# TODO: assumes a remote named whoami for the user's fork
+	git push --set-upstream "$(whoami)" HEAD
+	hub pull-request -m "Release $FULLVERSION" -b "$REMOTE_BRANCH"
 else
 	git push "$PACKAGING_GIT_REMOTE" "HEAD:$REMOTE_BRANCH"
 fi
