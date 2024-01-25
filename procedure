@@ -133,7 +133,7 @@ if procedures.key?(procedure)
   command = procedures[procedure]
   command.order!
 
-  unless context[:project] && context[:target_date] && context[:owner] && (context[:project] != 'katello' || context[:foreman_version])
+  unless context[:project] && context[:target_date] && context[:owner] && (context[:project] != 'katello' || procedure != 'release' || context[:foreman_version])
     STDERR.puts command.help
     exit 1
   end
