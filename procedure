@@ -73,6 +73,8 @@ procedures = {
     opts.on('--target-date [YYYY-MM-DD]', Date,
             'Target date that the procedure should be completed on') do |date|
       context[:target_date] = date
+      context[:four_weeks_before] = date - 28
+      context[:three_weeks_before] = date - 21
       context[:two_weeks_before] = date - 14
       context[:one_week_before] = date - 7
     end

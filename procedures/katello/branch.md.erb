@@ -2,7 +2,7 @@
 
 * Release Owner: <%= owner %>
 
-# One Month Prior to Branch Date
+# Four Weeks Prior to Branch Date: <%= four_weeks_before %> to <%= four_weeks_before + 4 %>
 
 ## Release Owner
 
@@ -22,13 +22,13 @@
   - [ ] `make -C locale commit-translation-files` in the katello directory
   - [ ] Add any uncommitted translation files and open a PR to Katello (no Redmine issue needed)
 
-# Three Weeks Prior to Branch Date
+# Three Weeks Prior to Branch Date: <%= three_weeks_before %> to <%= three_weeks_before + 4 %>
 
 ## Release Owner
 
 - [ ] Ensure that issues requiring installer changes are merged
 
-# Two Weeks Prior to Branch Date
+# Two Weeks Prior to Branch Date: <%= two_weeks_before %> to <%= two_weeks_before + 4 %>
 
 ## Release Owner
 
@@ -49,7 +49,7 @@
   - [ ] [katello](https://github.com/theforeman/puppet-katello)
 - [ ] Review the Foreman schedule and planning ([example](https://community.theforeman.org/t/foreman-2-5-schedule-and-planning/22219)) and note the date of the first scheduled release candidate.
 
-# On Branch Date
+# Branching: <%= target_date %>
 
 ## Release Owner
 
