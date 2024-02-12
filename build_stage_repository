@@ -40,10 +40,10 @@ def get_rpm_name(rpm):
     return check_output(command, universal_newlines=True)
 
 
-def modulemd_yaml(collection, version, foreman_version):
+def modulemd_yaml(collection, version, foreman_version, dist):
     branch = 'develop' if foreman_version == 'nightly' else foreman_version
 
-    path, headers = urlretrieve(f"https://raw.githubusercontent.com/theforeman/foreman-packaging/rpm/{branch}/modulemd/modulemd-{collection}-el8.yaml")
+    path, headers = urlretrieve(f"https://raw.githubusercontent.com/theforeman/foreman-packaging/rpm/{branch}/modulemd/modulemd-{collection}-{dist}.yaml")
     return path
 
 
@@ -89,7 +89,7 @@ def generate_modulemd_context(collection, version):
     return digest[:8]
 
 
-def create_modulemd(collection, version, stage_dir, foreman_version):
+def create_modulemd(collection, version, stage_dir, foreman_version, dist):
     print("Adding modulemd to stage repository")
     cmd = [
         'rpm',
@@ -101,7 +101,7 @@ def create_modulemd(collection, version, stage_dir, foreman_version):
     ]
     output = check_output(cmd, universal_newlines=True)
 
-    with open(modulemd_yaml(collection, version, foreman_version), 'r') as file:
+    with open(modulemd_yaml(collection, version, foreman_version, dist), 'r') as file:
         modules = list(yaml.safe_load_all(file))
 
     module_version = generate_modulemd_version(version)
@@ -318,8 +318,8 @@ def update_repositories(collection, version, dist, rpm_dir, srpm_dir, foreman_ve
     create_repository(rpm_dir)
     create_repository(srpm_dir)
 
-    if collection in ['foreman', 'katello'] and dist == 'el8':
-        create_modulemd(collection, version, rpm_dir, foreman_version)
+    if collection in ['foreman'] or (collection in ['katello'] and dist == 'el8'):
+        create_modulemd(collection, version, rpm_dir, foreman_version, dist)
 
 
 def main():
