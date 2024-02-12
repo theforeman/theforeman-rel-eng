@@ -2,4 +2,4 @@ PASS_NAME_GPG="theforeman/releases/candlepin/$VERSION-gpg"
 PASS_NAME_KEY="theforeman/releases/candlepin/$VERSION-key"
 SIGNER_NAME="Candlepin Automatic Signing Key"
 FOREMAN_VERSION='none'
-OSES='el8'
+OSES='el8 el9'

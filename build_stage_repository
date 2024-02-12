@@ -58,6 +58,7 @@ def comps(collection, version, dist, foreman_version):
         name = 'foreman-plugins'
     elif collection == 'candlepin':
         repo = 'candlepin-packaging'
+        branch = version if version != 'nightly' else branch
     elif collection == 'pulpcore':
         repo = 'pulpcore-packaging'
         branch = 'develop' if version == 'nightly' else version
