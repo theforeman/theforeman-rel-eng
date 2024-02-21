@@ -93,6 +93,13 @@ On Fedora this can be installed:
 dnf install python3-jenkins
 ```
 
+
+Foreman requires GPG signed git tags. Configure git with your personal gpg key id as your signing key:
+
+```
+git config --global user.signingKey <your-key-id>
+```
+
 ### Gopass
 
 For storing secrets, [gopass](https://github.com/gopasspw/gopass) is used.
