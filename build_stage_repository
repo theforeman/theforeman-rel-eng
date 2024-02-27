@@ -159,7 +159,11 @@ def sync_prod_repository(collection, version, target_dir, dist, arch):
             '*.src',
         ])
 
-    check_output(cmd)
+    try:
+        check_output(cmd)
+    except CalledProcessError:
+        print("reposync failed, creating empty repository")
+        create_repository(target_dir)
 
 
 def packages_from_comps(comps):
