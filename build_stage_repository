@@ -136,6 +136,8 @@ def sync_prod_repository(collection, version, target_dir, dist, arch):
 
     cmd = [
         'dnf',
+        '--config',
+        f'tmp/dnf.conf',
         'reposync',
         '--refresh',
         '--remote-time',
@@ -211,6 +213,8 @@ def copr_repository_urls(repository):
 def compare_repositories(new_repository, old_repository, arch, source=False):
     cmd = [
         'dnf',
+        '--config',
+        f'tmp/dnf.conf',
         'repodiff',
         '--simple',
         '--refresh',
@@ -342,6 +346,9 @@ def main():
 
     if not os.path.exists(srpm_dir):
         os.makedirs(srpm_dir)
+
+    with open(f"{base_dir}/dnf.conf", "w") as dnf_conf:
+        dnf_conf.write("[main]\nskip_if_unavailable=True")
 
     initialize_repository(collection, version, dist, arch, rpm_dir, srpm_dir)
     add_packages_from_copr(collection, version, dist, arch, rpm_dir, srpm_dir, foreman_version)
