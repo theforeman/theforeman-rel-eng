@@ -1,5 +1,15 @@
 #!/usr/bin/env python
 
+"""
+This script aims to help you create a schedule by asking for a date and then suggesting a series of
+dates. This is printed in a markdown compatible table.
+
+It all starts with the dev start date, which is the date after the previous branching. The exact
+date doesn't really matter, since it's normalized to weeks. Based on that it suggests a GA date.
+The user should check whether it conflicts with holidays or important conferences and adjust as
+needed.
+"""
+
 import sys
 from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
@@ -7,6 +17,12 @@ from dateutil.relativedelta import relativedelta
 RC = relativedelta(weeks=2)
 
 def parse_date(value: str) -> date:
+    """
+    Parse a date string into a date object
+
+    >>> parse_date('2024-03-01')
+    date(2024, 3, 1)
+    """
     try:
         return datetime.strptime(value, '%Y-%m-%d').date()
     except ValueError as exc:
@@ -14,6 +30,12 @@ def parse_date(value: str) -> date:
 
 
 def week_range(day: date) -> str:
+    """
+    Accept a date and show the Monday - Friday dates in that week.
+
+    >>> week_range(date(2024, 3, 1))
+    '2024-2-26 - 2024-3-1'
+    """
     weekday = day.weekday()
     monday = day - relativedelta(days=weekday)
     friday = day + relativedelta(days=5 - weekday)
