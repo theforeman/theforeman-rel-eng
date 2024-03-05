@@ -191,6 +191,9 @@ def prod_repository(collection, version, dist, arch):
     else:
         subdir = collection.replace('foreman-', '')
 
+    if collection == 'katello':
+        version = f'{version}/katello'
+
     return f"https://yum.theforeman.org/{subdir}/{version}/{dist}/{arch}"
 
 
