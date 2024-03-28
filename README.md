@@ -21,7 +21,7 @@ Below is a listing of access used.
 #### Foreman release owner
 
 * Belong to the [Foreman GitHub release-managers team](https://github.com/orgs/theforeman/teams/release-managers)
-* Belong to the `releases` group on [Discourse](https://community.theforeman.org/)
+* Belong to the [releases](https://community.theforeman.org/g/releases) group on [Discourse](https://community.theforeman.org/)
 * Matrix: permission to change the topic in [#theforeman on matrix.org](https://matrix.to/#/#theforeman:matrix.org). See [Matrix moderation](https://matrix.org/docs/communities/moderation/) on how channel admins can grant this.
 * Redmine access: be added to the [Developers group](https://projects.theforeman.org/groups/44213/edit?tab=users)
 * Transifex account (unclear on the exact permissions to extract translations)
