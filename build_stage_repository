@@ -3,6 +3,7 @@
 from email.utils import parsedate_to_datetime
 from subprocess import check_output, STDOUT, CalledProcessError
 from urllib.request import urlretrieve
+from urllib.error import ContentTooShortError
 import os
 import yaml
 import glob
@@ -266,7 +267,14 @@ def download_copr_packages(packages, urls, repository, downloads_dir, included_p
 
             if not os.path.exists(f"{downloads_dir}/{name}"):
                 print(f"Downloading {repository}/{name} to {downloads_dir}")
-                filename, headers = urlretrieve(download_url, f"{downloads_dir}/{name}")
+                try:
+                  filename, headers = urlretrieve(download_url, f"{downloads_dir}/{name}")
+                except ContentTooShortError:
+                  try:
+                    os.unlink(f"{downloads_dir}/{name}")
+                  except OSError:
+                    pass
+                  raise
                 if 'Last-Modified' in headers:
                   modification_ts = parsedate_to_datetime(headers['Last-Modified']).timestamp()
                   os.utime(filename, (modification_ts, modification_ts))
