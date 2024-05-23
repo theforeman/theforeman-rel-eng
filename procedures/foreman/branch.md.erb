@@ -93,6 +93,7 @@ The next step should only be done after all branching, including packaging, has 
 
 - [ ] Bump versions to <%= develop %>-develop using <%= rel_eng_script('develop_branch_bump') %>
 - [ ] Push version bumps to <%= develop %>-develop using <%= rel_eng_script('develop_branch_push') %>
+- [ ] Create Redmine version <%= develop %>.0 and make sure it is shared with subprojects in [foreman](https://projects.theforeman.org/projects/foreman/settings/versions)
 - [ ] Ask Hammer maintainer to bump [hammer-cli](https://github.com/theforeman/hammer-cli) and [hammer-cli-foreman](https://github.com/theforeman/hammer-cli-foreman)
 
 # Preparing build systems: <%= target_date %>
@@ -124,7 +125,6 @@ The next step should only be done after all branching, including packaging, has 
   - [ ] Post the output in [Development/Releases](https://community.theforeman.org/c/development/releases/20) using `Foreman <%= release %>.0-rc1 release process`
 - [ ] Create the <%= release %>.0-rc release procedure in [Development/Releases](https://community.theforeman.org/c/development/releases/20): `PROJECT=foreman VERSION=<%= release %> ./procedure_release <%= target_date %> '<%= owner %>' '<%= engineer %>' | wl-copy`
 - [ ] Create a `Foreman <%= develop %> Schedule and Planning` post on [Development/Releases](https://community.theforeman.org/c/development/releases/20) using <%= rel_eng_script('schedule') %>: `./schedule <%= target_date + 1 %>` (make sure there are no conflicts with other important dates)
-- [ ] Create Redmine version <%= develop %>.0 and make sure it is shared with subprojects in [foreman](https://projects.theforeman.org/projects/foreman/settings/versions)
 - [ ] Ensure current Foreman deprecations for the next release are removed in __develop__
 
 This was based on the [wiki procedure](https://projects.theforeman.org/projects/foreman/wiki/Release_Process#Branching-for-series) and sometimes has a bit more info.
