@@ -20,6 +20,7 @@ def header(filename)
     This procedure was generated from [#{git_filename} at #{git_commit}](https://github.com/theforeman/theforeman-rel-eng/blob/#{git_commit}/#{git_filename})
 
     [ ] Make this post a wiki ([help](https://meta.discourse.org/t/create-a-wiki-post/30802))
+
   HEADER
 end
 
@@ -59,9 +60,9 @@ global = OptionParser.new do |opts|
 end
 procedures = {
 	'branch' => OptionParser.new do |opts|
-    opts.banner = "Usage: #{opts.program_name} branch --project [foreman|katello] --release [X.Y] --target-date [YYYY-MM-DD] --owner [OWNER] [--engineer [ENGINEER]]"
+    opts.banner = "Usage: #{opts.program_name} branch --project [foreman|katello|candlepin] --release [X.Y] --target-date [YYYY-MM-DD] --owner [OWNER] [--engineer [ENGINEER]]"
 
-    opts.on('--project [PROJECT]', ['foreman', 'katello'],
+    opts.on('--project [PROJECT]', ['foreman', 'katello', 'candlepin'],
             'Project to generate branch procedure for') do |t|
       context[:project] = t
     end
@@ -129,13 +130,26 @@ procedures = {
 	end
 }
 
+def missing_required_option?(procedure, context)
+  case context[:project]
+  when 'candlepin'
+    context[:release].nil?
+  when 'katello'
+    context[:target_date].nil? || context[:owner].nil? || (procedure == 'release' && context[:foreman_version].nil?)
+  when 'foreman'
+    context[:target_date].nil? || context[:owner].nil?
+  else
+    true
+  end
+end
+
 global.order!
 procedure = ARGV.shift
 if procedures.key?(procedure)
   command = procedures[procedure]
   command.order!
 
-  unless context[:project] && context[:target_date] && context[:owner] && (context[:project] != 'katello' || procedure != 'release' || context[:foreman_version])
+  if missing_required_option?(procedure, context)
     STDERR.puts command.help
     exit 1
   end

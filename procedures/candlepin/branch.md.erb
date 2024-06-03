@@ -1,0 +1,21 @@
+# Branch Packaging
+
+- [ ] Clone https://github.com/theforeman/candlepin-packaging
+- [ ] Check out most recent branch `rpm/< latest_version >`
+- [ ] Create a new branch for the version being added
+  - `git checkout -b rpm/<%= release %>`
+- [ ] Update `package_manifest.yaml` with <%= release %>
+- [ ] Create project in copr `obal copr-project candlepin-staging-<%= release %>`
+- [ ] Push new branch to https://github.com/theforeman/candlepin-packaging
+
+# Update CI
+
+- [ ] Open a PR with the following updates:
+  - [ ] Add new vars file for the version being branched, [for example](https://github.com/theforeman/jenkins-jobs/blob/master/theforeman.org/pipelines/vars/candlepin/4.4.groovy)
+  - [ ] Add <%= release %> to https://github.com/theforeman/jenkins-jobs/blob/master/theforeman.org/yaml/includes/candlepin_versions.yaml.inc
+  - [ ] Add <%= release %> to https://github.com/theforeman/jenkins-jobs/blob/master/centos.org/jobs/candlepin-pipelines.yml
+- Create new GPG key for release
+  - [ ] <%= rel_eng_script('generate_gpg') %>: `VERSION=<%= release %> PROJECT=candlepin ./generate_gpg`
+  - [ ] <%= rel_eng_script('export_gpg_private') %>: `VERSION=<%= release %> PROJECT=candlepin ./export_gpg_private`
+  - [ ] <%= rel_eng_script('sign_gpg') %>: `VERSION=<%= release %> PROJECT=candlepin ./sign_gpg`
+  - [ ] <%= rel_eng_script('upload_gpg') %>: `VERSION=<%= release %> PROJECT=candlepin ./upload_gpg`
