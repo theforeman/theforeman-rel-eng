@@ -4,7 +4,9 @@
   become_user: yumrepo
   gather_facts: false
   vars:
-    releasedir: "/var/www/vhosts/yum/htdocs/releases"
+    releasebasedir: "/var/www/vhosts/yum/htdocs"
+    releasesubdir: "{{ 'releases' if project == 'foreman' else project }}"
+    releasedir: "{{ releasebasedir }}/{{ releasesubdir }}"
   tasks:
     - name: "Ensure release directory"
       file:
