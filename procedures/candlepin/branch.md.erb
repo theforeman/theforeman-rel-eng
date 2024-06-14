@@ -19,3 +19,5 @@
   - [ ] VERSION=<%= release %> PROJECT=candlepin <%= rel_eng_script('export_gpg_private') %> to back up
   - [ ] VERSION=<%= release %> PROJECT=candlepin <%= rel_eng_script('sign_gpg') %>
   - [ ] VERSION=<%= release %> PROJECT=candlepin <%= rel_eng_script('upload_gpg') %>
+- Publish the key
+  - [ ] Use <%= rel_eng_script('upload_yum_gpg') %> to create [candlepin/<%= release %>/RPM-GPG-KEY-candlepin](https://yum.theforeman.org/candlepin/<%= release %>/RPM-GPG-KEY-candlepin) on yum.theforeman.org
