@@ -142,7 +142,7 @@ def pipeline(args):
         parameters = {
             'expected_version': args.version,
         }
-    elif args.type == 'katello':
+    elif args.type in ('katello', 'candlepin', 'pulpcore'):
         job = f'{args.type}-{major}.{minor}-rpm-pipeline'
     else:
         job = f'foreman-{args.type}-{major}.{minor}-rpm-pipeline'
@@ -183,7 +183,7 @@ def main():
 
     pipeline_parser = subparsers.add_parser('pipeline', help='Run a pipeline')
     pipeline_parser.set_defaults(func=pipeline)
-    pipeline_parser.add_argument('type', choices=('foreman', 'client', 'plugins', 'katello'))
+    pipeline_parser.add_argument('type', choices=('foreman', 'client', 'plugins', 'katello', 'candlepin', 'pulpcore'))
     pipeline_parser.add_argument('version', help='The full version like 1.24.0-RC1')
     pipeline_parser.add_argument('--no-wait', action='store_false', dest='wait',
                                  help="Don't wait for the job to complete and exit immediately")
