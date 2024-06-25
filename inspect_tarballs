@@ -6,6 +6,12 @@ require_fullversion
 
 filenames=()
 for project in $TAR_PROJECTS ; do
-	filenames+=("${TARDIR}/${project}-${FULLVERSION}.tar.bz2")
+	filename="${TARDIR}/${project}-${FULLVERSION}.tar.bz2"
+	filenames+=("$filename")
+	project_version=$(tar xf "$filename" --to-stdout "${project}-${FULLVERSION}/VERSION")
+	if [[ $project_version != "${FULLVERSION}" ]] ; then
+		echo "Incorrect version '${project_version}' in $filename"
+		exit 1
+	fi
 done
 file-roller "${filenames[@]}"
