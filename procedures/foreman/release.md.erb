@@ -117,11 +117,6 @@ Note: If for some reason there was an issue with the tarballs that required uplo
 <% end -%>
   - Make sure [foreman-contributors.adoc](https://github.com/theforeman/foreman-documentation/blob/<%= short_version %>/guides/doc-Release_Notes/topics/foreman-contributors.adoc) is updated
   - Make sure headline features, upgrade warnings and deprecations are in sync with the website
-<% if is_first_ga -%>
-  - Update `web/content/index.adoc` and `web/content/js/versions.js` to declare <%= short_version %> as stable and <%= short_version_minus_two %> as unsupported
-<% elsif is_first_rc -%>
-  - Update `web/content/index.adoc` and `web/content/js/versions.js` to add <%= short_version %> as a release candidate
-<% end -%>
   - Submit this as a PR
 <% if is_first_rc -%>
 - [ ] [Generate](https://github.com/theforeman/apidocs#adding-new-version) the apipie docs and raise pull request in [apidocs](https://github.com/theforeman/apidocs) repository
@@ -150,9 +145,18 @@ Note: If for some reason there was an issue with the tarballs that required uplo
 <% end -%>
 <% end -%>
 <% if is_first_ga -%>
-- [ ] Update the [docs.theforeman.org](https://github.com/theforeman/foreman-documentation) [index page](https://github.com/theforeman/foreman-documentation/blob/master/web/content/index.adoc) and [versions](https://github.com/theforeman/foreman-documentation/blob/master/web/content/js/versions.js)
-  - Update <%= short_version %> as `supported`
-  - Update <%= short_version_minus_two %> as `unsupported`
+  - Update `web/content/index.adoc` and `web/content/js/versions.js` to declare <%= short_version %> as stable and <%= short_version_minus_two %> as unsupported
+<% elsif is_first_rc -%>
+  - Update `web/content/index.adoc` and `web/content/js/versions.js` to add <%= short_version %> as a release candidate
+<% end -%>
+<% if is_first_rc -%>
+- [ ] Add <%= short_version %> to the navigation in [docs.theforeman.org](https://github.com/theforeman/foreman-documentation) master
+  - `cp web/releases/nightly.adoc web/releases/<%= short_version %>.adoc` and modify as needed
+  - `cp web/releases/nightly.json web/releases/<%= short_version %>.json` and modify as needed
+<% elsif is_first_ga -%>
+- [ ] Update the [docs.theforeman.org](https://github.com/theforeman/foreman-documentation) master
+  - Update <%= short_version %> as `supported`: `sed -i '/"state":/ s/"[A-Za-z]\+",/"supported",/' web/releases/<%= short_version %>.json`
+  - Update <%= short_version_minus_two %> as `unsupported`: `sed -i '/"state":/ s/"[A-Za-z]\+",/"unsupported",/' web/releases/<%= short_version_minus_two %>.json`
 - [ ] Update the [docs.theforeman.org](https://github.com/theforeman/foreman-documentation) <%= short_version %> DocState as `stable` in [attributes.adoc](https://github.com/theforeman/foreman-documentation/blob/<%= short_version %>/guides/common/attributes.adoc?plain=1): `sed -i '/:DocState:/ s/ .\+/ stable/' guides/common/attributes.adoc`
 - [ ] Update the [docs.theforeman.org](https://github.com/theforeman/foreman-documentation) <%= short_version_minus_two %> DocState as `unsupported` in [attributes.adoc](https://github.com/theforeman/foreman-documentation/blob/<%= short_version_minus_two %>/guides/common/attributes.adoc?plain=1): `sed -i '/:DocState:/ s/ .\+/ unsupported/' guides/common/attributes.adoc`
 <% end -%>
