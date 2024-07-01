@@ -59,6 +59,7 @@
 - [ ] Push version bumps to <%= develop %>-master using <%= rel_eng_script('develop_branch_push') %>
 - [] Bump Katello related packages to their next versions
   - [] [packaging](https://github.com/theforeman/foreman-packaging/pull/8729/files)
+- [ ] Set GitHub Actions to use the new branch: `sed -i '/foreman_version/ s/develop/<%= foreman_version %>-stable/' .github/workflows/*.yml`
 - [ ] Generate and post the release procedure, if not already posted:
   - [ ] Use <%= rel_eng_script('procedure_release') %>: `PROJECT=katello VERSION=<%= release %> ./procedure_release "<%= target_date %>" "<%= owner %>" "<%= engineer %>"`
   - [ ] Post the output in [Development/Releases](https://community.theforeman.org/c/development/releases/20) using `Katello <%= release %>.0-rc1 release process`
