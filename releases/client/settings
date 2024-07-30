@@ -1,2 +1,3 @@
 FOREMAN_VERSION=$VERSION
 PACKAGING_SUBDIR="packages/client"
+OSES="el7 el8 el9"

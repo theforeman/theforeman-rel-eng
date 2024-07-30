@@ -44,7 +44,7 @@ fi
 
 SIGNER="packages@theforeman.org"
 SIGNER_NAME="Foreman Automatic Signing Key"
-OSES="el8"
+OSES=""
 RPMDIR="$RELEASEDIR/rpms"
 KEYDIR="$RELEASEDIR/gnupg"
 GNUPGHOME="$KEYDIR"
