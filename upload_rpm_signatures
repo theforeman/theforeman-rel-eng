@@ -1,5 +1,0 @@
-#!/bin/bash -e
-
-. settings
-
-find "$RPMDIR" -name '*.rpm' | xargs $XARGS_JOBS $KOJI_CMD import-sig

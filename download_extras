@@ -1,6 +1,0 @@
-#!/bin/bash -e
-
-. settings
-
-mkdir -p $EXTRASDIR
-scp -r root@koji.katello.org:/mnt/koji/releases/extras/foreman-$VERSION-rhel7-dist/x86_64/* $EXTRASDIR/

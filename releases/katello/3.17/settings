@@ -1,4 +1,3 @@
 FULLVERSION='3.17.0'
 FOREMAN_VERSION='2.2'
 OSES="rhel7"
-KOJI_TAGS="katello-@VERSION@-@OS@ katello-@VERSION@-thirdparty-candlepin-@OS@"
