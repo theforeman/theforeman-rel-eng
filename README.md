@@ -31,7 +31,6 @@ Below is a listing of access used.
 * Belong to the [Foreman GitHub release-engineering team](https://github.com/orgs/theforeman/teams/release-engineering)
 * [Foreman infrastructure access](https://theforeman.github.io/foreman-infra/#access) including [secrets](https://theforeman.github.io/foreman-infra/secrets/)
 * [Jenkins access](https://theforeman.github.io/foreman-infra/jenkins/#access)
-* [Koji access](https://theforeman.github.io/foreman-infra/koji/#using-koji-as-a-user)
 * [web01 stagingyum access](https://github.com/theforeman/foreman-infra/blob/master/puppet/modules/web/manifests/vhost/stagingyum.pp#L9)
 * [theforeman Fedora group member](https://copr.fedorainfracloud.org/groups/g/theforeman/coprs/) which can be viewed [through Fedora Account System](https://accounts.fedoraproject.org/?next=/group/theforeman/%3F)
 
@@ -165,18 +164,16 @@ Make sure `VERSION` is correct in `settings` and `FULLVERSION` in `releases/$PRO
 ./bump_rpm_packaging
 ./release_packages
 # These steps can happen during the build after RPMs have been built but DEBs are still running
-./download_rpms
-./sign_rpms
-./upload_rpm_signatures
-./upload_rpms
-./process_rpms
+./generate_stage_repository
+./sign_stage_rpms
+./upload_stage_rpms
 ```
 
 When handling non-Foreman releases (currently supported: Katello and Client), set `PROJECT` to the lowercase name of the project and `VERSION` to the version of the project (if it differs from the Foreman one).
 
 ```bash
-PROJECT=client ./download_rpms
-PROJECT=katello VERSION=3.13 ./download_rpms
+PROJECT=client ./generate_stage_repository
+PROJECT=katello VERSION=3.13 ./generate_stage_repository
 ```
 
 ### Generating a new GPG Key for a X.Y release
@@ -214,7 +211,6 @@ Settings can be customized in `settings.local`. The following settings are suppo
 ```sh
 GIT_DIR=$HOME/dev # Projects are cloned here
 GIT_REMOTE=upstream # Git remote for cloned projects
-KOJI_CMD=koji # Invoke koji. Change this if you also have Koji set up for Fedora development
 PACKAGING_PR=true # Create a PR in bump_{deb,rpm}_packaging
 ```
 

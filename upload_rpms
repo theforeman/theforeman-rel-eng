@@ -1,5 +1,0 @@
-#!/bin/bash -e
-
-. settings
-
-find "$RPMDIR" -name '*.src.rpm' | xargs -I@@ basename @@ .src.rpm | xargs -t $XARGS_JOBS $KOJI_CMD write-signed-rpm $(echo $GPGKEY | tr 'A-Z' 'a-z')
