@@ -1,10 +1,9 @@
 # Build Package
 
 - [ ] Acquire Candlepin SRPM for <%= release %>
-- [ ] Build into Copr
-  - `copr build @theforeman/candlepin-staging-<%= release %> <SRPM>`
+- [ ] Build into Copr: `copr build @theforeman/candlepin-staging-<%= release %> <SRPM>`
 - [ ] Sign RPMs
-  - [ ] VERSION=<%= release %> PROJECT=candlepin <%= rel_eng_script('generate_stage_repository') %>
-  - [ ] VERSION=<%= release %> PROJECT=candlepin <%= rel_eng_script('sign_stage_rpms') %>
-  - [ ] VERSION=<%= release %> PROJECT=candlepin <%= rel_eng_script('upload_stage_rpms') %>
-- [ ] [Run release pipeline](https://ci.theforeman.org/job/candlepin-<%= release %>-rpm-pipeline/)
+  - [ ] <%= rel_eng_script('generate_stage_repository') %>: `VERSION=<%= release %> PROJECT=candlepin ./generate_stage_repository`
+  - [ ] <%= rel_eng_script('sign_stage_rpms') %>: `VERSION=<%= release %> PROJECT=candlepin ./sign_stage_rpms`
+  - [ ] <%= rel_eng_script('upload_stage_rpms') %>: `VERSION=<%= release %> PROJECT=candlepin ./upload_stage_rpms`
+- [ ] Kick off the [release pipeline](https://ci.theforeman.org/job/candlepin-<%= release %>-rpm-pipeline/) by calling <%= rel_eng_script('release_pipeline') %>: `VERSION=<%= release %> PROJECT=candlepin ./release_pipeline`
