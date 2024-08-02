@@ -3,3 +3,6 @@ PASS_NAME_KEY="theforeman/releases/candlepin/$VERSION-key"
 SIGNER_NAME="Candlepin Automatic Signing Key"
 FOREMAN_VERSION='none'
 OSES='el8 el9'
+GIT_DEVELOP_BRANCH="rpm/develop"
+GIT_STABLE_BRANCH="rpm/${VERSION}"
+TAR_PROJECTS="candlepin-packaging"

@@ -14,6 +14,10 @@ for repo in $(./ensure_clean_git_checkouts "$@") ; do
 			bundle exec librarian-puppet install
 			git add .gitignore Puppetfile*
 			git commit --message "Pin Puppet modules for ${VERSION}"
+		elif [[ $repo == candlepin-packaging ]] ; then
+			sed -i "/candlepin_version/ s/'.\+'/'$VERSION'/" package_manifest.yaml
+			git add package_manifest.yaml
+			git commit --message "Set Candlepin version to ${VERSION}"
 		fi
 	)
 done
