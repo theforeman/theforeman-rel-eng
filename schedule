@@ -79,7 +79,7 @@ def main():
         ('Event', 'Date'),
         ('Dev start', dev_start),
         ('Half way point', dev_start + ((branching - dev_start) / 2)),
-        ('Installer module release week', week_range(branching - relativedelta(weeks=2))),
+        ('Prep week', week_range(branching - relativedelta(weeks=2))),
         ('Stabilization week', week_range(branching - relativedelta(weeks=1))),
         ('Branching', branching),
         ('Release Candidate 1', branching),
