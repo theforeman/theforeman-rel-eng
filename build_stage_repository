@@ -120,11 +120,19 @@ def create_modulemd(collection, version, stage_dir, foreman_version, dist):
     with open(modules_yaml, 'w') as modules_file:
         yaml.dump_all(modules, modules_file, default_flow_style=False, explicit_start=True, explicit_end=True)
 
-    check_output(['modifyrepo_c', '--compress-type=gz', '--mdtype=modules', modules_yaml, f"{stage_dir}/repodata"])
+    try:
+        check_output(['modifyrepo_c', '--compress-type=gz', '--mdtype=modules', modules_yaml, f"{stage_dir}/repodata"], stderr=STDOUT)
+    except CalledProcessError as e:
+        print(e.output)
+        raise
 
 
 def create_repository(repo_dir):
-    check_output(['createrepo_c', "--general-compress-type=gz", "--database" ,repo_dir], stderr=STDOUT)
+    try:
+        check_output(['createrepo_c', "--general-compress-type=gz", "--database" ,repo_dir], stderr=STDOUT)
+    except CalledProcessError as e:
+        print(e.output)
+        raise
 
 
 def sync_prod_repository(collection, version, target_dir, dist, arch):
