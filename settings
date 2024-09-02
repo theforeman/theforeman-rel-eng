@@ -21,25 +21,24 @@ load_settings() {
   # Expected: FULLGPGKEY
   # Optional: FULLVERSION
   . "$RELEASEDIR/settings"
+
+  if [[ $PROJECT != foreman ]]; then
+    if [[ -z "$FOREMAN_VERSION" ]]; then
+      echo "please set FOREMAN_VERSION in $RELEASEDIR/settings"
+      exit 1
+    elif [[ "$FOREMAN_VERSION" != "none" ]]; then
+      # load foreman settings, which will contain keys etc
+      . "releases/foreman/${FOREMAN_VERSION}/settings"
+    fi
+  else
+    FOREMAN_VERSION="$VERSION"
+  fi
 }
 
 # Prepare settings file
 if [[ ! -d "$RELEASEDIR" ]] ; then
 	mkdir -p "$RELEASEDIR"
 	echo "FULLVERSION='${VERSION}.0-rc1'" > "$RELEASEDIR/settings"
-fi
-
-if [[ $PROJECT != foreman ]]; then
-  load_settings
-  if [[ -z "$FOREMAN_VERSION" ]]; then
-    echo "please set FOREMAN_VERSION in $RELEASEDIR/settings"
-    exit 1
-  elif [[ "$FOREMAN_VERSION" != "none" ]]; then
-    # load foreman settings, which will contain keys etc
-    . "releases/foreman/${FOREMAN_VERSION}/settings"
-  fi
-else
-  FOREMAN_VERSION="$VERSION"
 fi
 
 SIGNER="packages@theforeman.org"
@@ -52,8 +51,6 @@ TARDIR="$RELEASEDIR/tarballs"
 EXTRASDIR="$RELEASEDIR/extras"
 HOSTS="web01.osuosl.theforeman.org,"
 DOCROOT="/var/www/vhosts/downloads/htdocs"
-PASS_NAME_GPG="theforeman/releases/foreman/$FOREMAN_VERSION-gpg"
-PASS_NAME_KEY="theforeman/releases/foreman/$FOREMAN_VERSION-key"
 XARGS_JOBS="-n 20 -P 4"
 GIT_DIR="${GIT_DIR:-$HOME/dev}"
 GIT_USE_WORKTREES=false
@@ -70,6 +67,8 @@ GPG_EXPIRE="1y"
 
 load_settings
 
+PASS_NAME_GPG="theforeman/releases/foreman/$FOREMAN_VERSION-gpg"
+PASS_NAME_KEY="theforeman/releases/foreman/$FOREMAN_VERSION-key"
 HALFGPGKEY="$(echo ${FULLGPGKEY: -16} | tr '[A-Z]' '[a-z]')"
 
 show_gpg_password() {
