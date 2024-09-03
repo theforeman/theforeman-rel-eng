@@ -28,10 +28,9 @@ load_settings() {
       exit 1
     elif [[ "$FOREMAN_VERSION" != "none" ]]; then
       # load foreman settings, which will contain keys etc
+      . releases/foreman/settings
       . "releases/foreman/${FOREMAN_VERSION}/settings"
     fi
-  else
-    FOREMAN_VERSION="$VERSION"
   fi
 }
 
@@ -67,11 +66,24 @@ GPG_EXPIRE="1y"
 
 load_settings
 
-PASS_NAME_GPG="theforeman/releases/foreman/$FOREMAN_VERSION-gpg"
-PASS_NAME_KEY="theforeman/releases/foreman/$FOREMAN_VERSION-key"
 HALFGPGKEY="$(echo ${FULLGPGKEY: -16} | tr '[A-Z]' '[a-z]')"
 
+require_pass_name_gpg() {
+	if [[ -z $PASS_NAME_GPG ]] ; then
+		echo "Set PASS_NAME_GPG in the settings"
+		exit 1
+	fi
+}
+
+require_pass_name_key() {
+	if [[ -z $PASS_NAME_KEY ]] ; then
+		echo "Set PASS_NAME_KEY in the settings"
+		exit 1
+	fi
+}
+
 show_gpg_password() {
+	require_pass_name_gpg
 	gopass show --password "$PASS_NAME_GPG"
 }
 
