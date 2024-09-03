@@ -31,7 +31,7 @@ Below is a listing of access used.
 * Belong to the [Foreman GitHub release-engineering team](https://github.com/orgs/theforeman/teams/release-engineering)
 * [Foreman infrastructure access](https://theforeman.github.io/foreman-infra/#access) including [secrets](https://theforeman.github.io/foreman-infra/secrets/)
 * [Jenkins access](https://theforeman.github.io/foreman-infra/jenkins/#access)
-* [web01 stagingyum access](https://github.com/theforeman/foreman-infra/blob/master/puppet/modules/web/manifests/vhost/stagingyum.pp#L9)
+* [stagingrpm access](https://github.com/theforeman/foreman-infra/blob/master/puppet/modules/web/manifests/vhost/stagingrpm.pp#L9)
 * [theforeman Fedora group member](https://copr.fedorainfracloud.org/groups/g/theforeman/coprs/) which can be viewed [through Fedora Account System](https://accounts.fedoraproject.org/?next=/group/theforeman/%3F)
 
 #### Katello release owner
