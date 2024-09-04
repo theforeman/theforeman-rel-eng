@@ -2,7 +2,11 @@
 
 . settings
 
-USER='yumrepostage'
-HOST='web01.osuosl.theforeman.org'
+USER='rpmrepostage'
+HOST='repo-rpm01.osuosl.theforeman.org'
 
-rsync --checksum --times --perms --recursive --links --verbose --partial --one-file-system --delete-after "tmp/$PROJECT/$VERSION/" "$USER@$HOST:rsync_cache/$PROJECT/$VERSION/"
+if [[ "$PROJECT" == "pulpcore" || "$PROJECT" == "candlepin" ]];then
+  rsync --checksum --times --perms --recursive --links --verbose --partial --one-file-system --delete-after "tmp/$PROJECT/$VERSION/" "$USER@$HOST:rsync_cache/$PROJECT/$VERSION/"
+else
+  rsync --checksum --times --perms --recursive --links --verbose --partial --one-file-system --delete-after "tmp/$PROJECT/$VERSION/" "$USER@$HOST:rsync_cache/foreman/$FOREMAN_VERSION/$PROJECT/"
+fi

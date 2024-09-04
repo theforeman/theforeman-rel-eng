@@ -1,0 +1,19 @@
+#!/bin/bash -e
+
+. settings
+
+USER='rpmrepo'
+HOST='repo-rpm01.osuosl.theforeman.org'
+
+OVERWRITE=true
+MERGE=false
+
+for os in $OSES; do
+  if [[ "$PROJECT" == "pulpcore" || "$PROJECT" == "candlepin" ]];then
+    REPO_PATH="$PROJECT/$VERSION/$os"
+  else
+    REPO_PATH="foreman/$FOREMAN_VERSION/$PROJECT/$os"
+  fi
+
+  ssh "$USER@$HOST" "$REPO_PATH" "$REPO_PATH" "$OVERWRITE" "$MERGE"
+done
