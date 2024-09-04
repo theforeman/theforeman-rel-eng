@@ -25,7 +25,7 @@
 
 ## Release Owner
 
-- [ ] Make sure [test_<%= short_version.tr('.', '_') %>_stable](https://ci.theforeman.org/job/test_<%= short_version.tr('.', '_') %>_stable/) and [smart-proxy<%= short_version %>-stable-test](https://ci.theforeman.org/job/smart-proxy-<%= short_version %>-stable-test/) are green using <%= rel_eng_script('verify_green_jobs') %>
+- [ ] Make sure [test_<%= short_version.tr('.', '_') %>_stable](https://ci.theforeman.org/job/test_<%= short_version.tr('.', '_') %>_stable/) and [smart-proxy-<%= short_version %>-stable-test](https://ci.theforeman.org/job/smart-proxy-<%= short_version %>-stable-test/) are green using <%= rel_eng_script('verify_green_jobs') %>
 <% if is_rc || is_first_ga -%>
 - [ ] Run `make -C locale tx-update` in foreman <%= short_version %>-stable
 <% end -%>
