@@ -5,14 +5,12 @@ set -e
 . settings
 
 for os in $OSES; do
-  BASE="tmp/$PROJECT/$VERSION/$os"
-
   for arch in $ARCHES; do
-    UNSIGNED_RPMS=$(./list_unsigned_rpms "$BASE/$arch" "$HALFGPGKEY")
+    UNSIGNED_RPMS=$(./list_unsigned_rpms "$STAGE_LOCAL_BASE/$os/$arch" "$HALFGPGKEY")
 
     if [[ -n "$UNSIGNED_RPMS" ]]; then
       echo "$UNSIGNED_RPMS" | xargs ./sign_rpms
-      createrepo_c --general-compress-type gz --database --update "$BASE/$arch"
+      createrepo_c --general-compress-type gz --database --update "$STAGE_LOCAL_BASE/$os/$arch"
     fi
   done
 done
