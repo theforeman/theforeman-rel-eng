@@ -9,4 +9,4 @@ if [[ "${VERSION}" != "nightly" ]]; then
   ./verify_stage_sigs
 fi
 
-rsync --checksum --times --perms --recursive --links --verbose --partial --one-file-system --delete-after "tmp/$PROJECT/$VERSION/" "$USER@$HOST:rsync_cache/$PROJECT/$VERSION/"
+rsync --checksum --times --perms --recursive --links --verbose --partial --one-file-system --delete-after "${STAGE_LOCAL_BASE}/" "$USER@$HOST:rsync_cache/$PROJECT/$VERSION/"

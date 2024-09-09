@@ -7,10 +7,8 @@ set -e
 EXIT_CODE=0
 
 for os in $OSES; do
-  BASE="tmp/$PROJECT/$VERSION/$os"
-
   for arch in $ARCHES; do
-    UNSIGNED_RPMS=$(./list_unsigned_rpms "$BASE/$arch" "$HALFGPGKEY")
+    UNSIGNED_RPMS=$(./list_unsigned_rpms "$STAGE_LOCAL_BASE/$os/$arch" "$HALFGPGKEY")
 
     if [[ -n "$UNSIGNED_RPMS" ]]; then
       echo "$UNSIGNED_RPMS"
