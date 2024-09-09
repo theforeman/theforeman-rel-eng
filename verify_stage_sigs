@@ -4,6 +4,11 @@ set -e
 
 . settings
 
+if [[ -z "${FULLGPGKEY}" ]]; then
+  echo "No signing configured."
+  exit 0
+fi
+
 EXIT_CODE=0
 
 for os in $OSES; do
