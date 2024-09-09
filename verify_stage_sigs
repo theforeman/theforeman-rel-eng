@@ -1,0 +1,28 @@
+#!/bin/bash
+
+set -e
+
+. settings
+
+ARCHES="x86_64 source"
+
+EXIT_CODE=0
+
+for os in $OSES; do
+  BASE="tmp/$PROJECT/$VERSION/$os"
+
+  for arch in $ARCHES; do
+    UNSIGNED_RPMS=$(./list_unsigned_rpms "$BASE/$arch" "$HALFGPGKEY")
+
+    if [[ -n "$UNSIGNED_RPMS" ]]; then
+      echo "$UNSIGNED_RPMS"
+      EXIT_CODE=1
+    fi
+  done
+done
+
+if [[ "${EXIT_CODE}" != "0" ]]; then
+  echo "RPMs not signed with ${HALFGPGKEY} found, aborting"
+fi
+
+exit ${EXIT_CODE}
