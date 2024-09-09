@@ -5,7 +5,7 @@
 USER='yumrepostage'
 HOST='web01.osuosl.theforeman.org'
 
-if [[ "${VERSION}" != "nightly" ]]; then
+if [[ -n  "${FULLGPGKEY}" ]]; then
   ./verify_stage_sigs
 fi
 
