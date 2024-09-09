@@ -1,5 +1,0 @@
-#!/bin/bash -e
-
-. settings
-
-./sign_rpms "$EXTRASDIR"/*.rpm
