@@ -4,8 +4,6 @@ set -e
 
 . settings
 
-ARCHES="x86_64 source"
-
 EXIT_CODE=0
 
 for os in $OSES; do

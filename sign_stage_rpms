@@ -4,8 +4,6 @@ set -e
 
 . settings
 
-ARCHES="x86_64 source"
-
 for os in $OSES; do
   BASE="tmp/$PROJECT/$VERSION/$os"
 

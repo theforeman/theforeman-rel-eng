@@ -45,6 +45,7 @@ fi
 SIGNER="packages@theforeman.org"
 SIGNER_NAME="Foreman Automatic Signing Key"
 OSES=""
+ARCHES="x86_64 source"
 RPMDIR="$RELEASEDIR/rpms"
 KEYDIR="$RELEASEDIR/gnupg"
 GNUPGHOME="$KEYDIR"
