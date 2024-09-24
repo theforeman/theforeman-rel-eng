@@ -128,11 +128,6 @@ Note: If for some reason there was an issue with the tarballs that required uplo
     - Add the <%= short_version %> in `foreman_versions` list
 <% end -%>
 <% end -%>
-<% if is_first_ga -%>
-  - Update `web/content/index.adoc` and `web/content/js/versions.js` to declare <%= short_version %> as stable and <%= short_version_minus_two %> as unsupported
-<% elsif is_first_rc -%>
-  - Update `web/content/index.adoc` and `web/content/js/versions.js` to add <%= short_version %> as a release candidate
-<% end -%>
 <% if is_first_rc -%>
 - [ ] Add <%= short_version %> to the navigation in [docs.theforeman.org](https://github.com/theforeman/foreman-documentation) master
   - `cp web/releases/nightly.adoc web/releases/<%= short_version %>.adoc` and modify as needed
