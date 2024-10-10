@@ -108,7 +108,8 @@ procedures = {
         full_version: full_version, # 1.20.0-rc1
         version: version, # 1.20.0
         short_version_minus_two: "#{major}.#{minor.to_i - 2}",
-        short_version_minus_five: "#{major}.#{minor.to_i - 5}"
+        short_version_minus_five: "#{major}.#{minor.to_i - 5}",
+        next_patch_version: "#{major}.#{minor}.#{patch.to_i + 1}",
       )
     end
     opts.on('--foreman-version [X.Y]', /^\d+\.\d+$/, 'Foreman version, for Katello') do |foreman_version|
