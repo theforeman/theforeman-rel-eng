@@ -17,8 +17,8 @@
 
 ## Release Owner
 
-- [ ] Remove/change target version field for any open Redmine tickets assigned to the release still (next minor, unset it or reject)
-- [ ] Ensure that code in git matches issues fixed in <%= full_version %> in redmine. [issues](https://github.com/theforeman/theforeman-rel-eng/blob/master/issues) can be used to generate a comparison between the two.
+- [ ] Make sure any release blocking issues are resolved and remove/change target version field for any open Redmine tickets assigned to the release still (next minor, unset it or reject). Look for the `<%= version %> release TODO` saved query on [Foreman's issues](https://projects.theforeman.org/projects/foreman/issues).
+- [ ] Ensure that code in git matches issues fixed in <%= full_version %> in Redmine. Use the `<%= version %> release DONE` saved query on [Foreman's issues](https://projects.theforeman.org/projects/foreman/issues). [issues](https://github.com/theforeman/theforeman-rel-eng/blob/master/issues) can be used to generate a comparison between the two.
 - [ ] Check for open pull requests in [Foreman](https://github.com/theforeman/foreman/pulls?q=is%3Apr+is%3Aopen+branch%3A<%= short_version %>-stable), [smart-proxy](https://github.com/theforeman/smart-proxy/pulls?q=is%3Apr+is%3Aopen+branch%3A<%= short_version %>-stable), [foreman-installer](https://github.com/theforeman/foreman-installer/pulls?q=is%3Apr+is%3Aopen+branch%3A<%= short_version %>-stable) and [foreman-selinux](https://github.com/theforeman/foreman-selinux/pulls?q=is%3Apr+is%3Aopen+branch%3A<%= short_version %>-stable)
 
 # Tagging a release: <%= target_date %>
@@ -38,7 +38,7 @@
 - [ ] Run the Jenkins [Tarballs Release](https://ci.theforeman.org/job/tarballs-release/) using <%= rel_eng_script('release_tarballs') %> to create tarballs
 <% unless is_rc -%>
 - [ ] Change Redmine version <%= full_version %> state to Closed using <%= rel_eng_script('close_redmine_version') %>
-- [ ] Add a new [Redmine version](https://projects.theforeman.org/projects/foreman/settings/versions) for the next minor, unless the series is EOL. Be sure the version is set to sharing with subprojects.
+- [ ] Add a new [Redmine version](https://projects.theforeman.org/projects/foreman/settings/versions) for <%= next_patch_version %><%= ', unless the series is EOL' unless is_first_ga %>. Be sure the version is set to sharing with subprojects.
 <% end -%>
 
 ## Release Engineer
@@ -150,3 +150,6 @@ Note: If for some reason there was an issue with the tarballs that required uplo
 - [ ] Create an issue in [foreman-infra](https://github.com/theforeman/foreman-infra/issues) to archive old Debian releases (keeping <%= short_version_minus_five %> and newer)
 <% end -%>
 - [ ] Release pipeline will trigger [foreman-plugins-<%= short_version %>-deb-test-pipeline](https://ci.theforeman.org/job/foreman-plugins-<%= short_version %>-deb-test-pipeline/) and [foreman-plugins-<%= short_version %>-rpm-test-pipeline](https://ci.theforeman.org/job/foreman-plugins-<%= short_version %>-rpm-test-pipeline/). These don't block releases but can be used to understand known issues around plugin compatibility with Foreman <%= short_version %>.
+<% unless is_rc -%>
+- [ ] <%= 'Unless the series is EOL: ' unless is_first_ga %>Prepare <%= next_patch_version %> by updating the `<%= version %> release TODO` and `<%= version %> release DONE` saved queries on [Foreman's issues](https://projects.theforeman.org/projects/foreman/issues). Be sure to update both the name and individual filters.
+<% end -%>
