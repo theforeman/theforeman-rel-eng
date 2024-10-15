@@ -16,6 +16,12 @@ import dnf.comps
 import argparse
 
 
+if os.path.exists('/usr/bin/dnf4'):
+  DNF = 'dnf4'
+else:
+  DNF = 'dnf'
+
+
 def filter_packages(target_dir, packages):
     files = glob.glob(f"{target_dir}/*.rpm")
 
@@ -144,7 +150,7 @@ def sync_prod_repository(collection, version, target_dir, dist, arch):
         print(f"Syncing {collection} {version} RPM repository from {repository_url}")
 
     cmd = [
-        'dnf',
+        DNF,
         '--config',
         f'tmp/dnf.conf',
         'reposync',
@@ -208,7 +214,7 @@ def prod_repository(collection, version, dist, arch):
 
 def copr_repository_urls(repository):
     cmd = [
-        'dnf',
+        DNF,
         'reposync',
         '--urls',
         '--refresh',
@@ -224,7 +230,7 @@ def copr_repository_urls(repository):
 
 def compare_repositories(new_repository, old_repository, arch, source=False):
     cmd = [
-        'dnf',
+        DNF,
         '--config',
         f'tmp/dnf.conf',
         'repodiff',
