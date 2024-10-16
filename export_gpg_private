@@ -2,6 +2,8 @@
 
 . settings
 
+require_pass_name_key
+
 if [[ ! -d $KEYDIR ]] ; then
 	echo "Keydir $KEYDIR doesn't exist"
 	exit 1
