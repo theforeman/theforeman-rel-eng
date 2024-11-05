@@ -20,3 +20,5 @@ else
 fi
 
 gpg_with_password --batch --homedir "$KEYDIR" --export-secret-keys -a "$FULLGPGKEY" | gopass insert --multiline $FORCE "$PASS_NAME_KEY"
+
+gopass_sync
