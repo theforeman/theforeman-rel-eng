@@ -6,4 +6,6 @@ if [[ ! -d "$KEYDIR" ]] ; then
 	mkdir -p -m 0700 "$KEYDIR"
 fi
 
+gopass_sync
+
 gopass show "$PASS_NAME_KEY" | gpg_with_password --batch --homedir "$KEYDIR" --import

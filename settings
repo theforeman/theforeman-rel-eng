@@ -75,6 +75,10 @@ load_settings
 
 HALFGPGKEY="$(echo ${FULLGPGKEY: -16} | tr '[A-Z]' '[a-z]')"
 
+gopass_sync() {
+	gopass sync --store "$GOPASS_STORE"
+}
+
 show_gpg_password() {
 	gopass show --password "$PASS_NAME_GPG"
 }
