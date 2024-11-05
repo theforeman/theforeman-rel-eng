@@ -13,6 +13,8 @@ if [[ -n $FULLGPGKEY ]] ; then
 	exit 2
 fi
 
+require_pass_name_gpg
+
 mkdir -m 0700 $KEYDIR
 
 ( gopass show --password "$PASS_NAME_GPG" 2> /dev/null || gopass generate "$PASS_NAME_GPG" 20 ) > /dev/null

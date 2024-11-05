@@ -1,3 +1,11 @@
-TAR_PROJECTS="foreman foreman-proxy foreman-installer foreman-selinux"
-RPM_PACKAGES=(foreman foreman-installer foreman-proxy foreman-release foreman-selinux)
-PACKAGING_SUBDIR="packages/foreman"
+# This deals with inheritance with other projects
+if [[ -z $FOREMAN_VERSION ]] ; then
+	TAR_PROJECTS="foreman foreman-proxy foreman-installer foreman-selinux"
+	RPM_PACKAGES=(foreman foreman-installer foreman-proxy foreman-release foreman-selinux)
+	PACKAGING_SUBDIR="packages/foreman"
+else
+	FOREMAN_VERSION=$VERSION
+fi
+
+PASS_NAME_GPG="theforeman/releases/foreman/${FOREMAN_VERSION}-gpg"
+PASS_NAME_KEY="theforeman/releases/foreman/${FOREMAN_VERSION}-key"
