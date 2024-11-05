@@ -1,5 +1,5 @@
 OSES="el7 el8"
-PASS_NAME_GPG="theforeman/releases/pulpcore/$VERSION-gpg"
-PASS_NAME_KEY="theforeman/releases/pulpcore/$VERSION-key"
+PASS_NAME_GPG="$GOPASS_STORE/pulpcore/$VERSION-gpg"
+PASS_NAME_KEY="$GOPASS_STORE/pulpcore/$VERSION-key"
 SIGNER_NAME="Pulpcore Automatic Signing Key"
 FOREMAN_VERSION='none'
