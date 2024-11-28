@@ -21,7 +21,7 @@ upload() {
 	files+="'docroot': '${DOCROOT}'"
 	files+="}"
 
-	ansible_playbook --inventory=$HOSTS --extra-vars="$files" upload_tarball_signatures.yaml
+	ansible_playbook --inventory=$DOWNLOADS_HOSTS --extra-vars="$files" upload_tarball_signatures.yaml
 }
 
 if [[ ! -d "$TARDIR" ]] ; then

@@ -18,7 +18,7 @@ upload() {
 	trap "rm -f $gpg_key" EXIT
 	gpg2 --homedir "$KEYDIR" --armor --export "$FULLGPGKEY" > "$gpg_key"
 
-	ansible_playbook --inventory=$HOSTS --extra-vars="release=${VERSION} gpg_key=${gpg_key} project=${PROJECT}" upload_yum_gpg_public_key.yaml
+	ansible_playbook --inventory=$YUM_HOSTS --extra-vars="release=${VERSION} gpg_key=${gpg_key} project=${PROJECT}" upload_yum_gpg_public_key.yaml
 }
 
 upload
