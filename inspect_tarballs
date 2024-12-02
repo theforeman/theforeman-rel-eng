@@ -14,4 +14,3 @@ for project in $TAR_PROJECTS ; do
 		exit 1
 	fi
 done
-file-roller "${filenames[@]}"
