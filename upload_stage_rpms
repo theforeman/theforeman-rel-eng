@@ -3,8 +3,7 @@
 . settings
 
 USER='yumrepostage'
-HOST='web01.osuosl.theforeman.org'
 
 ./verify_stage_sigs
 
-rsync --checksum --times --perms --recursive --links --verbose --partial --one-file-system --delete-after "${STAGE_LOCAL_BASE}/" "$USER@$HOST:rsync_cache/$PROJECT/$VERSION/"
+rsync --checksum --times --perms --recursive --links --verbose --partial --one-file-system --delete-after "${STAGE_LOCAL_BASE}/" "$USER@$RPM_HOST:rsync_cache/$PROJECT/$VERSION/"
