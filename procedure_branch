@@ -11,11 +11,11 @@ if [[ -z $TARGET_DATE ]] ; then
 	READ=1
 fi
 if [[ -z $OWNER ]] ; then
-	read -r -p "Release owner (Discourse usernmame): " OWNER
+	read -r -p "Release owner (Discourse username): " OWNER
 	READ=1
 fi
 if [[ -z $ENGINEER ]] ; then
-	read -r -p "Release engineer (Discourse usernmame): " ENGINEER
+	read -r -p "Release engineer (Discourse username): " ENGINEER
 	READ=1
 fi
 if [[ $READ == 1 ]] ; then
