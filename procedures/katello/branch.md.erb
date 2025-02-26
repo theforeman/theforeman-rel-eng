@@ -62,7 +62,7 @@
 - [ ] Set GitHub Actions to use the new branch: `sed -i '/foreman_version/ s/develop/<%= foreman_version %>-stable/' .github/workflows/*.yml`
 - [ ] Generate and post the release procedure, if not already posted:
   - [ ] Use <%= rel_eng_script('procedure_release') %>: `PROJECT=katello VERSION=<%= release %> ./procedure_release "<%= target_date %>" "<%= owner %>" "<%= engineer %>"`
-  - [ ] Post the output in [Development/Releases](https://community.theforeman.org/c/development/releases/20) using `Katello <%= release %>.0-rc1 release process`
+  - [ ] Post the output in [Development/Releases](https://community.theforeman.org/c/development/releases/20) using `Katello <%= release %>.0.rc1 release process`
   - [ ] Clone https://github.com/theforeman/apidocs and follow the Katello README section to update the API documentation.
 - [ ] Prepare "Katello Next" and future redmine versions
   - [ ] Rename the "Katello Next" release to Katello <%= develop %>.0

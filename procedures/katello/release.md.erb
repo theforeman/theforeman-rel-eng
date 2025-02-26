@@ -22,23 +22,22 @@
 <% unless is_rc -%>
 - [ ] Change Redmine version <%= full_version %> state to Closed using <%= rel_eng_script('close_redmine_version') %>: `PROJECT=katello VERSION=<%= short_version %> ./close_redmine_version` and enter your Redmine API Key when prompted.
 <% end -%>
-- [ ] Check for outdated deprecation warnings in the current and next release with `./tools check-deprecation-warnings configs/katello/<%= short_version %>.yaml`. Follow the instructions in the output of the command. Don't forget to create any Redmine issues needed!
-- [ ] Update the `<%= foreman_version %>` branch in [foreman-documentation](https://github.com/theforeman/foreman-documentation)
-  - Ensure [release notes](https://github.com/theforeman/foreman-documentation/blob/<%= foreman_version %>/guides/doc-Release_Notes/topics/katello.adoc) are correct
+- [ ] Check for outdated deprecation warnings in the current and next release with `./tools.rb check-deprecation-warnings configs/katello/<%= short_version %>.yaml`. Follow the instructions in the output of the command. Don't forget to create any Redmine issues needed!
+- [ ] Update the `<%= foreman_version %>` branch in [foreman-documentation](https://github.com/theforeman/foreman-documentation) <% unless is_first_rc %>if there have been any release note or contributor additions since the previous release note update. Otherwise, this section may be skipped.<% end %>
+  - [ ] Ensure [release notes](https://github.com/theforeman/foreman-documentation/blob/<%= foreman_version %>/guides/doc-Release_Notes/topics/katello.adoc) are correct
     - Headline features: important features with a few sentences description each
     - Upgrade notes: all important notices that users must be aware of before upgrading
     - Deprecations: features that will be removed or changed in a future version
-  - Using [redmine_release_notes](https://github.com/theforeman/foreman-documentation/blob/<%= foreman_version %>/guides/doc-Release_Notes/redmine_release_notes) (see [README](https://github.com/theforeman/foreman-documentation/blob/<%= foreman_version %>/guides/doc-Release_Notes/README.md) as well): `./guides/doc-Release_Notes/redmine_release_notes katello <%= version %> > ./guides/doc-Release_Notes/topics/katello-<%= version %>.adoc`
+  - [ ] Using [redmine_release_notes](https://github.com/theforeman/foreman-documentation/blob/<%= foreman_version %>/guides/doc-Release_Notes/redmine_release_notes) (see [README](https://github.com/theforeman/foreman-documentation/blob/<%= foreman_version %>/guides/doc-Release_Notes/README.md) as well): `./guides/doc-Release_Notes/redmine_release_notes katello <%= version %> > ./guides/doc-Release_Notes/topics/katello-<%= version %>.adoc`
 <% unless is_rc && !full_version.end_with?('1') -%>
-  - Add `topics/katello-<%= version %>.adoc` to `guides/doc-Release_Notes/master.adoc`: `sed '/x.y.z releases here/a include::topics/katello-<%= version %>.adoc[leveloffset=+1]' master.adoc`
+  - [ ] Add `topics/katello-<%= version %>.adoc` to `guides/doc-Release_Notes/master.adoc`: `sed '/x.y.z releases here/a include::topics/katello-<%= version %>.adoc[leveloffset=+1]' master.adoc`
 <% end -%>
-  - Make sure [katello-contributors.adoc](https://github.com/theforeman/foreman-documentation/blob/<%= foreman_version %>/guides/doc-Release_Notes/topics/katello-contributors.adoc) is updated
-  - Submit this as a PR
-
+  - [ ] Update [katello-contributors.adoc](https://github.com/theforeman/foreman-documentation/blob/<%= foreman_version %>/guides/doc-Release_Notes/topics/katello-contributors.adoc) with the list of contributors using `git log --since="<YYYY-MM-DD of previous major release branching>" --format="%an" | sort | uniq`. Manually clean up any erroneous entries.
+  - [ ] Submit this as a PR
 - [ ] Open a PR (or use cherry-pick PR) against the release branch which updates `lib/katello/version.rb` to <%= full_version %>:
   - [ ] `git pull` to make sure you have the latest changes
   - [ ] `sed '/VERSION/ s/".\+"/"<%= full_version %>"/' lib/katello/version.rb`
-  - [ ] Update/add the CHANGELOG.md file: `GITHUB_ACCESS_TOKEN=<secret> ./tools changelog --version <%= full_version %> configs/katello/<%= short_version %>.yaml`
+  - [ ] Update/add the CHANGELOG.md file: `GITHUB_ACCESS_TOKEN=<secret> ./tools.rb changelog --version <%= full_version %> configs/katello/<%= short_version %>.yaml`
   - [ ] Commit: `git commit -m "Release <%= full_version %>"`
   - [ ] Ensure that the commit above is the _last_ commit and there are no commits after it. This is the commit that will get tagged. (Rearrange commits with `git rebase -i` if needed.)
 - [ ] Once the PR is merged, perform the following in the Katello release branch (the real one, not your fork):
@@ -46,10 +45,10 @@
   - [ ] Fetch upstream remote: `git fetch upstream`
   - [ ] Checkout upstream release branch: `git checkout upstream/KATELLO-<%= short_version %>`
   - [ ] Tag: `git tag -s -m "Release <%= full_version %>" <%= full_version %>`
-  - [ ] Push: `git push --follow-tags` (Must be pushed directly to the release branch, as pull request merges will not preserve tags.)
+  - [ ] Push: `git push --follow-tags upstream HEAD:KATELLO-<%= short_version %>` (Must be pushed directly to the release branch, as pull request merges will not preserve tags.)
   - [ ] Generate .mo translation files: `make -C locale all-mo` in the katello directory
   - [ ] Generate source gem: `gem build katello.gemspec`
-  - [ ] Ensure you have a working login and password at rubygems.org
+  - [ ] Ensure you have login, password, and two factor authentication set up for rubygems.org
   - [ ] Push gem: `gem push katello-<%= full_version %>.gem`
 - [ ] Inform the delivery team that the gem is published
 
