@@ -2,5 +2,5 @@
 
 . settings
 
-./ci-jobs green test_${VERSION/./_}_stable
+./ci-jobs green foreman-${VERSION}-stable-test
 ./ci-jobs green smart-proxy-${VERSION}-stable-test
