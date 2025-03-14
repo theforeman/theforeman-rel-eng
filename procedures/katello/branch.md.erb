@@ -33,6 +33,7 @@
 ## Release Owner
 
 - [ ] Commit the [settings file](https://github.com/theforeman/theforeman-rel-eng/blob/master/releases/katello/<%= release %>/settings) to the `theforeman-rel-eng` repository. See an example [here](https://github.com/theforeman/theforeman-rel-eng/commit/29b6b92e82de25c7a0e32fb9ca36468d8df0f6a1)
+  - [ ] Ensure that the version string uses `VERSION.rc1` instead of `VERSION-rc1`. Katello's syntax differs from Foreman.
 - [ ] Add tool_belt config for new release:
   - [ ] Create a new yaml file using the nightly Katello config as a template: [tool_belt configs](https://github.com/theforeman/tool_belt/tree/master/configs/katello)
   - [ ] Manually update the following sections:
@@ -62,7 +63,7 @@
 - [ ] Set GitHub Actions to use the new branch: `sed -i '/foreman_version/ s/develop/<%= foreman_version %>-stable/' .github/workflows/*.yml`
 - [ ] Generate and post the release procedure, if not already posted:
   - [ ] Use <%= rel_eng_script('procedure_release') %>: `PROJECT=katello VERSION=<%= release %> ./procedure_release "<%= target_date %>" "<%= owner %>" "<%= engineer %>"`
-  - [ ] Post the output in [Development/Releases](https://community.theforeman.org/c/development/releases/20) using `Katello <%= release %>.0-rc1 release process`
+  - [ ] Post the output in [Development/Releases](https://community.theforeman.org/c/development/releases/20) using `Katello <%= release %>.0.rc1 release process`
   - [ ] Clone https://github.com/theforeman/apidocs and follow the Katello README section to update the API documentation.
 - [ ] Prepare "Katello Next" and future redmine versions
   - [ ] Rename the "Katello Next" release to Katello <%= develop %>.0
