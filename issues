@@ -9,6 +9,7 @@ URL = 'https://projects.theforeman.org'
 
 unless ARGV.size == 3
   puts "Usage: #{$0} PROJECT RELEASE_NAME PREV_RELEASE_NAME"
+  puts "Run in the project directory"
   puts "Example: #{$0} foreman 3.7.0 3.6.0"
   exit 1
 end
