@@ -92,6 +92,14 @@ On Fedora this can be installed:
 dnf install python3-jenkins
 ```
 
+For Redmine integration, python-redmine needs to be installed:
+
+```sh
+pip install python-redmine
+```
+
+Or, alternatively, there is a [Fedora build](https://copr.fedorainfracloud.org/coprs/ekohl/python-redmine).
+
 
 Foreman requires GPG signed git tags. Configure git with your personal gpg key id as your signing key:
 
