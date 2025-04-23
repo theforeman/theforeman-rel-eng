@@ -26,7 +26,14 @@ load_settings() {
 # Prepare settings file
 if [[ ! -d "$RELEASEDIR" ]] ; then
 	mkdir -p "$RELEASEDIR"
-	echo "FULLVERSION='${VERSION}.0-rc1'" > "$RELEASEDIR/settings"
+	if [[ $PROJECT == katello ]] ; then
+		echo "FULLVERSION='${VERSION}.0.rc1'" > "$RELEASEDIR/settings"
+	else
+		echo "FULLVERSION='${VERSION}.0-rc1'" > "$RELEASEDIR/settings"
+	fi
+	if [[ $PROJECT != foreman ]] && [[ $FOREMAN_VERSION != "none" ]] ; then
+		echo "FOREMAN_VERSION='${FOREMAN_VERSION}'" >> "$RELEASEDIR/settings"
+	fi
 fi
 
 if [[ $PROJECT != foreman ]]; then
