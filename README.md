@@ -125,7 +125,7 @@ gopass init <YOUR-PUB-KEY-HASH>
 For running jobs in Jenkins, make sure you have [access](https://theforeman.github.io/foreman-infra/jenkins/#access) and add your Jenkins password or API token:
 
 ```
-gopass edit theforeman/jenkins-token --create
+gopass edit --create theforeman/jenkins-token
 ```
 
 ### Copr
@@ -141,7 +141,7 @@ Copr is where all packages are built and the stage repositories are generated fr
 For commands on the Foreman infrastructure, add your personal `sudo` password:
 
 ```
-gopass edit theforeman/unix --create
+gopass edit --create theforeman/unix
 ```
 
 The releases store from the [shared secret storage](https://theforeman.github.io/foreman-infra/secrets/) is also needed:
