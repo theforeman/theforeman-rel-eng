@@ -11,15 +11,14 @@
 - [ ] Update Katello Transifex translations:
   - [ ] Create a Transifex account and join the Foreman team
   - [ ] Spin up a Foreman and Katello installation
-  - [ ] [Configure the Transifex client](https://projects.theforeman.org/projects/foreman/wiki/Translating#How-to-pull-translations)
-  - [ ] [Install grunt](https://github.com/Katello/katello/blob/master/engines/bastion_katello/README.md)
+  - [ ] [Install the Transifex cli client](https://projects.theforeman.org/projects/foreman/wiki/Translating#How-to-pull-translations). Only the first `curl` command is necessary.
+  - [ ] [Install grunt-cli](https://github.com/Katello/katello/blob/master/engines/bastion_katello/README.md)
   - [ ] `grunt i18n:extract` in the katello/engines/bastion_katello directory
-  - [ ] `tx pull --minimum-perc 50 --all` in the katello directory
   - [ ] `make -C locale tx-pull` in the katello directory
   - [ ] `grunt i18n:compile` in the katello/engines/bastion_katello directory
   - [ ] `bundle exec rake plugin:gettext[katello]` in the foreman directory
   - [ ] `bundle exec rake plugin:po_to_json[katello]` in the foreman directory
-  - [ ] `make -C locale commit-translation-files` in the katello directory
+  - [ ] `make -C locale mo-files` in the katello directory
   - [ ] Add any uncommitted translation files and open a PR to Katello (no Redmine issue needed)
 
 # Three Weeks Prior to Branch Date: <%= three_weeks_before %> to <%= three_weeks_before + 4 %>
