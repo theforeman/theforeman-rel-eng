@@ -15,6 +15,13 @@ fi
 
 CHECKOUT="${GIT_DIR}/theforeman.org"
 
+if [[ ! -d "$CHECKOUT" ]] ; then
+	git clone --quiet --origin "$GIT_REMOTE" https://github.com/theforeman/theforeman.org "$CHECKOUT"
+fi
+
+git -C "$CHECKOUT" fetch "$GIT_REMOTE"
+git -C "$CHECKOUT" checkout -b "add-gpg-key-$VERSION" "$GIT_REMOTE/$TFM_WEBSITE_GH_PAGES_BRANCH"
+
 gpg2 --homedir "$KEYDIR" --armor --export "$FULLGPGKEY" > "${CHECKOUT}/static/keys/${FULLGPGKEY}.pub"
 
 echo "Fill in any FIXME's and then add this to ${CHECKOUT}/security.md"
