@@ -61,6 +61,7 @@
 - Publish the key
   - [ ] Use <%= rel_eng_script('export_gpg_public') %> to show the GPG key and update the website's [security.md](https://github.com/theforeman/theforeman.org/blob/gh-pages/security.md) and create a file in [static/keys](https://github.com/theforeman/theforeman.org/tree/gh-pages/static/keys)
   - [ ] Use <%= rel_eng_script('upload_yum_gpg') %> to create [releases/<%= release %>/RPM-GPG-KEY-foreman](https://yum.theforeman.org/releases/<%= release %>/RPM-GPG-KEY-foreman) on yum.theforeman.org
+  - [ ] Make sure the [settings file](https://github.com/theforeman/theforeman-rel-eng/blob/master/releases/foreman/<%= release %>/settings) contains the right `OSES` list. It should match what is in [the nightly settings file](https://github.com/theforeman/theforeman-rel-eng/blob/master/releases/foreman/nightly/settings)
   - [ ] Commit the [settings file](https://github.com/theforeman/theforeman-rel-eng/blob/master/releases/foreman/<%= release %>/settings) to the `theforeman-rel-eng` repository
 - [ ] Create new settings files for [client](https://github.com/theforeman/theforeman-rel-eng/blob/master/releases/client/<%= release %>/settings), ensure it has the rights `OSES` list and commit it too.
 - [ ] Open a PR with the result of [jenkins-jobs](https://github.com/theforeman/jenkins-jobs) branching: `./branch-foreman <%= release %> KATELLO_VERSION`
