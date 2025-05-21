@@ -144,7 +144,6 @@ Note: If for some reason there was an issue with the tarballs that required uplo
 <% end -%>
 - [ ] Announce the release on [Discourse](https://community.theforeman.org/c/release-announcements/8) using <%= rel_eng_script('release_announcement') %>
 - [ ] Update the topic in [#theforeman channel on Matrix](https://matrix.to/#/#theforeman:matrix.org)
-- [ ] Share the release announcement on Twitter
 <% if is_first_ga -%>
 - [ ] Update `stable_release` version in [foreman-infra](https://github.com/theforeman/foreman-infra/blob/master/puppet/data/common.yaml#L2)
 - [ ] Create an issue in [foreman-infra](https://github.com/theforeman/foreman-infra/issues) to archive old Debian releases (keeping <%= short_version_minus_five %> and newer)
