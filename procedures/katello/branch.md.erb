@@ -56,8 +56,9 @@
 - [ ] Push the KATELLO-<%= release %> branch using <%= rel_eng_script('branch_push') %>
 - [ ] Bump versions to <%= develop %>-master using <%= rel_eng_script('develop_branch_bump') %>
 - [ ] Push version bumps to <%= develop %>-master using <%= rel_eng_script('develop_branch_push') %>
-- [] Bump Katello related packages to their next versions
-  - [] [packaging](https://github.com/theforeman/foreman-packaging/pull/8729/files)
+- [ ] Bump Katello related packages to their next versions
+  - [ ] [packaging](https://github.com/theforeman/foreman-packaging/pull/8729/files)
+  - [ ] Update the katello-repos `pulpcore_version` to the latest branched version available in pulpcore-packaging: [Example from Katello 4.17](https://github.com/theforeman/foreman-packaging/blob/32fbf3e4287e36dcebcdc15add7cf067486d8228/packages/katello/katello-repos/katello-repos.spec#L1)
 - [ ] Set GitHub Actions to use the new branch: `sed -i '/foreman_version/ s/develop/<%= foreman_version %>-stable/' .github/workflows/*.yml`
 - [ ] Generate and post the release procedure, if not already posted:
   - [ ] Use <%= rel_eng_script('procedure_release') %>: `PROJECT=katello VERSION=<%= release %> ./procedure_release "<%= target_date %>" "<%= owner %>" "<%= engineer %>"`
