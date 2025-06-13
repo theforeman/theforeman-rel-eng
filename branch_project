@@ -14,6 +14,20 @@ for repo in $(./ensure_clean_git_checkouts "$@") ; do
 			bundle exec librarian-puppet install
 			git add .gitignore Puppetfile*
 			git commit --message "Pin Puppet modules for ${VERSION}"
+		elif [[ $repo == foreman ]] ; then
+			# TODO: We don't know the Katello version at this point
+			read -p "Katello version: " -r KATELLO
+			if [[ -z $KATELLO ]] ; then
+				echo "No Katello version given" >&2
+				exit 1
+			fi
+			sed -i "/plugin_repository/a\      plugin_version: KATELLO-$KATELLO" .github/workflows/foreman.yml
+			git add .github/workflows/foreman.yml
+
+			sed -i "s/nightly/$VERSION/" .packit.yaml
+			git add .packit.yaml
+
+			git commit --message "Adjust CI to use $VERSION stable branches"
 		elif [[ $repo == candlepin-packaging ]] ; then
 			sed -i "/candlepin_version/ s/'.\+'/'$VERSION'/" package_manifest.yaml
 			git add package_manifest.yaml
