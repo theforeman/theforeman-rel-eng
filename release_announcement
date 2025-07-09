@@ -15,7 +15,7 @@ fi
 echo >> "$ANNOUNCEMENT"
 
 if [[ $PROJECT == foreman ]] ; then
-	# TODO: inform the user input is expected?
+	echo Enter the announcement text, end by CTRL+D: >&2
 	cat >> "$ANNOUNCEMENT"
 
 	if [[ $FULLVERSION == *-rc* ]] ; then
