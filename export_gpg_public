@@ -24,15 +24,22 @@ git -C "$CHECKOUT" checkout -b "add-gpg-key-$VERSION" "$GIT_REMOTE/$TFM_WEBSITE_
 
 gpg2 --homedir "$KEYDIR" --armor --export "$FULLGPGKEY" > "${CHECKOUT}/static/keys/${FULLGPGKEY}.pub"
 
-echo "Fill in any FIXME's and then add this to ${CHECKOUT}/security.md"
-gpg2 --homedir "$KEYDIR" --fingerprint "$FULLGPGKEY"
+read -r CREATION_TS EXPIRATION_TS < <(gpg2 --homedir "$KEYDIR" --with-colons --list-keys "$FULLGPGKEY" | awk -F: '/^pub/{print $6, $7}')
+FINGERPRINT=$(gpg2 --homedir "$KEYDIR" --with-colons --list-keys "$FULLGPGKEY" | awk -F: '/^fpr/{print $10}' | grep -o '....' | xargs printf "%s %s %s %s %s  %s %s %s %s %s")
+echo "Creation Date: $(date -d @"$CREATION_TS" -u +"%Y-%m-%d")"
+echo "Expiration Date: $([ -n "$EXPIRATION_TS" ] && date -d @"$EXPIRATION_TS" -u +"%Y-%m-%d" || echo "Never")"
+echo "Fingerprint: $FINGERPRINT"
+
+echo -e "Add this to ${CHECKOUT}/security.md\n"
+
+
 cat <<EOF
       <tr>
         <td><a href="{{ site.baseurl }}/static/keys/${FULLGPGKEY}.pub">${FULLGPGKEY}</a></td>
-        <td>FIXME: fingerprint</td>
+        <td>${FINGERPRINT}</td>
         <td>${SIGNER_NAME} (${VERSION})</td>
-        <td style='white-space:nowrap'>$(date +%Y-%m-%d)</td>
-        <td style='white-space:nowrap'>FIXME: end date</td>
+        <td style='white-space:nowrap'>$(date -d @"$CREATION_TS" -u +"%Y-%m-%d")</td>
+        <td style='white-space:nowrap'>$([ -n "$EXPIRATION_TS" ] && date -d @"$EXPIRATION_TS" -u +"%Y-%m-%d" || echo "Never")</td>
         <td style='white-space:nowrap'></td>
         <td></td>
       </tr>
