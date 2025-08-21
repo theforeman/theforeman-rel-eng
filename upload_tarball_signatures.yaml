@@ -11,5 +11,5 @@
       loop: "{{ files|dict2items }}"
 
     - name: "Invalidate CDN cache"
-      command: "fastly-purge https://downloads.theforeman.org {{ item.value }}"
+      command: "/usr/local/bin/fastly-purge https://downloads.theforeman.org {{ item.value }}"
       loop: "{{ files|dict2items }}"
