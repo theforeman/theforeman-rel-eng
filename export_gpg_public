@@ -16,7 +16,7 @@ fi
 CHECKOUT="${GIT_DIR}/theforeman.org"
 
 if [[ ! -d "$CHECKOUT" ]] ; then
-	git clone --quiet --origin "$GIT_REMOTE" https://github.com/theforeman/theforeman.org "$CHECKOUT"
+	git clone --quiet --origin "$GIT_REMOTE" "$(github_url theforeman.org)" "$CHECKOUT"
 fi
 
 git -C "$CHECKOUT" fetch "$GIT_REMOTE"
