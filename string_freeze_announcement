@@ -1,0 +1,118 @@
+#!/usr/bin/env ruby
+
+require 'csv'
+
+# Script to generate complete string freeze announcement with translation statistics
+# Usage: ./string_freeze_announcement.rb <csv_file> <branching_date> <rc1_date> <rc2_date> <planning_url>
+
+if ARGV.length != 5
+  puts "Usage: #{$0} <transifex_csv> <branching_date> <rc1_date> <rc2_date> <planning_url>"
+  puts "Example: #{$0} foreman_foreman.languages.csv '2025-08-12' '2025-08-12' '2025-08-26' 'https://community.theforeman.org/t/foreman-3-16-schedule-and-planning/43345'"
+  exit 1
+end
+
+csv_file = ARGV[0]
+branching_date = ARGV[1]
+rc1_date = ARGV[2]
+rc2_date = ARGV[3]
+planning_url = ARGV[4]
+
+# Get environment variables
+version = ENV['VERSION']
+project = ENV['PROJECT'] || 'foreman'
+
+if version.nil?
+  puts "VERSION must be set as an environment variable"
+  exit 1
+end
+
+unless File.exist?(csv_file)
+  puts "Error: File '#{csv_file}' not found"
+  exit 1
+end
+
+# Generate translation statistics table and get total string count
+def generate_translation_table_and_count(csv_file)
+  table_header = []
+  table_header << "| Language | Language code | Percentage |"
+  table_header << "|:---------|:--------------|:-----------|"
+
+  total_strings = 0
+
+  # Read CSV and process translation data
+  languages = CSV.foreach(csv_file, headers: true).filter_map do |row|
+    language_name = row['name']
+    language_code = row['code']
+    percentage = row['translated stringcount percentage']
+    translated_count = row['translated stringcount']
+
+    # Get total string count from English (source language) translated count
+    if language_code == 'en' && language_name.include?('source language')
+      total_strings = translated_count.to_i if translated_count
+    end
+
+    # Clean up the data
+    language_name = language_name.to_s.strip
+    language_code = language_code.to_s.strip
+    percentage = percentage.to_s.strip.gsub('%', '')
+
+    # Skip empty rows
+    next if language_name.empty? || language_code.empty? || percentage.empty?
+
+    # Format percentage
+    percentage_float = percentage.to_f
+    formatted_percentage = "%.2f%%" % percentage_float
+
+    # Return language data for sorting
+    {
+      name: language_name,
+      code: language_code,
+      percentage: percentage_float,
+      formatted_percentage: formatted_percentage
+    }
+  end
+
+  # Sort languages by percentage (descending)
+  languages.sort! { |a, b| b[:percentage] <=> a[:percentage] }
+
+  # Build the table with sorted languages
+  table_rows = languages.map do |lang|
+    "| #{lang[:name]} | #{lang[:code]} | #{lang[:formatted_percentage]} |"
+  end
+
+  # Format total strings in k format (e.g., 14.6k, 11.2k)
+  total_strings_formatted = if total_strings >= 1000
+    "%.1fk" % (total_strings / 1000.0)
+  else
+    total_strings.to_s
+  end
+
+  [(table_header + table_rows).join("\n"), total_strings_formatted]
+end
+
+# Generate the complete announcement
+translation_table, total_strings = generate_translation_table_and_count(csv_file)
+
+announcement = <<~EOF
+# String Freeze and State of translations - #{project.capitalize} #{version}
+
+Hello,
+
+We are currently in the process leading up to branching #{version} and just wrapped up extracting the strings. Branching #{version} and pulling in translations will be occurring on #{branching_date}. As part of this process, we update translations before each release candidate and the final GA release. Depending on the number of release candidates, there will be approximately 2 to 4 weeks to translate the new strings.
+
+If you are a plugin maintainer, please extract the strings so translators can do their work.
+
+The RC1 and RC2 dates are #{rc1_date} and #{rc2_date}.
+
+Please refer to the scheduling and planning post for more information and dates: [#{project.capitalize} #{version} Schedule and Planning](#{planning_url})
+
+Below are the stats for all languages we currently have translations for in repositories, out of #{total_strings} source strings (including strings from plugins):
+
+#{translation_table}
+
+If you are a native speaker of any of the above languages and would like to contribute to the translations, please see [Translating - #{project.capitalize}](https://projects.theforeman.org/projects/foreman/wiki/Translating) for more information about how to do so. The procedure is very straightforward, as it is carried out using an easy-to-use web application that shows the strings to be translated and requests input. Please contact me if you are an active translator and want to become a coordinator or reviewer for your language.
+
+If you believe that certain languages should be added or that we should avoid pulling translations for some languages that may have a poor translation rate, please let us know in the comments section below.
+EOF
+
+puts announcement
