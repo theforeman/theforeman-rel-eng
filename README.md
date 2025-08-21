@@ -92,6 +92,8 @@ On Fedora this can be installed:
 dnf install python3-jenkins
 ```
 
+GitHub CLI is required for creating pull requests during packaging updates. See the [installation instructions](https://cli.github.com/) for your platform.
+
 For Redmine integration, python-redmine needs to be installed:
 
 ```sh
