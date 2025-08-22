@@ -51,8 +51,23 @@ else
 fi
 
 git commit -m "Release $FULLVERSION"
-git push "$PACKAGING_GIT_REMOTE" "HEAD:$REMOTE_BRANCH"
 
 if [[ $PACKAGING_PR == true ]] ; then
-	gh pr create --repo theforeman/foreman-packaging --title "Release $FULLVERSION" --base "$REMOTE_BRANCH"
+	# Create deterministic branch name
+	FEATURE_BRANCH="release-$PROJECT-$FULLVERSION"
+
+	# Ensure fork exists with configured remote name
+	gh repo fork theforeman/foreman-packaging --remote-name "$PACKAGING_FORK_REMOTE"
+
+	# Push to fork with deterministic branch name
+	git push "$PACKAGING_FORK_REMOTE" "HEAD:$FEATURE_BRANCH"
+
+	# Create PR with explicit source specification
+	gh pr create --repo theforeman/foreman-packaging \
+	             --title "Release $FULLVERSION" \
+	             --head "$GITHUB_USER:$FEATURE_BRANCH" \
+	             --base "$REMOTE_BRANCH" \
+	             --body "Release $FULLVERSION"
+else
+	git push "$PACKAGING_GIT_REMOTE" "HEAD:$REMOTE_BRANCH"
 fi
