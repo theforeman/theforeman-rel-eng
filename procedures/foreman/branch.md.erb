@@ -35,8 +35,8 @@
     - [ ] Ask plugin authors to start extracting i18n strings and pushing the changes into develop/master git branches so Transifex can pick it up (send a message in the Matrix channel)
   - [ ] Work with Transifex for translation status and announcements:
     - [ ] Export translation statistics from [Transifex](https://app.transifex.com/foreman/foreman/languages/) (click on Report) and save as `foreman_foreman.languages.csv`. See [this](https://help.transifex.com/en/articles/6304029-progress-report#h_03f3e11758) help article on how to generate the report for all languages.
-    - [ ] Post string freeze announcement to [foreman-dev](https://community.theforeman.org/c/development) using `<%= rel_eng_script('string_freeze_announcement') %> foreman_foreman.languages.csv <branching_date> <rc1_date> <rc2_date> <planning_url>` to encourage 100% translations before release
-    - [ ] [Send a project-level announcement](https://app.transifex.com/foreman/communication/?q=project%3Aforeman) on Transifex about the string freeze using `<%= rel_eng_script('transifex_announcement') %> <ga_date> <schedule_url> <planning_url>`
+    - [ ] Post string freeze announcement to [foreman-dev](https://community.theforeman.org/c/development) using `<%= rel_eng_script('string_freeze_announcement') %> foreman_foreman.languages.csv BRANCHING_DATE RC1_DATE RC2_DATE PLANNING_URL` to encourage 100% translations before release
+    - [ ] [Send a project-level announcement](https://app.transifex.com/foreman/communication/?q=project%3Aforeman) on Transifex about the string freeze using `<%= rel_eng_script('transifex_announcement') %> GA_DATE SCHEDULE_URL PLANNING_URL`
   - [ ] Track translation work in project management:
     - [ ] Create Redmine issue for locale updates: [Template link](https://projects.theforeman.org/projects/foreman/issues/new?issue[description]=Update%20locales%20for%20Foreman%20<%= release %>%20release&issue[tracker_id]=2&issue[subject]=Update%20locales%20for%20<%= release %>&issue[category_id]=57&issue[custom_field_values][5]=1)
 
