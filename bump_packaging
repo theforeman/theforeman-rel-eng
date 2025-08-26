@@ -54,7 +54,7 @@ git commit -m "Release $FULLVERSION"
 
 if [[ $PACKAGING_PR == true ]] ; then
 	# Create deterministic branch name
-	FEATURE_BRANCH="release-$PROJECT-$FULLVERSION"
+	FEATURE_BRANCH="release-$FLAVOR-$PROJECT-$FULLVERSION"
 
 	# Ensure fork exists with configured remote name
 	gh repo fork theforeman/foreman-packaging --remote-name "$PACKAGING_FORK_REMOTE"
