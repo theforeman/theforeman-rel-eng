@@ -8,9 +8,9 @@ ANNOUNCEMENT=$(mktemp)
 trap 'rm -f ${ANNOUNCEMENT}' EXIT
 
 if [[ $FULLVERSION == *-rc* ]] ; then
-	echo "# ${PROJECT} ${FULLVERSION} is now ready for testing" >> "$ANNOUNCEMENT"
+	echo "# ${PROJECT^} ${FULLVERSION} is now ready for testing" >> "$ANNOUNCEMENT"
 else
-	echo "# ${PROJECT} ${FULLVERSION} is now available" >> "$ANNOUNCEMENT"
+	echo "# ${PROJECT^} ${FULLVERSION} is now available" >> "$ANNOUNCEMENT"
 fi
 echo >> "$ANNOUNCEMENT"
 
