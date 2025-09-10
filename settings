@@ -68,6 +68,7 @@ XARGS_JOBS="-n 20 -P 4"
 GIT_DIR="${GIT_DIR:-$HOME/dev}"
 GIT_USE_WORKTREES=false
 GIT_REMOTE="${GIT_REMOTE:-upstream}"
+GIT_PROTOCOL="${GIT_PROTOCOL:-https}"
 GIT_DEVELOP_BRANCH=develop
 GIT_STABLE_BRANCH="${VERSION}-stable"
 GITHUB_NAMESPACE=theforeman
@@ -113,6 +114,16 @@ require_fullversion() {
 		echo "FULLVERSION is required for this script"
 		exit 1
 	fi
+}
+
+# Function to construct GitHub URLs based on protocol
+github_url() {
+    local repo="$1"
+    if [[ "$GIT_PROTOCOL" == "ssh" ]]; then
+        echo "git@github.com:${GITHUB_NAMESPACE}/${repo}.git"
+    else
+        echo "https://github.com/${GITHUB_NAMESPACE}/${repo}"
+    fi
 }
 
 # vim: ft=sh
