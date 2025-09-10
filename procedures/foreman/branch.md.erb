@@ -27,6 +27,10 @@
 
 ## Release Owner
 
+- Setup GitHub project management:
+  - [ ] Create new version field in [Foreman Releases](https://github.com/orgs/theforeman/projects/21/settings/fields/127439092) project: Add "<%= release %>" option to the Version field
+  - [ ] Move the new "<%= release %>" option to the top of the list if it's not already there
+  - [ ] Acknowledge: I will assign all issues and pull requests I create to the [Foreman Releases](https://github.com/orgs/theforeman/projects/21/) project with the correct version
 - [ ] Ensure headline features planned for the release have been merged or push them off to the next release.
 - Translations:
   - [ ] Update locales in foreman __develop__: `make -C locale tx-update`
@@ -53,6 +57,7 @@
 
 ## Release Engineer
 
+- [ ] Acknowledge: I will assign all issues and pull requests I create to the [Foreman Releases](https://github.com/orgs/theforeman/projects/21/) project with the correct version
 - Create new GPG key for release. See [GPG_Keys](https://github.com/theforeman/theforeman-rel-eng/#generating-a-new-gpg-key-for-a-xy-release) if needed.
   - [ ] <%= rel_eng_script('generate_gpg') %>
   - [ ] <%= rel_eng_script('export_gpg_private') %> to back up
