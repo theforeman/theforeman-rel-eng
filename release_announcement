@@ -37,7 +37,7 @@ if [[ $PROJECT == foreman ]] ; then
 		read -r -p "Discourse translations URL: " TRANSLATIONS
 		cat >> "$ANNOUNCEMENT" <<-EOF
 
-		This is also a good time to improve translations for existing locales to ensure full coverage. Help out at: [Foreman localization](https://www.transifex.com/foreman/foreman/dashboard). See ${TRANSLATIONS} as well.
+		This is also a good time to improve translations for existing locales to ensure full coverage. Help out at: [Foreman localization](https://app.transifex.com/foreman/foreman/dashboard). See ${TRANSLATIONS} as well.
 		EOF
 	fi
 

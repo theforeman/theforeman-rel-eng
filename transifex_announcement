@@ -1,0 +1,45 @@
+#!/usr/bin/env ruby
+
+require 'date'
+
+if ARGV.length != 3
+  puts "Usage: #{$0} <ga_date> <schedule_url> <planning_url>"
+  puts "Example: VERSION=3.16 #{$0} 2025-09-09 'https://community.theforeman.org/t/foreman-3-16-schedule-and-planning/43345' 'https://community.theforeman.org/t/string-freeze-and-state-of-translations-foreman-3-16/44042'"
+  exit 1
+end
+
+version = ENV['VERSION']
+if version.nil? || version.empty?
+  puts "Error: VERSION environment variable must be set"
+  exit 1
+end
+
+ga_date = ARGV[0]
+schedule_url = ARGV[1]
+planning_url = ARGV[2]
+
+# Validate date format
+begin
+  Date.parse(ga_date)
+rescue ArgumentError
+  puts "Error: Invalid date format. Please use YYYY-MM-DD format."
+  exit 1
+end
+
+user_name = `git config --global user.name`.strip
+
+announcement = <<~EOF
+Hello,
+
+We are in the process of branching for the #{version} release and extracting strings. We will be pulling in new translations before each new release candidate (RC), and #{version} is expected to GA by #{ga_date}. Plugin strings will also be revised in the coming weeks.
+
+The schedule of #{version} is available at: #{schedule_url}. State of translations is available here: #{planning_url}
+
+If you wish to coordinate or require assistance, you are welcome to comment on https://community.theforeman.org or find us on [#theforeman-dev on matrix.org](https://matrix.to/#/#theforeman-dev:matrix.org).
+
+Thank you very much for your contributions!
+
+#{user_name}
+EOF
+
+puts announcement

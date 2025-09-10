@@ -29,10 +29,16 @@
 
 - [ ] Ensure headline features planned for the release have been merged or push them off to the next release.
 - Translations:
+  - [ ] Setup Transifex CLI if not already installed: Follow the [Transifex CLI documentation](https://developers.transifex.com/docs/cli) for installation and authentication setup
   - [ ] Update locales in foreman __develop__: `make -C locale tx-update`
-  - [ ] Ask plugin authors to start extracting i18n strings and pushing the changes into develop/master git branches so Transifex can pick it up
-  - [ ] Announce string freeze date on Discourse and [send announcement](https://www.transifex.com/foreman/communication/?q=project%3Aforeman)
-  - [ ] Update [foreman-dev](https://community.theforeman.org/c/development) with [translations status](https://www.transifex.com/foreman/foreman/languages/) (click on Report) to encourage 100% translations before release
+  - [ ] Coordinate with plugin authors to extract i18n strings:
+    - [ ] Ask plugin authors to start extracting i18n strings and pushing the changes into develop/master git branches so Transifex can pick it up (send a message in the Matrix channel)
+  - [ ] Work with Transifex for translation status and announcements:
+    - [ ] Export translation statistics from [Transifex](https://app.transifex.com/foreman/foreman/languages/) (click on Report) and save as `foreman_foreman.languages.csv`. See [this](https://help.transifex.com/en/articles/6304029-progress-report#h_03f3e11758) help article on how to generate the report for all languages.
+    - [ ] Post string freeze announcement to [foreman-dev](https://community.theforeman.org/c/development) using `<%= rel_eng_script('string_freeze_announcement') %> foreman_foreman.languages.csv BRANCHING_DATE RC1_DATE RC2_DATE PLANNING_URL` to encourage 100% translations before release
+    - [ ] [Send a project-level announcement](https://app.transifex.com/foreman/communication/?q=project%3Aforeman) on Transifex about the string freeze using `<%= rel_eng_script('transifex_announcement') %> GA_DATE SCHEDULE_URL PLANNING_URL`
+  - [ ] Track translation work in project management:
+    - [ ] Create Redmine issue for locale updates: [Template link](https://projects.theforeman.org/projects/foreman/issues/new?issue[description]=Update%20locales%20for%20Foreman%20<%= release %>%20release&issue[tracker_id]=2&issue[subject]=Update%20locales%20for%20<%= release %>&issue[category_id]=57&issue[custom_field_values][5]=1)
 
 # Stabilization Week: <%= one_week_before %> to <%= one_week_before + 4 %>
 
@@ -49,7 +55,7 @@
     - `sed -i '/previous_version/ s/: .\+/: "<%= release %>"/' manuals/nightly/index.md`
     - `sed -i '/- nightly/a \ \ - "<%= release %>"' _config.yml`
   - [ ] Clean up deprecation and upgrade warnings from nightly manual for in both [foreman.adoc](https://github.com/theforeman/foreman-documentation/blob/master/guides/doc-Release_Notes/topics/foreman.adoc) and [katello.adoc](https://github.com/theforeman/foreman-documentation/blob/master/guides/doc-Release_Notes/topics/katello.adoc).
-- [ ] Add new languages that are at a [reasonable completion on Transifex](https://www.transifex.com/foreman/foreman/foreman/) to __develop__
+- [ ] Add new languages that are at a [reasonable completion on Transifex](https://app.transifex.com/foreman/foreman/foreman/) to __develop__
 
 ## Release Engineer
 
