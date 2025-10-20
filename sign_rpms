@@ -11,11 +11,11 @@ SIGN_FLAGS=(--define "_gpg_sign_cmd_extra_args --pinentry-mode loopback --passph
 
 rpmdev-vercmp $(rpm --query --queryformat='%{EVR}' rpm) 4.16.0 || RESULT=$?
 if [[ $RESULT == "11" ]]; then
-	SIGN_FLAGS+=("--rpmv3")
+	SIGN_FLAGS+=("--rpmv4")
 fi
 
 if [[ -n $1 ]] ; then
-	echo "$@" | xargs $XARGS_JOBS rpmsign --addsign "${SIGN_FLAGS[@]}"
+	echo "$@" | xargs $XARGS_JOBS rpmsign --resign "${SIGN_FLAGS[@]}"
 else
-	find "$RPMDIR" -name '*.rpm' | xargs $XARGS_JOBS rpmsign --addsign "${SIGN_FLAGS[@]}"
+	find "$RPMDIR" -name '*.rpm' | xargs $XARGS_JOBS rpmsign --resign "${SIGN_FLAGS[@]}"
 fi
