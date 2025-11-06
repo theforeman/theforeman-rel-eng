@@ -1,7 +1,5 @@
 ---
 - hosts: all
-  become: true
-  become_user: downloads
   gather_facts: false
   tasks:
     - name: "Upload signatures"
@@ -9,6 +7,8 @@
         src: "{{ item.key }}"
         dest: "{{ docroot }}/{{ item.value }}"
       loop: "{{ files|dict2items }}"
+      become: true
+      become_user: downloads
 
     - name: "Invalidate CDN cache"
       command: "fastly-purge https://downloads.theforeman.org {{ item.value }}"
