@@ -65,6 +65,7 @@
   - [ ] <%= rel_eng_script('sign_gpg') %>
   - [ ] <%= rel_eng_script('upload_gpg') %>
 - Publish the key
+  - [ ] Sync gopass `gopass sync`
   - [ ] Use <%= rel_eng_script('export_gpg_public') %> to show the GPG key and update the website's [security.md](https://github.com/theforeman/theforeman.org/blob/gh-pages/security.md) and create a file in [static/keys](https://github.com/theforeman/theforeman.org/tree/gh-pages/static/keys)
   - [ ] Use <%= rel_eng_script('upload_yum_gpg') %> to create [releases/<%= release %>/RPM-GPG-KEY-foreman](https://yum.theforeman.org/releases/<%= release %>/RPM-GPG-KEY-foreman) on yum.theforeman.org
   - [ ] Make sure the [settings file](https://github.com/theforeman/theforeman-rel-eng/blob/master/releases/foreman/<%= release %>/settings) contains the right `OSES` list. It should match what is in [the nightly settings file](https://github.com/theforeman/theforeman-rel-eng/blob/master/releases/foreman/nightly/settings)
