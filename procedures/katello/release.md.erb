@@ -16,7 +16,7 @@
   - [ ] Run `./tools.rb setup-environment configs/katello/<%= short_version %>.yaml`
   - [ ] Run `GITHUB_ACCESS_TOKEN=<secret> ./tools.rb cherry-picks --version <%= full_version %> configs/katello/<%= short_version %>.yaml`
   - [ ] Open a PR in Katello release branch.  Make sure the PR name starts with [CP] to prevent our automations from adding it to Redmine issues.
-  - [ ] Using `git cherry-pick -x` as needed, verify tickets in the cherry_picks_<%= full_version %> file are accounted for, or additionally cherry-pick them.  Recommended: Do this in tool_belt's checkout of Katello, in `repos/katello/<%= full_version %>/katello`. This way when you run cherry-picks again, tool_belt will be aware of any picks already completed.
+  - [ ] Using `git cherry-pick -x` as needed, verify tickets in the cherry_picks_<%= full_version %> file are accounted for, or additionally cherry-pick them.  Recommended: Do this in tool_belt's checkout of Katello, in `repos/katello`. This way when you run cherry-picks again, tool_belt will be aware of any picks already completed.
   - [ ] For any cherry-picks that are not needed (including Redmine trackers) you can add them to the `:ignores:` section of `tool_belt` in `configs/katello/<%= short_version %>.yaml`
 - [ ] Update Katello Transifex translations:
   - [ ] `grunt i18n:extract` in the katello/engines/bastion_katello directory
@@ -38,13 +38,13 @@
     - Deprecations: features that will be removed or changed in a future version
   - [ ] Using [redmine_release_notes](https://github.com/theforeman/foreman-documentation/blob/<%= foreman_version %>/guides/doc-Release_Notes/redmine_release_notes) (see [README](https://github.com/theforeman/foreman-documentation/blob/<%= foreman_version %>/guides/doc-Release_Notes/README.md) as well): `./guides/doc-Release_Notes/redmine_release_notes katello <%= version %> > ./guides/doc-Release_Notes/topics/katello-<%= version %>.adoc`
 <% unless is_rc && !full_version.end_with?('1') -%>
-  - [ ] Add `topics/katello-<%= version %>.adoc` to `guides/doc-Release_Notes/master.adoc`: `sed '/x.y.z releases here/a include::topics/katello-<%= version %>.adoc[leveloffset=+1]' master.adoc`
+  - [ ] Add `topics/katello-<%= version %>.adoc` to `guides/doc-Release_Notes/master.adoc`: `sed -i '/x.y.z releases here/a include::topics/katello-<%= version %>.adoc[leveloffset=+1]' master.adoc`
 <% end -%>
   - [ ] Update [katello-contributors.adoc](https://github.com/theforeman/foreman-documentation/blob/<%= foreman_version %>/guides/doc-Release_Notes/topics/katello-contributors.adoc) with the list of contributors using `git log --since="<YYYY-MM-DD of previous major release branching>" --format="%an" | sort | uniq`. Manually clean up any erroneous entries.
   - [ ] Submit this as a PR
 - [ ] Open a PR (or use cherry-pick PR) against the release branch which updates `lib/katello/version.rb` to <%= full_version %>:
   - [ ] `git pull` to make sure you have the latest changes
-  - [ ] `sed '/VERSION/ s/".\+"/"<%= full_version %>"/' lib/katello/version.rb`
+  - [ ] `sed -i '/VERSION/ s/".\+"/"<%= full_version %>"/' lib/katello/version.rb`
   - [ ] Update/add the CHANGELOG.md file: `GITHUB_ACCESS_TOKEN=<secret> ./tools.rb changelog --version <%= full_version %> configs/katello/<%= short_version %>.yaml`
   - [ ] Commit: `git commit -m "Release <%= full_version %>"`
   - [ ] Ensure that the commit above is the _last_ commit and there are no commits after it. This is the commit that will get tagged. (Rearrange commits with `git rebase -i` if needed.)
@@ -90,8 +90,39 @@
 <% end -%>
 - [ ] Confirm response that the build succeeded (or if necessary, do more cherry-picks and version bumps repeating the steps above)
 - [ ] Test the install and upgrade documentation for both the Katello server and smart proxy
+  - [ ] Testing fresh installation (recommended: use [forklift](https://github.com/theforeman/forklift) for automated testing)
+    - [ ] Ensure you're in a [forklift](https://github.com/theforeman/forklift) checkout
+    - [ ] Bring up a fresh CentOS Stream 9 box: `vagrant up centos9-stream`
+    - [ ] Install Katello using foreman-installer: `vagrant ssh centos9-stream -c "sudo foreman-installer --scenario katello"`
+    - [ ] Verify the installation succeeded:
+      - Check Foreman version: `vagrant ssh centos9-stream -c "rpm -q foreman"` (should show <%= foreman_version %>)
+      - Check Katello version: `vagrant ssh centos9-stream -c "rpm -q katello"` (should show <%= full_version %>)
+    - [ ] Test basic Katello functionality:
+      - Create a test product: `vagrant ssh centos9-stream -c "hammer product create --organization Default --name 'Test Product'"`
+      - Create a test repository: `vagrant ssh centos9-stream -c "hammer repository create --organization Default --product 'Test Product' --name 'Test Repo' --content-type yum --url https://fixtures.pulpproject.org/rpm-with-modules/"`
+      - Synchronize the repository: `vagrant ssh centos9-stream -c "hammer repository synchronize --organization Default --product 'Test Product' --name 'Test Repo'"`
+      - Verify sync completed successfully: `vagrant ssh centos9-stream -c "hammer repository info --organization Default --product 'Test Product' --name 'Test Repo'"`
+        - Should show content counts including RPMs, modulemds, and errata
+    - [ ] Clean up test VM: `vagrant destroy -f centos9-stream`
+  - [ ] Testing upgrade from previous version (recommended: use [forklift](https://github.com/theforeman/forklift) for automated testing)
+    - [ ] Ensure you're in a [forklift](https://github.com/theforeman/forklift) checkout directory
+    - [ ] Identify the previous version stable box (e.g., `centos9-stream-katello-<%= previous_release(short_version).split('.').last %>`)
+    - [ ] Bring up the previous version box: `vagrant up centos9-stream-katello-<%= previous_release(short_version).split('.').last %>`
+    - [ ] Stop all services: `vagrant ssh centos9-stream-katello-<%= previous_release(short_version).split('.').last %> -c "sudo foreman-maintain service stop"`
+    - [ ] Upgrade system packages to the new version: `vagrant ssh centos9-stream-katello-<%= previous_release(short_version).split('.').last %> -c "sudo dnf upgrade -y"`
+    - [ ] Run the Katello installer to complete the upgrade: `vagrant ssh centos9-stream-katello-<%= previous_release(short_version).split('.').last %> -c "sudo foreman-installer --scenario katello --tuning development"`
+      - Watch for any error messages or warnings during Pulp migrations
+    - [ ] Verify the upgrade succeeded:
+      - Check Foreman version: `vagrant ssh centos9-stream-katello-<%= previous_release(short_version).split('.').last %> -c "rpm -q foreman"` (should show <%= foreman_version %>)
+      - Check Katello version: `vagrant ssh centos9-stream-katello-<%= previous_release(short_version).split('.').last %> -c "rpm -q katello"` (should show <%= full_version %>)
+    - [ ] Test basic Katello functionality post-upgrade:
+      - Create a test product: `vagrant ssh centos9-stream-katello-<%= previous_release(short_version).split('.').last %> -c "hammer product create --organization Default --name 'Test Product'"`
+      - Create a test repository: `vagrant ssh centos9-stream-katello-<%= previous_release(short_version).split('.').last %> -c "hammer repository create --organization Default --product 'Test Product' --name 'Test Repo' --content-type yum --url https://fixtures.pulpproject.org/rpm-with-modules/"`
+      - Synchronize the repository: `vagrant ssh centos9-stream-katello-<%= previous_release(short_version).split('.').last %> -c "hammer repository synchronize --organization Default --product 'Test Product' --name 'Test Repo'"`
+      - Verify sync completed successfully and content counts are reasonable (should show RPMs, modulemds, and errata)
+    - [ ] Clean up test VM: `vagrant destroy -f centos9-stream-katello-<%= previous_release(short_version).split('.').last %>`
 - [ ] Post a [release announcement](https://community.theforeman.org/c/release-announcements/8)
 <% if is_first_ga -%>
 - [ ] Create and upload [release specific developer stable box](https://github.com/theforeman/forklift/blob/master/packer/README.md#creating-version-specific-katello-devel-boxes)
-- [ ] Remove references to the oldest Katello version from [testKatello.groovy](https://github.com/theforeman/jenkins-jobs/blob/master/theforeman.org/pipelines/test/testKatello.groovy) and [katello-pipelines.yml](https://github.com/theforeman/jenkins-jobs/blob/master/centos.org/jobs/katello-pipelines.yml).
+- [ ] Remove references to the oldest Katello version from [jenkins-jobs](https://github.com/theforeman/jenkins-jobs): [testKatello.groovy](https://github.com/theforeman/jenkins-jobs/blob/master/theforeman.org/pipelines/test/testKatello.groovy) and [katello-pipelines.yml](https://github.com/theforeman/jenkins-jobs/blob/master/centos.org/jobs/katello-pipelines.yml).
 <% end -%>
