@@ -68,11 +68,57 @@ def gather_issues(release_id, offset = 0)
     result['issues'] += gather_issues(release_id, offset + 100)
   end
 end
+
+def get_issue_details(issue_id)
+  uri = URI("#{URL}/issues/#{issue_id}.json")
+  url_to_json(uri)['issue']
+rescue StandardError => e
+  puts "  Warning: Could not fetch details for issue #{issue_id}: #{e}"
+  nil
+end
+
+def diagnose_issue(issue_id, current_release_name, prev_release_name)
+  issue = get_issue_details(issue_id)
+  return if issue.nil?
+
+  status = issue['status']['name']
+  fixed_version = issue['fixed_version'] ? issue['fixed_version']['name'] : 'Not set'
+
+  puts "  Status: #{status} (expected: Closed)"
+  puts "  Fixed in Version: #{fixed_version} (expected: #{current_release_name} or #{prev_release_name})"
+
+  # Provide hints
+  if status != 'Closed' && fixed_version == current_release_name
+    puts "  → Issue has correct version but wrong status (should be Closed, not #{status})"
+  elsif status != 'Closed' && fixed_version != current_release_name && fixed_version != prev_release_name
+    puts "  → Issue needs to be closed and version updated to #{current_release_name}"
+  elsif status == 'Closed' && fixed_version != current_release_name && fixed_version != prev_release_name
+    puts "  → Issue is closed but has wrong version (update to #{current_release_name})"
+  elsif status != 'Closed'
+    puts "  → Issue needs to be closed"
+  elsif fixed_version != current_release_name && fixed_version != prev_release_name
+    puts "  → Issue version needs to be updated to #{current_release_name}"
+  end
+  puts ""
+end
 redmine = Set.new(gather_issues(current_release_id).map{|issue| issue['id']})
 redmine_prev = Set.new(gather_issues(prev_release_id).map{|issue| issue['id']})
 
 puts "Issues only in redmine:"
-puts (redmine - git_issues).sort.map{|id| "#{URL}/issues/#{id}"}.join("\n")
+redmine_only_issues = (redmine - git_issues).sort
+if redmine_only_issues.empty?
+  puts "(none)"
+else
+  puts redmine_only_issues.map{|id| "#{URL}/issues/#{id}"}.join("\n")
+end
 
 puts "Issues only in git:"
-puts (git_issues - redmine - redmine_prev).sort.map{|id| "#{URL}/issues/#{id}"}.join("\n")
+git_only_issues = (git_issues - redmine - redmine_prev).sort
+if git_only_issues.empty?
+  puts "(none)"
+else
+  git_only_issues.each do |id|
+    puts "#{URL}/issues/#{id}"
+    diagnose_issue(id, current_release_name, prev_release_name)
+  end
+end
