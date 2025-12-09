@@ -25,6 +25,7 @@
 
 ## Release Owner
 
+- [ ] Acknowledge: I will assign all issues and pull requests I create to the [Foreman Releases](https://github.com/orgs/theforeman/projects/21/) project with the correct version
 - [ ] Make sure [foreman-<%= short_version %>-stable-test](https://ci.theforeman.org/job/foreman-<%= short_version %>-stable-test/) and [smart-proxy-<%= short_version %>-stable-test](https://ci.theforeman.org/job/smart-proxy-<%= short_version %>-stable-test/) are green using <%= rel_eng_script('verify_green_jobs') %>
 <% if is_rc || is_first_ga -%>
 - [ ] Run `make -C locale tx-update` in foreman <%= short_version %>-stable
@@ -43,6 +44,7 @@
 
 ## Release Engineer
 
+- [ ] Acknowledge: I will assign all issues and pull requests I create to the [Foreman Releases](https://github.com/orgs/theforeman/projects/21/) project with the correct version
 - Sign Tarballs
   - [ ] <%= rel_eng_script('download_tarballs') %>
   - [ ] <%= rel_eng_script('inspect_tarballs') %>
