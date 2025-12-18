@@ -197,11 +197,7 @@ def packages_from_comps(comps):
 
 
 def copr_repository(collection, version, dist, arch):
-    if dist == 'el10':
-        chroot = 'centos-stream'
-    else:
-        chroot = 'rhel'
-    return f"https://download.copr.fedorainfracloud.org/results/@theforeman/{collection}-{version}-staging/{chroot}-{dist.replace('el', '')}-{arch}"
+    return f"https://download.copr.fedorainfracloud.org/results/@theforeman/{collection}-{version}-staging/rhel-{dist.replace('el', '')}-{arch}"
 
 
 def prod_repository(collection, version, dist, arch):
