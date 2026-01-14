@@ -17,3 +17,4 @@
       copy:
         src: "{{ gpg_key }}"
         dest: "{{ releasedir }}/{{ release }}/RPM-GPG-KEY-{{ project }}"
+        mode: '0644'
