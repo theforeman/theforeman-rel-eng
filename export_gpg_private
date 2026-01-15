@@ -13,6 +13,9 @@ if [[ -z $FULLGPGKEY ]] ; then
 	exit 2
 fi
 
+# Verify key has no third-party signatures
+./verify_gpg_clean || exit $?
+
 if [[ $1 == "force" ]] ; then
 	FORCE="--force"
 else
