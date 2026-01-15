@@ -189,12 +189,17 @@ PROJECT=katello VERSION=3.13 ./generate_stage_repository
 When starting a new release, the following scripts can be used to generate a new key:
 
 ```bash
-generate_gpg
-export_gpg_private
-export_gpg_public
-sign_gpg
-upload_gpg
+generate_gpg           # Generate new GPG key in isolated keydir
+export_gpg_private     # Backup private key to gopass
+export_gpg_public      # Export clean public key for website
+sign_gpg               # Sign key for web-of-trust
+upload_gpg             # Upload to keyserver
 ```
+
+**IMPORTANT:** The published key must contain only the self-signature. Third-party signatures break RPM imports. See [community discussion](https://community.theforeman.org/t/unable-to-register-an-almalinux-8-client-into-foreman-3-17-server-key-import-failed-code-2-failing-package-is-katello-host-tools-4-5-0-2-el8-noarch/45374) for technical details.
+
+**About `sign_gpg`:**
+The `sign_gpg` script is for web-of-trust use only. It exports the key to your main GPG keyring and allows signing with your personal key. The signed version must **never** be re-imported to the isolated keydir. Both `export_gpg_private` and `export_gpg_public` include automatic verification to prevent accidentally exporting keys with third-party signatures.
 
 ### Generating a new GPG Key for signing the Debian repository
 

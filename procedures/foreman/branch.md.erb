@@ -61,12 +61,13 @@
 
 - Create new GPG key for release. See [GPG_Keys](https://github.com/theforeman/theforeman-rel-eng/#generating-a-new-gpg-key-for-a-xy-release) if needed.
   - [ ] <%= rel_eng_script('generate_gpg') %>
-  - [ ] <%= rel_eng_script('export_gpg_private') %> to back up
-  - [ ] <%= rel_eng_script('sign_gpg') %>
-  - [ ] <%= rel_eng_script('upload_gpg') %>
+  - [ ] <%= rel_eng_script('export_gpg_private') %> to backup private key to gopass
 - Publish the key
-  - [ ] Use <%= rel_eng_script('export_gpg_public') %> to show the GPG key and update the website's [security.md](https://github.com/theforeman/theforeman.org/blob/gh-pages/security.md) and create a file in [static/keys](https://github.com/theforeman/theforeman.org/tree/gh-pages/static/keys)
+  - [ ] Use <%= rel_eng_script('export_gpg_public') %> to export the clean GPG key and update the website's [security.md](https://github.com/theforeman/theforeman.org/blob/gh-pages/security.md) and create a file in [static/keys](https://github.com/theforeman/theforeman.org/tree/gh-pages/static/keys)
   - [ ] Use <%= rel_eng_script('upload_yum_gpg') %> to create [releases/<%= release %>/RPM-GPG-KEY-foreman](https://yum.theforeman.org/releases/<%= release %>/RPM-GPG-KEY-foreman) on yum.theforeman.org
+- Sign and upload the key to the keyserver
+  - [ ] <%= rel_eng_script('sign_gpg') %> for web-of-trust only - do NOT re-import or back up the signed key
+  - [ ] <%= rel_eng_script('upload_gpg') %> to upload the public key to keyservers
   - [ ] Make sure the [settings file](https://github.com/theforeman/theforeman-rel-eng/blob/master/releases/foreman/<%= release %>/settings) contains the right `OSES` list. It should match what is in [the nightly settings file](https://github.com/theforeman/theforeman-rel-eng/blob/master/releases/foreman/nightly/settings)
   - [ ] Commit the [settings file](https://github.com/theforeman/theforeman-rel-eng/blob/master/releases/foreman/<%= release %>/settings) to the `theforeman-rel-eng` repository
 - [ ] Create new settings files for [client](https://github.com/theforeman/theforeman-rel-eng/blob/master/releases/client/<%= release %>/settings), ensure it has the rights `OSES` list and commit it too.

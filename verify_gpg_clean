@@ -1,0 +1,34 @@
+#!/bin/bash -e
+
+. settings
+
+if [[ ! -d $KEYDIR ]] ; then
+	echo "ERROR: Keydir $KEYDIR doesn't exist" >&2
+	exit 1
+fi
+
+if [[ -z $FULLGPGKEY ]] ; then
+	echo "ERROR: FULLGPGKEY must be set" >&2
+	gpg2 --homedir "$KEYDIR" --list-key "$SIGNER" >&2
+	exit 2
+fi
+
+SIG_COUNT=$(gpg2 --homedir "$KEYDIR" --list-sigs --with-colons "$FULLGPGKEY" 2>/dev/null | grep -c "^sig:")
+
+if [[ "$SIG_COUNT" -ne 1 ]]; then
+	cat >&2 <<OUTER_EOF
+ERROR: Key has third-party signatures ($SIG_COUNT found, expected 1)
+
+$(gpg2 --homedir "$KEYDIR" --list-sigs "$FULLGPGKEY")
+
+Third-party signatures break RHEL/EL8 RPM imports.
+See: https://community.theforeman.org/t/unable-to-register-an-almalinux-8-client-into-foreman-3-17-server-key-import-failed-code-2-failing-package-is-katello-host-tools-4-5-0-2-el8-noarch/45374
+
+To fix, run:
+  gpg2 --homedir "$KEYDIR" --batch --yes --command-fd 0 --edit-key "$FULLGPGKEY" <<EOF
+clean
+save
+EOF
+OUTER_EOF
+	exit 1
+fi
