@@ -72,6 +72,7 @@ Note: If for some reason there was an issue with the tarballs that required uplo
   - [ ] <%= rel_eng_script('sign_stage_rpms') %>
   - [ ] <%= rel_eng_script('upload_stage_rpms') %>
 - Sign RPMs for client repos (call scripts with `PROJECT=client`)
+  - Import the client sigining key if not imported already `PROJECT=client VERSION=<%= short_version %> ./import_gpg_private`
   - [ ] <%= rel_eng_script('generate_stage_repository') %>
   - [ ] <%= rel_eng_script('sign_stage_rpms') %>
   - [ ] <%= rel_eng_script('upload_stage_rpms') %>
