@@ -227,8 +227,8 @@ Settings can be customized in `settings.local`. The following settings are suppo
 GIT_DIR=$HOME/dev # Projects are cloned here
 GIT_REMOTE=upstream # Git remote for cloned projects
 PACKAGING_PR=true # Create a PR in bump_{deb,rpm}_packaging
-PACKAGING_FORK_REMOTE=origin # Git remote name for your foreman-packaging fork
-GITHUB_USER=yourusername # Your GitHub username (auto-detected via gh CLI if not set)
+PACKAGING_FORK_REMOTE=origin # Git remote name for your foreman-packaging fork (defaults to your GitHub username)
+GITHUB_USER=yourusername # Your GitHub username (defaults to your shell's username)
 ```
 
 ## Generating Stage Repository
