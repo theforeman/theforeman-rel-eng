@@ -58,7 +58,7 @@ if [[ $PACKAGING_PR == true ]] ; then
 	gh repo fork theforeman/foreman-packaging --remote-name "$PACKAGING_FORK_REMOTE"
 
 	# Push to fork
-	git push "$PACKAGING_FORK_REMOTE" "HEAD:$FEATURE_BRANCH"
+	git push --set-upstream "$PACKAGING_FORK_REMOTE" HEAD
 
 	# Create PR with explicit source specification
 	gh pr create --repo theforeman/foreman-packaging \
