@@ -38,7 +38,7 @@
 - [ ] Run the Jenkins [Tarballs Release](https://ci.theforeman.org/job/tarballs-release/) using <%= rel_eng_script('release_tarballs') %> to create tarballs
 <% unless is_rc -%>
 - [ ] Change Redmine version <%= full_version %> state to Closed using <%= rel_eng_script('close_redmine_version') %>
-- [ ] Add a new [Redmine version](https://projects.theforeman.org/projects/foreman/settings/versions) for <%= next_patch_version %><%= ', unless the series is EOL' unless is_first_ga %>. Be sure the version is set to sharing with subprojects.
+- [ ] Add a new Redmine version for <%= next_patch_version %><%= ', unless the series is EOL' unless is_first_ga %> using [pre-filled form](https://projects.theforeman.org/projects/foreman/versions/new?version[name]=<%= next_patch_version %>&version[sharing]=descendants). Be sure the version is set to sharing with subprojects.
 <% end -%>
 
 ## Release Engineer
@@ -130,7 +130,6 @@ Note: If for some reason there was an issue with the tarballs that required uplo
 <% end -%>
 <% if is_first_rc -%>
 - [ ] Add <%= short_version %> to the navigation in [docs.theforeman.org](https://github.com/theforeman/foreman-documentation) master
-  - `cp web/releases/nightly.adoc web/releases/<%= short_version %>.adoc` and modify as needed
   - `cp web/releases/nightly.json web/releases/<%= short_version %>.json` and modify as needed
 <% elsif is_first_ga -%>
 - [ ] Update the [docs.theforeman.org](https://github.com/theforeman/foreman-documentation) master
