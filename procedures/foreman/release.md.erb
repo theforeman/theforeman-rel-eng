@@ -130,7 +130,6 @@ Note: If for some reason there was an issue with the tarballs that required uplo
 <% end -%>
 <% if is_first_rc -%>
 - [ ] Add <%= short_version %> to the navigation in [docs.theforeman.org](https://github.com/theforeman/foreman-documentation) master
-  - `cp web/releases/nightly.adoc web/releases/<%= short_version %>.adoc` and modify as needed
   - `cp web/releases/nightly.json web/releases/<%= short_version %>.json` and modify as needed
 <% elsif is_first_ga -%>
 - [ ] Update the [docs.theforeman.org](https://github.com/theforeman/foreman-documentation) master

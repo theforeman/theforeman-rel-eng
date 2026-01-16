@@ -9,6 +9,11 @@ for repo in $(./ensure_clean_git_checkouts "$@") ; do
 		git checkout -b "$GIT_STABLE_BRANCH" "${GIT_REMOTE}/${GIT_DEVELOP_BRANCH}"
 
 		if [[ $repo == foreman-installer ]]; then
+			if ! bundle check &>/dev/null; then
+				echo "Bundle dependencies not installed in foreman-installer" >&2
+				echo "Run: cd $GIT_DIR/$repo && bundle install" >&2
+				exit 1
+			fi
 			bundle exec rake pin_modules
 			sed -i '/Puppetfile.lock/d' .gitignore
 			bundle exec librarian-puppet install
