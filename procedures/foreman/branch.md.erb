@@ -99,7 +99,7 @@ The next step should only be done after all branching, including packaging, has 
 
 - [ ] Bump versions to <%= develop %>-develop using <%= rel_eng_script('develop_branch_bump') %>
 - [ ] Push version bumps to <%= develop %>-develop using <%= rel_eng_script('develop_branch_push') %>
-- [ ] Create Redmine version <%= develop %>.0 and make sure it is shared with subprojects in [foreman](https://projects.theforeman.org/projects/foreman/settings/versions)
+- [ ] Create Redmine version <%= develop %>.0 using <%= rel_eng_script('create_redmine_version') %>
 - [ ] Ask Hammer maintainer to bump [hammer-cli](https://github.com/theforeman/hammer-cli) and [hammer-cli-foreman](https://github.com/theforeman/hammer-cli-foreman)
 
 # Preparing build systems: <%= target_date %>
