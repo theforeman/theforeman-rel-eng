@@ -55,6 +55,7 @@
     - `sed -i '/previous_version/ s/: .\+/: "<%= release %>"/' manuals/nightly/index.md`
     - `sed -i '/- nightly/a \ \ - "<%= release %>"' _config.yml`
   - [ ] Clean up deprecation and upgrade warnings from nightly manual for in both [foreman.adoc](https://github.com/theforeman/foreman-documentation/blob/master/guides/doc-Release_Notes/topics/foreman.adoc) and [katello.adoc](https://github.com/theforeman/foreman-documentation/blob/master/guides/doc-Release_Notes/topics/katello.adoc).
+  - [ ] Commit the manual changes: `git commit -a -m "Add Foreman <%= release %> manual and update nightly"` and create a pull request
 - [ ] Add new languages that are at a [reasonable completion on Transifex](https://app.transifex.com/foreman/foreman/foreman/) to __develop__
 
 ## Release Engineer
@@ -69,7 +70,7 @@
   - [ ] <%= rel_eng_script('sign_gpg') %> for web-of-trust only - do NOT re-import or back up the signed key
   - [ ] <%= rel_eng_script('upload_gpg') %> to upload the public key to keyservers
   - [ ] Make sure the [settings file](https://github.com/theforeman/theforeman-rel-eng/blob/master/releases/foreman/<%= release %>/settings) contains the right `OSES` list. It should match what is in [the nightly settings file](https://github.com/theforeman/theforeman-rel-eng/blob/master/releases/foreman/nightly/settings)
-  - [ ] Commit the [settings file](https://github.com/theforeman/theforeman-rel-eng/blob/master/releases/foreman/<%= release %>/settings) to the `theforeman-rel-eng` repository
+  - [ ] Commit the [settings file](https://github.com/theforeman/theforeman-rel-eng/blob/master/releases/foreman/<%= release %>/settings) to the `theforeman-rel-eng` repository with message: `git commit -m "Foreman <%= release %> settings"`
 - [ ] Create new settings files for [client](https://github.com/theforeman/theforeman-rel-eng/blob/master/releases/client/<%= release %>/settings), ensure it has the rights `OSES` list and commit it too.
 - [ ] Open a PR with the result of [jenkins-jobs](https://github.com/theforeman/jenkins-jobs) branching: `./branch-foreman <%= release %> KATELLO_VERSION`
 - [ ] Open PR to remove any jobs that are related to end of life versions
@@ -117,9 +118,9 @@ The next step should only be done after all branching, including packaging, has 
   - [ ] deb/develop: `scripts/changelog.rb -v <%= develop %>.0-1 -m "Bump changelog to <%= develop %>.0 to match VERSION" debian/*/*/changelog`
 - [ ] Prepare build systems for <%= release %> release:
   - [ ] foreman-packaging's rpm/<%= release %>
-    - [ ] Update `packages/foreman/foreman-release/foreman.gpg`, `mock/*.cfg`, `package_manifest.yaml` and `repoclosure/*.conf`
+    - [ ] Update `packages/foreman/foreman-release/foreman.gpg`, `mock/*.cfg`, `package_manifest.yaml` and `repoclosure/*.conf` and commit with message: `git commit -a -m "Foreman <%= release %> branching build updates"`. See [example patch](https://github.com/theforeman/foreman-packaging/commit/1a70b2ab5c4cfc59bd49d5bf62e3da46dfda39b2)
   - [ ] foreman-packaging's deb/<%= release %>
-    - [ ] Update `debian/*/foreman-release/theforeman-archive-keyring.asc` from https://deb.theforeman.org/foreman.asc, you will only see changes if the key was recently updated.
+    - [ ] Update `debian/*/foreman-release/theforeman-archive-keyring.asc` from https://deb.theforeman.org/foreman.asc, you will only see changes if the key was recently updated, and commit with message: `git commit -a -m "Foreman <%= release %> keyring updates"`
 - [ ] Trigger the [`foreman-packaging-rpm-<%= release %>`](https://ci.theforeman.org/job/foreman-packaging-rpm-<%= release %>-release/) job once, so that GitHub hooks are properly set up.
 - [ ] Trigger the [`foreman-packaging-deb-<%= release %>`](https://ci.theforeman.org/job/foreman-packaging-deb-<%= release %>-release/) job once, so that GitHub hooks are properly set up.
 
