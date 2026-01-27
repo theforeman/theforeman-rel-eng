@@ -53,6 +53,18 @@ def discourse_username(name)
   name.start_with?('@') ? name : "@#{name}"
 end
 
+def week_range(day)
+  # Accept a date and return the Monday - Friday dates in that week
+  # NOTE: This logic is duplicated in schedule script (Python version)
+  # If you change this, update schedule:week_range() to match
+  # Ruby's wday: 0=Sunday, 1=Monday, ..., 6=Saturday
+  # Convert to: 0=Monday, 1=Tuesday, ..., 6=Sunday
+  weekday = (day.wday - 1) % 7
+  monday = day - weekday
+  friday = day + (4 - weekday)
+  { monday: monday, friday: friday }
+end
+
 context = {}
 
 global = OptionParser.new do |opts|
@@ -76,8 +88,16 @@ procedures = {
       context[:target_date] = date
       context[:four_weeks_before] = date - 28
       context[:three_weeks_before] = date - 21
-      context[:two_weeks_before] = date - 14
-      context[:one_week_before] = date - 7
+      two_weeks_before = date - 14
+      one_week_before = date - 7
+      prep_week = week_range(two_weeks_before)
+      stabilization_week = week_range(one_week_before)
+      context[:two_weeks_before] = two_weeks_before
+      context[:one_week_before] = one_week_before
+      context[:prep_week_start] = prep_week[:monday]
+      context[:prep_week_end] = prep_week[:friday]
+      context[:stabilization_week_start] = stabilization_week[:monday]
+      context[:stabilization_week_end] = stabilization_week[:friday]
     end
     opts.on('--owner [OWNER]', "The release owner's username on Discourse") do |t|
       owner = discourse_username(t)
