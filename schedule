@@ -38,7 +38,7 @@ def week_range(day: date) -> str:
     """
     weekday = day.weekday()
     monday = day - relativedelta(days=weekday)
-    friday = day + relativedelta(days=5 - weekday)
+    friday = day + relativedelta(days=4 - weekday)
     return f'{monday} - {friday}'
 
 
