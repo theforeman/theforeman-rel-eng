@@ -33,6 +33,9 @@ def week_range(day: date) -> str:
     """
     Accept a date and show the Monday - Friday dates in that week.
 
+    NOTE: This logic is duplicated in procedure script (Ruby version)
+    If you change this, update procedure:week_range() to match
+
     >>> week_range(date(2024, 3, 1))
     '2024-2-26 - 2024-3-1'
     """
