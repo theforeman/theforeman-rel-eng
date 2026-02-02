@@ -2,8 +2,30 @@
 
 . settings
 
+FORCE=false
+if [[ "$1" == "--force" ]] || [[ "$1" == "force" ]] ; then
+	FORCE=true
+fi
+
 if [[ ! -d "$KEYDIR" ]] ; then
 	mkdir -p -m 0700 "$KEYDIR"
+else
+	if gpg2 --homedir "$KEYDIR" --list-keys "$FULLGPGKEY" &>/dev/null ; then
+		if [[ "$FORCE" == "true" ]] ; then
+			echo "Reimporting key $FULLGPGKEY" >&2
+		else
+			echo "Key $FULLGPGKEY already exists in $KEYDIR" >&2
+			exit 0
+		fi
+	else
+		# Check if there are other keys (wrong keys imported)
+		KEYS_COUNT=$(gpg2 --homedir "$KEYDIR" --list-keys --with-colons 2>/dev/null | grep -c '^pub' || true)
+		if [[ "$KEYS_COUNT" -gt 0 ]] ; then
+			echo "KEYDIR $KEYDIR contains different keys" >&2
+			echo "Expected key $FULLGPGKEY not found" >&2
+			exit 1
+		fi
+	fi
 fi
 
 gopass_sync
