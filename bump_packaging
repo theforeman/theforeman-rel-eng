@@ -55,12 +55,10 @@ git commit -m "Release $FULLVERSION"
 
 if [[ $PACKAGING_PR == true ]] ; then
 	# Ensure fork exists with configured remote name
-	gh repo fork theforeman/foreman-packaging --remote-name "$PACKAGING_FORK_REMOTE"
+	GH_PROMPT_DISABLED=1 gh repo fork theforeman/foreman-packaging --remote-name "$PACKAGING_FORK_REMOTE"
 
-	# Push to fork
 	git push --set-upstream "$PACKAGING_FORK_REMOTE" HEAD
 
-	# Create PR with explicit source specification
 	gh pr create --repo theforeman/foreman-packaging \
 	             --title "${FLAVOR^^}: Release ${PROJECT^} $FULLVERSION" \
 	             --head "$GITHUB_USER:$FEATURE_BRANCH" \
