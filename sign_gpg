@@ -2,16 +2,7 @@
 
 . settings
 
-if [[ ! -d $KEYDIR ]] ; then
-	echo "Keydir $KEYDIR doesn't exist"
-	exit 1
-fi
-
-if [[ -z $FULLGPGKEY ]] ; then
-	echo "FULLGPGKEY must be set"
-	gpg2 --homedir "$KEYDIR" --list-keys "$VERSION"
-	exit 2
-fi
+require_gpg_key
 
 gpg2 --homedir "$KEYDIR" --armor --export "$FULLGPGKEY" | gpg2 --import
 

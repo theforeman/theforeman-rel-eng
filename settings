@@ -116,6 +116,23 @@ require_fullversion() {
 	fi
 }
 
+require_gpg_key() {
+	if [[ ! -d "$KEYDIR" ]] ; then
+		echo "GPG keyring directory not found: $KEYDIR" >&2
+		exit 1
+	fi
+
+	if [[ -z "$FULLGPGKEY" ]] ; then
+		echo "FULLGPGKEY not set in $RELEASEDIR/settings" >&2
+		exit 2
+	fi
+
+	if ! gpg2 --homedir "$KEYDIR" --list-keys "$FULLGPGKEY" &>/dev/null ; then
+		echo "GPG key $FULLGPGKEY not found in keyring at $KEYDIR" >&2
+		exit 1
+	fi
+}
+
 # Function to construct GitHub URLs based on protocol
 github_url() {
     local repo="$1"

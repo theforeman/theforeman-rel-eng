@@ -2,14 +2,6 @@
 
 . settings
 
-if [[ ! -d $KEYDIR ]] ; then
-	echo "Keydir $KEYDIR doesn't exist"
-	exit 1
-fi
-
-if [[ -z $FULLGPGKEY ]] ; then
-	echo "FULLGPGKEY is not set"
-	exit 2
-fi
+require_gpg_key
 
 gpg2 --keyserver pgp.mit.edu --send-keys "$FULLGPGKEY"
