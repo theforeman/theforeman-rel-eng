@@ -2,6 +2,8 @@
 
 . settings
 
+require_gpg_key
+
 gpg_pass=$(mktemp)
 trap 'shred --remove "${gpg_pass}"' EXIT
 chmod 0700 "$gpg_pass"

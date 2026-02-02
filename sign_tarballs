@@ -3,6 +3,7 @@
 . settings
 
 require_fullversion
+require_gpg_key
 
 sign() {
 	for project in $TAR_PROJECTS ; do

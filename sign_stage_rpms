@@ -4,6 +4,8 @@ set -e
 
 . settings
 
+require_gpg_key
+
 for os in $OSES; do
   for arch in $ARCHES; do
     UNSIGNED_RPMS=$(./list_unsigned_rpms "$STAGE_LOCAL_BASE/$os/$arch" "$HALFGPGKEY")
