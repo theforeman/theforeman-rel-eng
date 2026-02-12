@@ -29,6 +29,9 @@
 <% if is_rc || is_first_ga -%>
 - [ ] Run `make -C locale tx-update` in foreman <%= short_version %>-stable
 <% end -%>
+<% unless is_rc -%>
+- [ ] Change Redmine version <%= full_version %> state to Closed using <%= rel_eng_script('close_redmine_version') %>
+<% end -%>
 <% unless is_first_rc -%>
 - [ ] Update release version similar to [here](https://github.com/theforeman/theforeman-rel-eng/commit/2029a9688da00d9c385c3438dd71b594ba5f728e)
 <% end -%>
@@ -37,8 +40,7 @@
   - [ ] Push tags using <%= rel_eng_script('tag_push') %>
 - [ ] Run the Jenkins [Tarballs Release](https://ci.theforeman.org/job/tarballs-release/) using <%= rel_eng_script('release_tarballs') %> to create tarballs
 <% unless is_rc -%>
-- [ ] Change Redmine version <%= full_version %> state to Closed using <%= rel_eng_script('close_redmine_version') %>
-- [ ] Add a new [Redmine version](https://projects.theforeman.org/projects/foreman/settings/versions) for <%= next_patch_version %><%= ', unless the series is EOL' unless is_first_ga %>. Be sure the version is set to sharing with subprojects.
+- [ ] Add a new Redmine version for <%= next_patch_version %><%= ', unless the series is EOL' unless is_first_ga %> using <%= rel_eng_script('create_redmine_version') %>
 <% end -%>
 
 ## Release Engineer

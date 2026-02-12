@@ -1,0 +1,16 @@
+#!/bin/bash -e
+
+. settings
+
+require_fullversion
+
+# Strip any -rc or other suffix from FULLVERSION to get base version (e.g., 3.18.0-rc1 -> 3.18.0)
+VERSION_NAME="${FULLVERSION%%-*}"
+
+if [[ -z $REDMINE_API_KEY ]] ; then
+	echo "No API key set. Get it from https://projects.theforeman.org/my/account"
+	read -s -r -p "Redmine API KEY: " REDMINE_API_KEY
+fi
+export REDMINE_API_KEY
+
+./redmine version create "$PROJECT" "$VERSION_NAME" --status open --sharing descendants
