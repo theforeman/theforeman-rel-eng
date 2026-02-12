@@ -1,7 +1,7 @@
 - Branch packaging
   - [ ] <%= rel_eng_script('branch_project') %>: `VERSION=<%= release %> PROJECT=candlepin ./branch_project`
   - [ ] <%= rel_eng_script('branch_push') %>: `VERSION=<%= release %> PROJECT=candlepin ./branch_push`
-- [ ] Create project in copr `obal copr-project candlepin-staging-<%= release %>`
+- [ ] Inside candlepin-packaging, create project in copr `obal copr-project candlepin-copr`
 - [ ] In [jenkins-jobs](https://github.com/theforeman/jenkins-jobs) open a PR with the result of `./branch-candlepin <%= release %>`
 - Create new GPG key for release
   - [ ] <%= rel_eng_script('generate_gpg') %>: `VERSION=<%= release %> PROJECT=candlepin ./generate_gpg`
