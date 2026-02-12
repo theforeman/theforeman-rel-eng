@@ -74,6 +74,7 @@
 - [ ] Update release version similar to [here](https://github.com/theforeman/theforeman-rel-eng/commit/2029a9688da00d9c385c3438dd71b594ba5f728e)
 - [ ] Update `katello`, `katello-repos` and `rubygem-katello`
   - [ ] Use <%= rel_eng_script('bump_rpm_packaging') %>: `PROJECT=katello VERSION=<%= short_version %> ./bump_rpm_packaging`
+  - [ ] Set `pulpcore_version` in [`katello-repos.spec`](https://github.com/theforeman/foreman-packaging/blob/rpm/<%= foreman_version %>/packages/katello/katello-repos/katello-repos.spec) to the correct Pulpcore version and not `nightly`.
 - [ ] Merge packaging PR once job is green
 - [ ] Use <%= rel_eng_script('wait_packaging') %> to wait for [Jenkins to build the packages](https://ci.theforeman.org/job/foreman-packaging-rpm-<%= foreman_version %>-release/)
 - Sign the RPMs in the release
