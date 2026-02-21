@@ -2,10 +2,14 @@
 
 . settings
 
-require_fullversion
-
-# Strip any -rc or other suffix from FULLVERSION to get base version (e.g., 3.18.0-rc1 -> 3.18.0)
-VERSION_NAME="${FULLVERSION%%-*}"
+# Accept optional version argument, otherwise use FULLVERSION from settings
+if [[ -n $1 ]]; then
+	VERSION_NAME="$1"
+else
+	require_fullversion
+	# Strip any -rc or other suffix from FULLVERSION to get base version (e.g., 3.18.0-rc1 -> 3.18.0)
+	VERSION_NAME="${FULLVERSION%%-*}"
+fi
 
 if [[ -z $REDMINE_API_KEY ]] ; then
 	echo "No API key set. Get it from https://projects.theforeman.org/my/account"
