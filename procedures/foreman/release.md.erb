@@ -37,8 +37,8 @@
   - [ ] Push tags using <%= rel_eng_script('tag_push') %>
 <% unless is_rc -%>
 - Update Redmine versions
-  - [ ] Change Redmine version <%= full_version %> state to Closed using `<%= rel_eng_script('close_redmine_version') %> <%= full_version %>`
-  - [ ] Add a new Redmine version for <%= next_patch_version %><%= ', unless the series is EOL' unless is_first_ga %> using `<%= rel_eng_script('create_redmine_version') %> <%= next_patch_version %>`
+  - [ ] Change Redmine version <%= full_version %> state to Closed using <%= rel_eng_script('close_redmine_version') %>: `close_redmine_version <%= full_version %>`
+  - [ ] Add a new Redmine version for <%= next_patch_version %><%= ', unless the series is EOL' unless is_first_ga %> using <%= rel_eng_script('create_redmine_version') %>: `create_redmine_version <%= next_patch_version %>`
 <% end -%>
 - [ ] Run the Jenkins [Tarballs Release](https://ci.theforeman.org/job/tarballs-release/) using <%= rel_eng_script('release_tarballs') %> to create tarballs
 
