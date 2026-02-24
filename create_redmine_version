@@ -7,7 +7,8 @@ if [[ -n $1 ]]; then
 	VERSION_NAME="$1"
 else
 	require_fullversion
-	VERSION_NAME="$FULLVERSION"
+	# Strip any -rc or other suffix from FULLVERSION to get base version (e.g., 3.18.0-rc1 -> 3.18.0)
+	VERSION_NAME="${FULLVERSION%%-*}"
 fi
 
 if [[ -z $REDMINE_API_KEY ]] ; then
@@ -16,6 +17,4 @@ if [[ -z $REDMINE_API_KEY ]] ; then
 fi
 export REDMINE_API_KEY
 
-if [[ $VERSION_NAME != *-rc* ]]; then
-	./redmine version set-status "$PROJECT" "$VERSION_NAME" closed
-fi
+./redmine version create "$PROJECT" "$VERSION_NAME" --status open --sharing descendants
