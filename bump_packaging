@@ -13,6 +13,7 @@ fi
 
 REMOTE_BRANCH="${FLAVOR}/${FOREMAN_VERSION}"
 FULL_REMOTE_BRANCH="$PACKAGING_GIT_REMOTE/$REMOTE_BRANCH"
+FEATURE_BRANCH="${FLAVOR}/release-$PROJECT-$FULLVERSION"
 
 if [[ $GIT_USE_WORKTREES == true ]] ; then
 	RELEASE_PACKAGING_DIR="${PACKAGING_DIR}/${FLAVOR}-$VERSION"
@@ -34,7 +35,7 @@ fi
 cd "$RELEASE_PACKAGING_DIR"
 
 git fetch $PACKAGING_GIT_REMOTE
-git checkout -b "${FLAVOR}/release-$PROJECT-$FULLVERSION" "${FULL_REMOTE_BRANCH}"
+git checkout -b "${FEATURE_BRANCH}" "${FULL_REMOTE_BRANCH}"
 
 if [[ $FLAVOR == deb ]] ; then
 	scripts/changelog.rb -v "${FULLVERSION/-rc/~rc}-1" -m "$FULLVERSION released" debian/*/*/changelog
@@ -53,7 +54,16 @@ fi
 git commit -m "Release $FULLVERSION"
 
 if [[ $PACKAGING_PR == true ]] ; then
-	git phr -m "Release $FULLVERSION" -b "$REMOTE_BRANCH"
+	# Ensure fork exists with configured remote name
+	GH_PROMPT_DISABLED=1 gh repo fork theforeman/foreman-packaging --remote-name "$PACKAGING_FORK_REMOTE"
+
+	git push --set-upstream "$PACKAGING_FORK_REMOTE" HEAD
+
+	gh pr create --repo theforeman/foreman-packaging \
+	             --title "${FLAVOR^^}: Release ${PROJECT^} $FULLVERSION" \
+	             --head "$GITHUB_USER:$FEATURE_BRANCH" \
+	             --base "$REMOTE_BRANCH" \
+	             --body "Release ${PROJECT^} $FULLVERSION"
 else
 	git push "$PACKAGING_GIT_REMOTE" "HEAD:$REMOTE_BRANCH"
 fi
