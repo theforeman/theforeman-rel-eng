@@ -10,3 +10,4 @@
   - [ ] <%= rel_eng_script('sign_gpg') %>: `VERSION=<%= release %> PROJECT=candlepin ./sign_gpg`
   - [ ] <%= rel_eng_script('upload_gpg') %>: `VERSION=<%= release %> PROJECT=candlepin ./upload_gpg`
   - Update `releases/candlepin/<%= release %>/settings` and submit as a PR to [theforeman-rel-eng](https://github.com/theforeman/theforeman-rel-eng)
+- Backport GPG key to stable/branched Katello branches. Identify which stable Katello branches (rpm/x.y in foreman-packaging) will use Candlepin <%= release %>
