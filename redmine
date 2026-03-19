@@ -4,6 +4,7 @@
 
 import argparse
 import os
+import re
 
 try:
     from redminelib import Redmine
@@ -32,6 +33,7 @@ def create_version(args: argparse.Namespace) -> None:
             status=args.status,
             sharing=args.sharing,
         )
+        print(f'Created version {args.name}')
     except ValidationError as ex:
         raise SystemExit(str(ex))
 
@@ -46,8 +48,49 @@ def set_status_version(args: argparse.Namespace) -> None:
     except IndexError:
         raise SystemExit('Version not found')
 
-    print('Setting', args.name, 'to closed')
+    print(f'Setting {args.name} to {args.status}')
     version.save(status=args.status)
+
+
+def close_versions_by_pattern(args: argparse.Namespace) -> None:
+    """Close all open versions matching a pattern.
+
+    Refuses to close if it would leave no open versions.
+    """
+    redmine = get_redmine()
+    all_versions = list(redmine.version.filter(project_id=args.project_id))
+    open_versions = [v for v in all_versions if v.status == 'open']
+
+    if not open_versions:
+        raise SystemExit(f'No open versions found in project {args.project_id}')
+
+    pattern_variations = [
+        f'^{re.escape(args.pattern)}\\.',  # Standard: "3.16." matches "3.16.0", "3.16.1"
+        f'^{args.project_id.capitalize()} {re.escape(args.pattern)}\\.',  # Katello format
+    ]
+    matching_open = []
+    for version in open_versions:
+        for pattern in pattern_variations:
+            if re.match(pattern, version.name):
+                matching_open.append(version)
+                break
+
+    if not matching_open:
+        print(f'No open versions match pattern {args.pattern}')
+        return
+
+    remaining_open = len(open_versions) - len(matching_open)
+    if remaining_open == 0 and not args.force:
+        raise SystemExit(
+            f'Refusing to close {len(matching_open)} version(s) - would leave no open versions.\n'
+            f'Versions that would be closed: {", ".join(v.name for v in matching_open)}\n'
+            f'Use --force to override this safeguard.'
+        )
+
+    print(f'Closing {len(matching_open)} version(s) matching {args.pattern}:')
+    for version in matching_open:
+        print(f'  - {version.name}')
+        version.save(status='closed')
 
 
 def main():
@@ -71,8 +114,20 @@ def main():
     version_set_status.add_argument('status', default='closed', choices=VERSION_STATES)
     version_set_status.set_defaults(func=set_status_version)
 
+    version_close_pattern = version_action.add_parser('close-pattern',
+        help='Close all open versions matching a pattern (e.g., "3.16" closes "3.16.0", "3.16.1")')
+    version_close_pattern.add_argument('project_id')
+    version_close_pattern.add_argument('pattern',
+        help='Version prefix to match (e.g., "3.16" to close all 3.16.x versions)')
+    version_close_pattern.add_argument('--force', action='store_true',
+        help='Force closure even if it would leave no open versions')
+    version_close_pattern.set_defaults(func=close_versions_by_pattern)
+
     args = parser.parse_args()
-    args.func(args)
+    if hasattr(args, 'func'):
+        args.func(args)
+    else:
+        parser.print_help()
 
 
 if __name__ == '__main__':
