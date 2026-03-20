@@ -66,22 +66,17 @@ def close_versions_by_pattern(args: argparse.Namespace) -> None:
     # Pattern handles both formats: "3.16.0" and "Katello 3.16.0"
     pattern = f'^({args.project_id.capitalize()} )?{re.escape(args.pattern)}\\.'
 
-    matching_version = None
-    for version in open_versions:
-        if re.match(pattern, version.name):
-            if matching_version is not None:
-                raise SystemExit(
-                    f'Multiple open versions match pattern {args.pattern}: '
-                    f'{matching_version.name}, {version.name}'
-                )
-            matching_version = version
-
-    if matching_version is None:
+    matching_versions = [version for version in open_versions if re.match(pattern, version.name)]
+    if not matching_versions:
         print(f'No open version matches pattern {args.pattern}')
         return
-
-    print(f'Closing {matching_version.name}')
-    matching_version.save(status='closed')
+    elif len(matching_versions) > 1:
+        names = ', '.join(v.name for v in matching_versions)
+        raise SystemExit(f'Multiple open versions match pattern {args.pattern}: {names}')
+    else:
+        version = matching_versions[0]
+        print(f'Closing {version.name}')
+        version.save(status='closed')
 
 
 def main():
