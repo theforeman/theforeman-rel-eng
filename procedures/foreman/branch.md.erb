@@ -46,6 +46,13 @@
 
 - [ ] Announce start of stabilization week to discourse [development category](https://community.theforeman.org/c/development).
 - [ ] Request new Hammer CLI release from maintainers if needed.
+- [ ] Update Hammer CLI packaging once the Hammer CLI release is ready:
+  - [ ] RPM: Update [rubygem-hammer_cli](https://github.com/theforeman/foreman-packaging/blob/rpm/<%= release %>/packages/foreman/rubygem-hammer_cli/rubygem-hammer_cli.spec) and [rubygem-hammer_cli_foreman](https://github.com/theforeman/foreman-packaging/blob/rpm/<%= release %>/packages/foreman/rubygem-hammer_cli_foreman/rubygem-hammer_cli_foreman.spec) in `rpm/<%= release %>` branch
+    - [ ] `obal update rubygem-hammer_cli --version <%= release %>.0`
+    - [ ] `obal update rubygem-hammer_cli_foreman --version <%= release %>.0`
+  - [ ] DEB: Update packaging in `deb/develop` and cherry-pick the changes to `deb/<%= release %>`
+    - [ ] `deb/develop` is updated by [automation](https://github.com/theforeman/foreman-packaging/actions/workflows/bump_packages.yml), ensure that happened
+    - [ ] Cherry-pick the changes to `deb/<%= release %>`
 - Prepare the manual for the new version:
   - [ ] Update installer options section of nightly manual using the [get-params script](https://github.com/theforeman/theforeman.org/blob/gh-pages/scripts/installer/get-params)
   - [ ] Copy [website manual content](https://github.com/theforeman/theforeman.org/tree/gh-pages/manuals) from nightly to <%= release %> and update version numbers mentioned in it.
