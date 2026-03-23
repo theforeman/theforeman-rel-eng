@@ -4,6 +4,7 @@
 
 import argparse
 import os
+import re
 
 try:
     from redminelib import Redmine
@@ -32,6 +33,7 @@ def create_version(args: argparse.Namespace) -> None:
             status=args.status,
             sharing=args.sharing,
         )
+        print(f'Created version {args.name}')
     except ValidationError as ex:
         raise SystemExit(str(ex))
 
@@ -46,8 +48,35 @@ def set_status_version(args: argparse.Namespace) -> None:
     except IndexError:
         raise SystemExit('Version not found')
 
-    print('Setting', args.name, 'to closed')
+    print(f'Setting {args.name} to {args.status}')
     version.save(status=args.status)
+
+
+def close_versions_by_pattern(args: argparse.Namespace) -> None:
+    """Close the open version matching a pattern."""
+    redmine = get_redmine()
+    all_versions = list(redmine.version.filter(project_id=args.project_id))
+
+    # Filter for open versions (client-side since API filter is not available)
+    open_versions = [v for v in all_versions if v.status == 'open']
+
+    if not open_versions:
+        raise SystemExit(f'No open versions found in project {args.project_id}')
+
+    # Pattern handles both formats: "3.16.0" and "Katello 3.16.0"
+    pattern = f'^({args.project_id.capitalize()} )?{re.escape(args.pattern)}\\.'
+
+    matching_versions = [version for version in open_versions if re.match(pattern, version.name)]
+    if not matching_versions:
+        print(f'No open version matches pattern {args.pattern}')
+        return
+    elif len(matching_versions) > 1:
+        names = ', '.join(v.name for v in matching_versions)
+        raise SystemExit(f'Multiple open versions match pattern {args.pattern}: {names}')
+    else:
+        version = matching_versions[0]
+        print(f'Closing {version.name}')
+        version.save(status='closed')
 
 
 def main():
@@ -71,8 +100,18 @@ def main():
     version_set_status.add_argument('status', default='closed', choices=VERSION_STATES)
     version_set_status.set_defaults(func=set_status_version)
 
+    version_close_pattern = version_action.add_parser('close-pattern',
+        help='Close the open version matching a pattern (e.g., "3.16" closes "3.16.2")')
+    version_close_pattern.add_argument('project_id')
+    version_close_pattern.add_argument('pattern',
+        help='Version prefix to match (e.g., "3.16" to close the open 3.16.x version)')
+    version_close_pattern.set_defaults(func=close_versions_by_pattern)
+
     args = parser.parse_args()
-    args.func(args)
+    if hasattr(args, 'func'):
+        args.func(args)
+    else:
+        parser.print_help()
 
 
 if __name__ == '__main__':

@@ -3,12 +3,16 @@
 . settings
 
 require_fullversion
+
 if [[ -z $REDMINE_API_KEY ]] ; then
 	echo "No API key set. Get it from https://projects.theforeman.org/my/account"
 	read -s -r -p "Redmine API KEY: " REDMINE_API_KEY
 fi
 export REDMINE_API_KEY
 
-if [[ $FULLVERSION != *-rc* ]]; then
-	./redmine version set-status "$PROJECT" "$FULLVERSION" closed
+if [[ $FULLVERSION == *-rc* ]]; then
+	echo "Skipping RC version $FULLVERSION"
+	exit 0
 fi
+
+./redmine version close-pattern "$PROJECT" "$VERSION"
