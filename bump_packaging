@@ -18,6 +18,11 @@ FEATURE_BRANCH="${FLAVOR}/release-$PROJECT-$FULLVERSION"
 if [[ $GIT_USE_WORKTREES == true ]] ; then
 	RELEASE_PACKAGING_DIR="${PACKAGING_DIR}/${FLAVOR}-$VERSION"
 
+	# Ensure master checkout exists for worktree operations
+	if [[ ! -d "${PACKAGING_DIR}/master" ]] ; then
+		git clone --quiet --origin "$PACKAGING_GIT_REMOTE" "$(github_url foreman-packaging)" "${PACKAGING_DIR}/master"
+	fi
+
 	if [[ ! -d "$RELEASE_PACKAGING_DIR" ]] ; then
 		(
 			cd "${PACKAGING_DIR}/master"
@@ -54,8 +59,18 @@ fi
 git commit -m "Release $FULLVERSION"
 
 if [[ $PACKAGING_PR == true ]] ; then
-	# Ensure fork exists with configured remote name
-	GH_PROMPT_DISABLED=1 gh repo fork theforeman/foreman-packaging --remote-name "$PACKAGING_FORK_REMOTE"
+	# Only fork if it doesn't exist yet
+	if ! gh repo view "${GITHUB_USER}/foreman-packaging" --json url --jq .url &>/dev/null ; then
+		GH_PROMPT_DISABLED=1 gh repo fork theforeman/foreman-packaging --remote-name "$PACKAGING_FORK_REMOTE"
+	fi
+
+	if ! git remote get-url "$PACKAGING_FORK_REMOTE" &>/dev/null ; then
+		if [[ "$GIT_PROTOCOL" == "ssh" ]]; then
+			git remote add "$PACKAGING_FORK_REMOTE" "git@github.com:${GITHUB_USER}/foreman-packaging.git"
+		else
+			git remote add "$PACKAGING_FORK_REMOTE" "https://github.com/${GITHUB_USER}/foreman-packaging.git"
+		fi
+	fi
 
 	git push --set-upstream "$PACKAGING_FORK_REMOTE" HEAD
 
