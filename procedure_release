@@ -24,4 +24,9 @@ if [[ $READ == 1 ]] ; then
 	echo >&2
 fi
 
-./procedure release --project "$PROJECT" --version "$FULLVERSION" --foreman-version "$FOREMAN_VERSION" --target-date "$TARGET_DATE" --owner "$OWNER" --engineer "$ENGINEER"
+FOREMAN_VERSION_ARGS=()
+if [[ -n "$FOREMAN_VERSION" && "$FOREMAN_VERSION" != "none" ]]; then
+	FOREMAN_VERSION_ARGS=(--foreman-version "$FOREMAN_VERSION")
+fi
+
+./procedure release --project "$PROJECT" --version "$FULLVERSION" "${FOREMAN_VERSION_ARGS[@]}" --target-date "$TARGET_DATE" --owner "$OWNER" --engineer "$ENGINEER"

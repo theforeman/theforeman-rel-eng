@@ -109,7 +109,7 @@ procedures = {
     end
 	end,
 	'release' => OptionParser.new do |opts|
-    opts.on('--project [PROJECT]', ['foreman', 'katello'],
+    opts.on('--project [PROJECT]', ['foreman', 'katello', 'candlepin'],
             'Project to generate release procedure for') do |project|
       context[:project] = project
     end
@@ -155,7 +155,7 @@ procedures = {
 def missing_required_option?(procedure, context)
   case context[:project]
   when 'candlepin'
-    context[:release].nil?
+    context[:release].nil? && context[:short_version].nil?
   when 'katello'
     context[:target_date].nil? || context[:owner].nil? || (procedure == 'release' && context[:foreman_version].nil?)
   when 'foreman'
