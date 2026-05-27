@@ -14,7 +14,14 @@ else
 fi
 echo >> "$ANNOUNCEMENT"
 
-if [[ $PROJECT == foreman ]] ; then
+if [[ $PROJECT == candlepin ]] ; then
+	cat >> "$ANNOUNCEMENT" <<-EOF
+	Packages may be found at [yum.theforeman.org/candlepin/${VERSION}/](https://yum.theforeman.org/candlepin/${VERSION}/).
+
+	The GPG key used for signing RPMs has the following fingerprint:
+	[${FULLGPGKEY}](https://theforeman.org/static/keys/${FULLGPGKEY}.pub)
+	EOF
+elif [[ $PROJECT == foreman ]] ; then
 	echo Enter the announcement text, end by CTRL+D: >&2
 	cat >> "$ANNOUNCEMENT"
 

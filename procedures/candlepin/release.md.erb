@@ -7,3 +7,4 @@
   - [ ] <%= rel_eng_script('sign_stage_rpms') %>: `VERSION=<%= short_version %> PROJECT=candlepin ./sign_stage_rpms`
   - [ ] <%= rel_eng_script('upload_stage_rpms') %>: `VERSION=<%= short_version %> PROJECT=candlepin ./upload_stage_rpms`
 - [ ] Kick off the [release pipeline](https://ci.theforeman.org/job/candlepin-<%= short_version %>-rpm-pipeline/) by calling <%= rel_eng_script('release_pipeline') %>: `VERSION=<%= short_version %> PROJECT=candlepin ./release_pipeline`
+- [ ] Announce the release on [Discourse](https://community.theforeman.org/c/release-announcements/8) using <%= rel_eng_script('release_announcement') %>: `FULLVERSION=<%= version %> VERSION=<%= short_version %> PROJECT=candlepin ./release_announcement`
