@@ -1,7 +1,7 @@
 # Build Package
 
-- [ ] Acquire Candlepin SRPM for <%= short_version %>
-- [ ] Build into Copr: `copr build @theforeman/candlepin-<%= short_version %>-staging <SRPM>`
+- [ ] Acquire Candlepin SRPM for <%= version %>
+- [ ] Build into Copr: `copr build @theforeman/candlepin-<%= short_version %>-staging candlepin-<%= full_version %>*.src.rpm`
 - [ ] Sign RPMs
   - [ ] <%= rel_eng_script('generate_stage_repository') %>: `VERSION=<%= short_version %> PROJECT=candlepin ./generate_stage_repository`
   - [ ] <%= rel_eng_script('sign_stage_rpms') %>: `VERSION=<%= short_version %> PROJECT=candlepin ./sign_stage_rpms`

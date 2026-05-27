@@ -155,7 +155,12 @@ procedures = {
 def missing_required_option?(procedure, context)
   case context[:project]
   when 'candlepin'
-    context[:release].nil? && context[:short_version].nil?
+    case procedure
+    when 'branch'
+      context[:release].nil?
+    when 'release'
+      context[:version].nil?
+    end
   when 'katello'
     context[:target_date].nil? || context[:owner].nil? || (procedure == 'release' && context[:foreman_version].nil?)
   when 'foreman'
