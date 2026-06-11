@@ -27,9 +27,6 @@
   - [ ] `make -C locale mo-files` in the katello directory
   - [ ] Add any uncommitted translation files and open a PR to upstream's KATELLO-<%= short_version %> (no Redmine issue needed)
 <% end -%>
-<% unless is_rc -%>
-- [ ] Close old Katello <%= short_version %>.x versions in Redmine using <%= rel_eng_script('close_redmine_version') %>
-<% end -%>
 - [ ] Check for outdated deprecation warnings in the current and next release with `./tools.rb check-deprecation-warnings configs/katello/<%= short_version %>.yaml`. Follow the instructions in the output of the command. Don't forget to create any Redmine issues needed!
 - [ ] Update the `<%= foreman_version %>` branch in [foreman-documentation](https://github.com/theforeman/foreman-documentation) <% unless is_first_rc %>if there have been any release note or contributor additions since the previous release note update. Otherwise, this section may be skipped.<% end %>
   - [ ] Ensure [release notes](https://github.com/theforeman/foreman-documentation/blob/<%= foreman_version %>/guides/doc-Release_Notes/topics/katello.adoc) are correct
