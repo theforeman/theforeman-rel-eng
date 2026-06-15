@@ -5,6 +5,7 @@
 MAJOR=${VERSION%.*}
 MINOR=${VERSION#*.}
 DEVELOP=${MAJOR}.$((MINOR + 1))
+DEVELOP_VERSION="${DEVELOP}.0-develop"
 
 for project in $(./ensure_clean_git_checkouts "$@") ; do
 	(
@@ -24,6 +25,7 @@ for project in $(./ensure_clean_git_checkouts "$@") ; do
 			git add package.json
 		fi
 
-		git commit --message "Bump ${GIT_DEVELOP_BRANCH} to ${DEVELOP}.0-develop"
+		git commit --message "Bump ${GIT_DEVELOP_BRANCH} to ${DEVELOP_VERSION}"
+		git tag --message "Start ${DEVELOP} development" "${DEVELOP_VERSION}"
 	)
 done
