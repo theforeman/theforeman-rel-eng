@@ -21,7 +21,8 @@ for repo in $(./ensure_clean_git_checkouts "$@") ; do
 			git commit --message "Pin Puppet modules for ${VERSION}"
 		elif [[ $repo == candlepin-packaging ]] ; then
 			sed -i "/candlepin_version/ s/'.\+'/'$VERSION'/" package_manifest.yaml
-			git add package_manifest.yaml
+			sed -i "s/candlepin-nightly-staging/candlepin-${VERSION}-staging/g; s|/candlepin/nightly/|/candlepin/${VERSION}/|g; s/Candlepin nightly staging/Candlepin ${VERSION} staging/g" repoclosure/yum.conf
+			git add package_manifest.yaml repoclosure/yum.conf
 			git commit --message "Set Candlepin version to ${VERSION}"
 		fi
 	)
