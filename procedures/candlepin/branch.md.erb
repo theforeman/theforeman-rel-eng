@@ -12,3 +12,5 @@
   - Update `releases/candlepin/<%= release %>/settings` and submit as a PR to [theforeman-rel-eng](https://github.com/theforeman/theforeman-rel-eng)
 - [ ] Update [foreman-packaging](https://github.com/theforeman/foreman-packaging) rpm/develop with the new GPG key and Candlepin version in `katello-repos` (candlepin.gpg, katello-repos.spec)
 - [ ] Backport GPG key and version to stable Katello branches (rpm/x.y) as they are ready to adopt Candlepin <%= release %>
+- [ ] Update [foreman-documentation](https://github.com/theforeman/foreman-documentation): set `:CandlepinVersion:` to `<%= release %>` in `guides/common/attributes.adoc`
+- [ ] Update [forklift](https://github.com/theforeman/forklift): set `candlepin:` to `'<%= release %>'` for the nightly entry in `vagrant/config/versions.yaml`
