@@ -4,8 +4,21 @@
 
 require_fullversion
 
+MODE="$1"
+if [[ -n $MODE && $MODE != next ]] ; then
+	echo "Usage: $0 [next]" >&2
+	exit 1
+fi
+
 # Strip any -rc or other suffix from FULLVERSION to get base version (e.g., 3.18.0-rc1 -> 3.18.0)
 VERSION_NAME="${FULLVERSION%%-*}"
+
+if [[ $MODE == next ]] ; then
+	# FULLVERSION holds the version being released for (e.g. 3.19.1), not the
+	# one being prepared next, so bump the patch component (-> 3.19.2).
+	IFS=. read -r MAJOR MINOR PATCH <<< "$VERSION_NAME"
+	VERSION_NAME="${MAJOR}.${MINOR}.$((PATCH + 1))"
+fi
 
 # Katello uses 'Katello x.y.z' format in Redmine instead of just 'x.y.z'
 if [[ $PROJECT == katello ]]; then

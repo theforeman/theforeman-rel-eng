@@ -38,7 +38,7 @@
 <% unless is_rc -%>
 - Update Redmine versions
   - [ ] Close old <%= short_version %>.x versions using <%= rel_eng_script('close_redmine_version') %>
-  - [ ] Create new version <%= next_patch_version %><%= ' (unless the series is EOL)' unless is_first_ga %> using <%= rel_eng_script('create_redmine_version') %>
+  - [ ] Create new version <%= next_patch_version %><%= ' (unless the series is EOL)' unless is_first_ga %> using <%= rel_eng_script('create_redmine_version') %>: `./create_redmine_version next`
 <% end -%>
 - [ ] Run the Jenkins [Tarballs Release](https://ci.theforeman.org/job/tarballs-release/) using <%= rel_eng_script('release_tarballs') %> to create tarballs
 
