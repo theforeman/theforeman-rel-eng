@@ -3,7 +3,7 @@
 . settings
 
 REPO="${PROJECT}-oci-images"
-CONTAINERFILE="images/${PROJECT}/Containerfile"
+CONTAINERFILE=images/candlepin/Containerfile
 
 if [[ ! -d "$OCI_DIR" ]] ; then
   git clone --quiet --origin "$OCI_GIT_REMOTE" "$(github_url "$REPO")" "$OCI_DIR"
