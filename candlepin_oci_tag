@@ -2,15 +2,15 @@
 
 . settings
 
+if ! command -v skopeo &>/dev/null ; then
+  echo "skopeo is required but not installed" >&2
+  exit 1
+fi
+
 REPO="${PROJECT}-oci-images"
 IMAGE="quay.io/foreman/${PROJECT}"
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-BRANCHES=$("$SCRIPT_DIR/candlepin_oci_branches")
-
-if [[ -z "$BRANCHES" ]] ; then
-  exit 0
-fi
+BRANCHES=$(./candlepin_oci_branches)
 
 for branch in $BRANCHES; do
   if [[ "$branch" == master ]] ; then
