@@ -16,4 +16,4 @@ This bumps the Candlepin version pinned in [candlepin-oci-images](https://github
 - [ ] Identify branches pinned to Candlepin <%= short_version %> using <%= rel_eng_script('candlepin_oci_branches') %>: `VERSION=<%= short_version %> PROJECT=candlepin ./candlepin_oci_branches`
 - [ ] Bump `VERSION_XYZ` and open a PR on each affected branch using <%= rel_eng_script('bump_candlepin_oci_image') %>: `FULLVERSION=<%= version %> VERSION=<%= short_version %> PROJECT=candlepin ./bump_candlepin_oci_image`
 - [ ] Merge the PR(s) — Konflux rebuilds and publishes the image automatically on merge, no manual pipeline trigger needed
-- [ ] Verify the new tag is published: [quay.io/foreman/candlepin](https://quay.io/repository/foreman/candlepin?tab=tags)
+- [ ] Verify the new tag is published on [quay.io/foreman/candlepin](https://quay.io/repository/foreman/candlepin?tab=tags): `nightly` if the affected branch was `master`, or `<%= short_version %>`/`<%= version %>` if it was a `foreman-X.Y` branch
