@@ -1,0 +1,44 @@
+#!/bin/bash -e
+
+. settings
+
+REPO="${PROJECT}-oci-images"
+IMAGE="quay.io/foreman/${PROJECT}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+BRANCHES=$("$SCRIPT_DIR/candlepin_oci_branches")
+
+if [[ -z "$BRANCHES" ]] ; then
+  exit 0
+fi
+
+for branch in $BRANCHES; do
+  if [[ "$branch" == master ]] ; then
+    TAG=nightly
+  else
+    TAG="$VERSION"
+  fi
+
+  EXPECTED_COMMIT=$(git -C "$OCI_DIR" rev-parse "$OCI_GIT_REMOTE/$branch")
+
+  echo "== $branch (tag: $TAG) =="
+
+  if ! INSPECT=$(skopeo inspect "docker://${IMAGE}:${TAG}" 2>/dev/null) ; then
+    echo "  Could not inspect ${IMAGE}:${TAG} — not published yet?"
+    continue
+  fi
+
+  DIGEST=$(echo "$INSPECT" | jq -r '.Digest')
+  BUILD_DATE=$(echo "$INSPECT" | jq -r '.Labels["build-date"] // .Labels["org.opencontainers.image.created"] // "unknown"')
+  VCS_REF=$(echo "$INSPECT" | jq -r '.Labels["vcs-ref"] // .Labels["org.opencontainers.image.revision"] // "unknown"')
+
+  echo "  Image:  ${IMAGE}@${DIGEST}"
+  echo "  Built:  ${BUILD_DATE}"
+  echo "  Commit: https://github.com/theforeman/${REPO}/commit/${VCS_REF}"
+
+  if [[ "$VCS_REF" == "$EXPECTED_COMMIT" ]] ; then
+    echo "  MATCH — published image was built from the merged bump"
+  else
+    echo "  NOT YET — published commit ($VCS_REF) doesn't match branch HEAD ($EXPECTED_COMMIT); PR may not be merged/built yet"
+  fi
+done

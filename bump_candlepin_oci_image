@@ -48,11 +48,4 @@ for branch in $BRANCHES; do
   else
     git push "$OCI_GIT_REMOTE" "HEAD:$branch"
   fi
-
-  if [[ "$branch" == master ]] ; then
-    TAG=nightly
-  else
-    TAG="$VERSION or $FULLVERSION"
-  fi
-  echo "Once merged, verify quay.io/foreman/candlepin:${TAG} is published (branch: $branch)"
 done
