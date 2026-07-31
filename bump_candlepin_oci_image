@@ -1,0 +1,51 @@
+#!/bin/bash -e
+
+. settings
+
+require_fullversion
+
+REPO="${PROJECT}-oci-images"
+CONTAINERFILE=images/candlepin/Containerfile
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+BRANCHES=$("$SCRIPT_DIR/candlepin_oci_branches")
+
+if [[ -z "$BRANCHES" ]] ; then
+  exit 0
+fi
+
+cd "$OCI_DIR"
+
+for branch in $BRANCHES; do
+  FEATURE_BRANCH="bump-candlepin-${FULLVERSION}-${branch//\//-}"
+
+  git checkout -B "$FEATURE_BRANCH" "$OCI_GIT_REMOTE/$branch"
+  sed -i "s/^ARG VERSION_XYZ=.*/ARG VERSION_XYZ=${FULLVERSION}/" "$CONTAINERFILE"
+  git add "$CONTAINERFILE"
+  git commit --message "Bump Candlepin to $FULLVERSION"
+
+  if [[ $PACKAGING_PR == true ]] ; then
+    # Only fork if it doesn't exist yet
+    if ! gh repo view "${GITHUB_USER}/${REPO}" --json url --jq .url &>/dev/null ; then
+      GH_PROMPT_DISABLED=1 gh repo fork "theforeman/${REPO}" --remote-name "$OCI_FORK_REMOTE"
+    fi
+
+    if ! git remote get-url "$OCI_FORK_REMOTE" &>/dev/null ; then
+      if [[ "$GIT_PROTOCOL" == "ssh" ]]; then
+        git remote add "$OCI_FORK_REMOTE" "git@github.com:${GITHUB_USER}/${REPO}.git"
+      else
+        git remote add "$OCI_FORK_REMOTE" "https://github.com/${GITHUB_USER}/${REPO}.git"
+      fi
+    fi
+
+    git push --set-upstream "$OCI_FORK_REMOTE" "$FEATURE_BRANCH"
+
+    gh pr create --repo "theforeman/${REPO}" \
+                 --title "Bump Candlepin to $FULLVERSION" \
+                 --head "$GITHUB_USER:$FEATURE_BRANCH" \
+                 --base "$branch" \
+                 --body "Bump Candlepin to $FULLVERSION"
+  else
+    git push "$OCI_GIT_REMOTE" "HEAD:$branch"
+  fi
+done

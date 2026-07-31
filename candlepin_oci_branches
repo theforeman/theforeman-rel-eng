@@ -1,0 +1,34 @@
+#!/bin/bash -e
+
+. settings
+
+REPO="${PROJECT}-oci-images"
+CONTAINERFILE=images/candlepin/Containerfile
+
+if [[ ! -d "$OCI_DIR" ]] ; then
+  git clone --quiet --origin "$OCI_GIT_REMOTE" "$(github_url "$REPO")" "$OCI_DIR"
+fi
+
+(
+  cd "$OCI_DIR"
+  git fetch --quiet "$OCI_GIT_REMOTE"
+)
+
+found=false
+while read -r branch; do
+  case "$branch" in
+    HEAD|dependabot/*|konflux/*|use-*) continue ;;
+  esac
+
+  content=$(git -C "$OCI_DIR" show "$OCI_GIT_REMOTE/$branch:$CONTAINERFILE" 2>/dev/null) || continue
+
+  if echo "$content" | grep -q "ARG VERSION=${VERSION}\$"; then
+    echo "$branch"
+    found=true
+  fi
+done < <(git -C "$OCI_DIR" branch --remotes --list "$OCI_GIT_REMOTE/*" --format='%(refname:lstrip=3)')
+
+if [[ $found == false ]]; then
+  echo "No $OCI_GIT_REMOTE branch of $REPO is pinned to VERSION=${VERSION} yet." >&2
+  echo "It's likely not adopted anywhere yet and will land on master first." >&2
+fi
