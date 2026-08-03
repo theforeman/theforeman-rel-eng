@@ -1,1 +1,2 @@
 FOREMAN_VERSION='nightly'
+OSES='el9 el10'
