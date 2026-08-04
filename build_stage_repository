@@ -348,7 +348,7 @@ def update_repositories(collection, version, dist, rpm_dir, srpm_dir, foreman_ve
     create_repository(rpm_dir)
     create_repository(srpm_dir)
 
-    if collection in ['foreman'] or (collection in ['katello'] and dist == 'el8'):
+    if dist != 'el10' and (collection in ['foreman'] or (collection in ['katello'] and dist == 'el8')):
         create_modulemd(collection, version, rpm_dir, foreman_version, dist)
 
 
