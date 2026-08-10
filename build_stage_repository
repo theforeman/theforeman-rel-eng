@@ -21,8 +21,17 @@ if os.path.exists('/usr/bin/dnf4'):
 else:
   DNF = 'dnf'
 
+# Packages to keep out of a (collection, version, dist) stage repository even
+# though they are present in comps and get built in Copr. Remove an entry
+# once the excluded package(s) are ready to ship for that dist.
+EXCLUDED_PACKAGES = {
+    ('foreman', 'nightly', 'el10'): {'foreman-installer', 'foreman-installer-katello'},
+    ('foreman', '5.0', 'el10'): {'foreman-installer', 'foreman-installer-katello'},
+}
 
-def filter_packages(target_dir, packages):
+
+def filter_packages(target_dir, packages, excluded_packages=None):
+    excluded_packages = excluded_packages or set()
     files = glob.glob(f"{target_dir}/*.rpm")
 
     for file in files:
@@ -30,7 +39,23 @@ def filter_packages(target_dir, packages):
         rpm_name = get_rpm_name(file)
 
         if rpm_name not in packages:
-            print(f"Removed {rpm_name}. Package not in comps.")
+            reason = "explicitly excluded for this dist" if rpm_name in excluded_packages else "not in comps"
+            print(f"Removed {rpm_name}. Package {reason}.")
+            os.remove(os.path.join(target_dir, file_name))
+
+
+def exclude_packages(target_dir, excluded_packages):
+    if not excluded_packages:
+        return
+
+    files = glob.glob(f"{target_dir}/*.rpm")
+
+    for file in files:
+        file_name = os.path.basename(file)
+        rpm_name = get_rpm_name(file)
+
+        if rpm_name in excluded_packages:
+            print(f"Removed {rpm_name}. Package excluded for this dist.")
             os.remove(os.path.join(target_dir, file_name))
 
 
@@ -331,17 +356,21 @@ def initialize_repository(collection, version, dist, arch, rpm_dir, srpm_dir):
 
 def add_packages_from_copr(collection, version, dist, arch, rpm_dir, srpm_dir, foreman_version):
     packages_to_include = packages_from_comps(comps(collection, version, dist, foreman_version))
+    excluded_packages = EXCLUDED_PACKAGES.get((collection, version, dist), set())
+    packages_to_include -= excluded_packages
+
     copr_repo = copr_repository(collection, version, dist, arch)
     copr_package_urls = copr_repository_urls(copr_repo)
 
     rpm_diff = compare_repositories(copr_repo, rpm_dir, arch)
     packages = parse_repodiff(rpm_diff)
     download_copr_packages(packages, copr_package_urls, copr_repo, rpm_dir, packages_to_include)
-    filter_packages(rpm_dir, packages_to_include)
+    filter_packages(rpm_dir, packages_to_include, excluded_packages)
 
     srpm_diff = compare_repositories(copr_repo, srpm_dir, arch, True)
     srpm_packages = parse_repodiff(srpm_diff)
     download_copr_packages(srpm_packages, copr_package_urls, copr_repo, srpm_dir)
+    exclude_packages(srpm_dir, excluded_packages)
 
 
 def update_repositories(collection, version, dist, rpm_dir, srpm_dir, foreman_version):
