@@ -14,6 +14,7 @@ for project in $(./ensure_clean_git_checkouts "$@") ; do
 
 		if [[ $project == katello ]] ; then
 			sed -i '/VERSION/ s/[0-9]\+\.[0-9]\+\.[0-9]\+/'"${DEVELOP}".0'/' lib/katello/version.rb
+			git add lib/katello/version.rb
 		else
 			echo "${DEVELOP}.0-develop" > VERSION
 			git add VERSION
