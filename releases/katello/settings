@@ -1,3 +1,4 @@
+FOREMAN_VERSION=$VERSION
 RPM_PACKAGES=(katello katello-repos rubygem-katello)
 PACKAGING_SUBDIR="packages/katello"
 
