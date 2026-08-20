@@ -8,3 +8,12 @@
   - [ ] <%= rel_eng_script('upload_stage_rpms') %>: `VERSION=<%= short_version %> PROJECT=candlepin ./upload_stage_rpms`
 - [ ] Kick off the [release pipeline](https://ci.theforeman.org/job/candlepin-<%= short_version %>-rpm-pipeline/) by calling <%= rel_eng_script('release_pipeline') %>: `VERSION=<%= short_version %> PROJECT=candlepin ./release_pipeline`
 - [ ] Announce the release on [Discourse](https://community.theforeman.org/c/release-announcements/8) using <%= rel_eng_script('release_announcement') %>: `FULLVERSION=<%= version %> VERSION=<%= short_version %> PROJECT=candlepin ./release_announcement`
+
+# Update Container Image
+
+This bumps the Candlepin version pinned in [candlepin-oci-images](https://github.com/theforeman/candlepin-oci-images) branches that already track Candlepin <%= short_version %>. It does not create new branches — that happens automatically as part of a Foreman release's OCI branching, see [theforeman-rel-eng-konflux](https://github.com/theforeman/theforeman-rel-eng-konflux).
+
+- [ ] Identify branches pinned to Candlepin <%= short_version %> using <%= rel_eng_script('candlepin_oci_branches') %>: `VERSION=<%= short_version %> PROJECT=candlepin ./candlepin_oci_branches`
+- [ ] Bump `VERSION_XYZ` and open a PR on each affected branch using <%= rel_eng_script('bump_candlepin_oci_image') %>: `FULLVERSION=<%= version %> VERSION=<%= short_version %> PROJECT=candlepin ./bump_candlepin_oci_image`
+- [ ] Merge the PR(s) — Konflux rebuilds and publishes the image automatically on merge, no manual pipeline trigger needed
+- [ ] Verify the new image is published on [quay.io/foreman/candlepin](https://quay.io/repository/foreman/candlepin?tab=tags) using <%= rel_eng_script('candlepin_oci_tag') %>: `VERSION=<%= short_version %> PROJECT=candlepin ./candlepin_oci_tag`
