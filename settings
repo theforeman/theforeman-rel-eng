@@ -32,6 +32,8 @@ if [[ ! -d "$RELEASEDIR" ]] ; then
 		echo "FULLVERSION='${VERSION}.0.rc1'" > "$RELEASEDIR/settings"
 	elif [[ $PROJECT == foreman ]]; then
 		echo "FULLVERSION='${VERSION}.0-rc1'" > "$RELEASEDIR/settings"
+	elif [[ $PROJECT == candlepin ]] ; then
+		echo "FULLVERSION='${VERSION}.0'" > "$RELEASEDIR/settings"
 	fi
 fi
 
