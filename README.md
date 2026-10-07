@@ -94,6 +94,12 @@ dnf install python3-jenkins
 
 GitHub CLI is required for creating pull requests during packaging updates. See the [installation instructions](https://cli.github.com/) for your platform.
 
+`skopeo` and `jq` are required for verifying published container images (`candlepin_oci_tag`). On Fedora:
+
+```sh
+dnf install skopeo jq
+```
+
 For Redmine integration, python-redmine needs to be installed:
 
 ```sh

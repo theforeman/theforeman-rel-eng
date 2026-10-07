@@ -1,0 +1,81 @@
+#!/bin/bash -e
+
+. settings
+
+require_fullversion
+
+REPO="${PROJECT}-oci-images"
+CONTAINERFILE=images/candlepin/Containerfile
+
+BRANCHES=$(./candlepin_oci_branches)
+
+require_line() {
+  if ! grep -q "^${2}" "$1" ; then
+    echo "$3: $2 not found in $1" >&2
+    return 1
+  fi
+}
+
+cd "$OCI_DIR"
+
+if [[ $PACKAGING_PR == true ]] ; then
+  # Only fork if it doesn't exist yet
+  if ! gh repo view "${GITHUB_USER}/${REPO}" --json url --jq .url &>/dev/null ; then
+    GH_PROMPT_DISABLED=1 gh repo fork "${GITHUB_NAMESPACE}/${REPO}" --remote-name "$OCI_FORK_REMOTE"
+  fi
+
+  if ! git remote get-url "$OCI_FORK_REMOTE" &>/dev/null ; then
+    git remote add "$OCI_FORK_REMOTE" "$(github_url "$REPO")"
+  fi
+fi
+
+FAILED=()
+
+for branch in $BRANCHES; do
+  FEATURE_BRANCH="bump-candlepin-${FULLVERSION}-${branch//\//-}"
+
+  if [[ $PACKAGING_PR == true ]] && gh pr list --repo "${GITHUB_NAMESPACE}/${REPO}" \
+       --head "${GITHUB_USER}:${FEATURE_BRANCH}" --state open --json number --jq 'length > 0' \
+       | grep -q true ; then
+    echo "$branch: PR already open for $FEATURE_BRANCH, skipping" >&2
+    continue
+  fi
+
+  git checkout -B "$FEATURE_BRANCH" "$OCI_GIT_REMOTE/$branch"
+
+  if ! require_line "$CONTAINERFILE" "ARG VERSION_XYZ=" "$branch" \
+     || ! require_line Makefile "PROJECT_XY_TAG=" "$branch" \
+     || ! require_line Makefile "PROJECT_XYZ_TAG=" "$branch" ; then
+    FAILED+=("$branch")
+    continue
+  fi
+
+  sed -i "s/^ARG VERSION_XYZ=.*/ARG VERSION_XYZ=${FULLVERSION}/" "$CONTAINERFILE"
+  sed -i "s/^PROJECT_XY_TAG=.*/PROJECT_XY_TAG=${VERSION}/" Makefile
+  sed -i "s/^PROJECT_XYZ_TAG=.*/PROJECT_XYZ_TAG=${FULLVERSION}/" Makefile
+
+  if git diff --quiet -- "$CONTAINERFILE" Makefile ; then
+    echo "$branch: already at $FULLVERSION, nothing to bump" >&2
+    continue
+  fi
+
+  git add "$CONTAINERFILE" Makefile
+  git commit --message "Bump Candlepin to $FULLVERSION"
+
+  if [[ $PACKAGING_PR == true ]] ; then
+    git push --set-upstream "$OCI_FORK_REMOTE" "$FEATURE_BRANCH"
+
+    gh pr create --repo "${GITHUB_NAMESPACE}/${REPO}" \
+                 --title "Bump Candlepin to $FULLVERSION" \
+                 --head "$GITHUB_USER:$FEATURE_BRANCH" \
+                 --base "$branch" \
+                 --body "Bump Candlepin to $FULLVERSION"
+  else
+    git push "$OCI_GIT_REMOTE" "HEAD:$branch"
+  fi
+done
+
+if [[ ${#FAILED[@]} -gt 0 ]] ; then
+  echo "Failed to bump: ${FAILED[*]}" >&2
+  exit 1
+fi
