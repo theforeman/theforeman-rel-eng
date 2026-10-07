@@ -117,6 +117,10 @@ Note: If for some reason there was an issue with the tarballs that required uplo
 <% if (is_rc && !is_first_rc) || is_first_ga -%>
   - Update installer options section using the [get-params script](https://github.com/theforeman/theforeman.org/blob/gh-pages/scripts/installer/get-params) (Note: this step can only be done after packages are released)
 <% end -%>
+<% if is_first_ga -%>
+  - Update Settings wiki page on an installed system with all plugins: `cd /path/to/installed/foreman && sudo -u foreman FOREMAN_REDMINE_API_KEY=xxx bundle exec rake settings:wiki`
+  - Update ErrorCodes wiki page on an installed system with all plugins: `cd /path/to/installed/foreman && sudo -u foreman FOREMAN_REDMINE_API_KEY=xxx bundle exec rake exception:wiki`
+<% end -%>
 <% if is_first_rc || !is_rc -%>
   - Update [`_config.yml`](https://github.com/theforeman/theforeman.org/blob/gh-pages/_config.yml)
 <% if is_first_ga -%>
