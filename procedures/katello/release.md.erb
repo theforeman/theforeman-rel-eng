@@ -89,6 +89,7 @@
 - [ ] Confirm response that the build succeeded (or if necessary, do more cherry-picks and version bumps repeating the steps above)
 - [ ] Test the install and upgrade documentation for both the Katello server and smart proxy
 - [ ] Post a [release announcement](https://community.theforeman.org/c/release-announcements/8)
+- [ ] Close <%= full_version %> in redmine. Work with the community to move open issues off. After a week of waiting for open issues to be retriaged by reporters, bulk-move issues to the next Y version of Katello.
 <% if is_first_ga -%>
 - [ ] Create and upload [release specific developer stable box](https://github.com/theforeman/forklift/blob/master/packer/README.md#creating-version-specific-katello-devel-boxes)
 - [ ] Remove references to the oldest Katello version from [testKatello.groovy](https://github.com/theforeman/jenkins-jobs/blob/master/theforeman.org/pipelines/test/testKatello.groovy) and [katello-pipelines.yml](https://github.com/theforeman/jenkins-jobs/blob/master/centos.org/jobs/katello-pipelines.yml).
