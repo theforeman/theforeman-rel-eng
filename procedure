@@ -83,6 +83,9 @@ procedures = {
       context[:release] = release
       context[:develop] = bump_last(release)
     end
+    opts.on('--foreman-version [X.Y]', /^\d+\.\d+$/, 'Foreman version, for Katello') do |foreman_version|
+      context[:foreman_version] = foreman_version
+    end
     opts.on('--target-date [YYYY-MM-DD]', Date,
             'Target date that the procedure should be completed on') do |date|
       context[:target_date] = date
@@ -162,7 +165,7 @@ def missing_required_option?(procedure, context)
       context[:version].nil?
     end
   when 'katello'
-    context[:target_date].nil? || context[:owner].nil? || (procedure == 'release' && context[:foreman_version].nil?)
+    context[:target_date].nil? || context[:owner].nil? || context[:foreman_version].nil?
   when 'foreman'
     context[:target_date].nil? || context[:owner].nil?
   else
