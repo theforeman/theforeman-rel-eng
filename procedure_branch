@@ -22,4 +22,14 @@ if [[ $READ == 1 ]] ; then
 	echo >&2
 fi
 
-./procedure branch --project "$PROJECT" --release "$VERSION" --target-date "$TARGET_DATE" --owner "$OWNER" --engineer "$ENGINEER"
+if [[ "$PROJECT" == katello && -z "$FOREMAN_VERSION" ]]; then
+	echo "FOREMAN_VERSION must be set to a real version in $RELEASEDIR/settings when generating a Katello branch procedure" >&2
+	exit 1
+fi
+
+FOREMAN_VERSION_ARGS=()
+if [[ "$PROJECT" == katello ]]; then
+	FOREMAN_VERSION_ARGS=(--foreman-version "$FOREMAN_VERSION")
+fi
+
+./procedure branch --project "$PROJECT" --release "$VERSION" "${FOREMAN_VERSION_ARGS[@]}" --target-date "$TARGET_DATE" --owner "$OWNER" --engineer "$ENGINEER"
