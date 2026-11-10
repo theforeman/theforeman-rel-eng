@@ -7,8 +7,42 @@ This runbook covers the Debian repository work for a Foreman release. The genera
 Create the numbered production repository from nightly, then populate the staging repository used for builds. These repositories initially contain existing dependencies; creating them does not build or release the new Foreman version. Production and staging use separate Freight libraries and caches on `repo-deb01.osuosl.theforeman.org`.
 
 1. Confirm the release version and supported Debian and Ubuntu suites with the current release CI configuration and release team. The examples below use `5.1`, `bookworm`, `jammy`, `noble`, and `trixie`; replace these values for the release being prepared. Include the shared plugins repository in production if it is part of the release.
-2. Coordinate with other repository publishers. Check available space, that each nightly source exists, and that none of the destination components already exist. The operations below are not safe to rerun against a partial or existing destination. If any step fails, stop and inspect the affected libraries and caches before deciding how to resume.
-3. Connect to `repo-deb01.osuosl.theforeman.org` and switch to the `freight` account:
+2. Coordinate with other repository publishers and check available space. The operations below are not safe to rerun against a partial or existing destination. If any step fails, stop and inspect the affected libraries and caches before deciding how to resume.
+
+   Before changing production, connect to `repo-deb01.osuosl.theforeman.org` and check staging as `freightstage`:
+
+   ```sh
+   sudo -u freightstage -i
+   ```
+
+   Set the release and OS suites for this release and check all staging destinations and eligible nightly binary packages. These commands require Bash:
+
+   ```bash
+   RELEASE=5.1
+   SUITES=(bookworm jammy noble trixie)
+   (
+     set -euo pipefail
+     [[ "$RELEASE" =~ ^[0-9]+\.[0-9]+$ ]] || { echo 'Set a major.minor release' >&2; exit 1; }
+     ((${#SUITES[@]} > 0)) || { echo 'No OS suites selected' >&2; exit 1; }
+     for suite in "${SUITES[@]}"; do
+       [[ "$suite" =~ ^[a-z][a-z0-9-]*$ && "$suite" != plugins ]] || { echo "Invalid OS suite: $suite" >&2; exit 1; }
+       source_dir="/var/www/freight/apt/$suite/nightly"
+       target_dir="/var/www/freightstage/apt/$suite/theforeman-$RELEASE"
+       test -d "$source_dir" || { echo "Missing source: $source_dir" >&2; exit 1; }
+       if [[ -e "$target_dir" || -L "$target_dir" ]]; then
+         echo "Staging destination already exists: $target_dir" >&2
+         exit 1
+       fi
+       find "$source_dir" -maxdepth 1 -type f \
+         \( -name '*.deb' -o -name '*.ddeb' \) ! -name '*9999*' -print -quit | grep -q . || {
+           echo "No eligible binary packages in $source_dir" >&2; exit 1;
+         }
+     done
+   )
+   ```
+
+   Exit the `freightstage` shell after the checks. If they fail, do not continue.
+3. Switch to the `freight` account:
 
    ```sh
    sudo -u freight -i
@@ -28,6 +62,9 @@ Create the numbered production repository from nightly, then populate the stagin
      set -euo pipefail
      [[ "$RELEASE" =~ ^[0-9]+\.[0-9]+$ ]] || { echo 'Set a major.minor release' >&2; exit 1; }
      ((${#SUITES[@]} > 0)) || { echo 'No OS suites selected' >&2; exit 1; }
+     for suite in "${SUITES[@]}"; do
+       [[ "$suite" =~ ^[a-z][a-z0-9-]*$ && "$suite" != plugins ]] || { echo "Invalid OS suite: $suite" >&2; exit 1; }
+     done
      for suite in "${SUITES[@]}" plugins; do
        source_dir="/var/www/freight/apt/$suite/nightly"
        target_dir="/var/www/freight/apt/$suite/$RELEASE"
@@ -53,14 +90,31 @@ Create the numbered production repository from nightly, then populate the stagin
    ```bash
    (
      set -euo pipefail
+     [[ "$RELEASE" =~ ^[0-9]+\.[0-9]+$ ]] || { echo 'Set a major.minor release' >&2; exit 1; }
+     ((${#SUITES[@]} > 0)) || { echo 'No OS suites selected' >&2; exit 1; }
+     for suite in "${SUITES[@]}"; do
+       [[ "$suite" =~ ^[a-z][a-z0-9-]*$ && "$suite" != plugins ]] || { echo "Invalid OS suite: $suite" >&2; exit 1; }
+     done
      targets=()
-     for suite in "${SUITES[@]}" plugins; do targets+=("apt/$suite"); done
+     for suite in "${SUITES[@]}" plugins; do
+       source_dir="/var/www/freight/apt/$suite/nightly"
+       target_dir="/var/www/freight/apt/$suite/$RELEASE"
+       test -d "$source_dir" && test -d "$target_dir" || { echo "Missing source or destination for $suite" >&2; exit 1; }
+       differences=$(rsync -rlnic --delete --exclude='/*9999*' "$source_dir/" "$target_dir/")
+       if [[ -n "$differences" ]]; then
+         printf 'Copy differs for %s; do not publish:\n%s\n' "$suite" "$differences" >&2
+         exit 1
+       fi
+       targets+=("apt/$suite")
+     done
      ((${#targets[@]} > 0)) || { echo 'No cache targets; refusing a global rebuild' >&2; exit 1; }
      freight cache -v -k -c "$HOME/freight.conf" "${targets[@]}"
    )
    ```
 
-   Omit `plugins` if its library was not changed. A distribution argument rebuilds **all components** of that distribution, not only the new release. Do not run `freight cache` without distribution arguments: it rebuilds every distribution. The `-k` option skips pool-wide cleanup, even for unreferenced files; plan any necessary cleanup separately and monitor disk space.
+   Omit `plugins` if its library was not changed. The `rsync -n` check is a dry run: it compares the copies, including extra files, without deleting anything. If nightly changed during the copy, review the differences before continuing. If an approved package removal intentionally makes the copy different, this guard will also stop the command; record and review the intended inventory before running a separately constructed, targeted cache command.
+
+   A distribution argument rebuilds **all components** of that distribution, not only the new release. Do not run `freight cache` without distribution arguments: it rebuilds every distribution. The `-k` option skips pool-wide cleanup, even for unreferenced files; plan any necessary cleanup separately and monitor disk space.
 
 6. Exit the `freight` shell, switch to `freightstage`, and set `RELEASE` and `SUITES` again:
 
@@ -73,7 +127,7 @@ Create the numbered production repository from nightly, then populate the stagin
    SUITES=(bookworm jammy noble trixie)
    ```
 
-   Use the same reviewed release and OS suites as in production. The shared plugins repository is not imported by the historical staging procedure.
+   Use the same reviewed release and OS suites as in production. The historical staging procedure imports binary packages, not source packages or the shared plugins repository. If staging needs source packages, coordinate a separate source-package import and verify its source index; do not assume these commands provide one.
 
 7. Add the production binary packages to the new staging components. This checks all staging destinations before starting and stops on an error:
 
@@ -84,6 +138,7 @@ Create the numbered production repository from nightly, then populate the stagin
      [[ "$RELEASE" =~ ^[0-9]+\.[0-9]+$ ]] || { echo 'Set a major.minor release' >&2; exit 1; }
      ((${#SUITES[@]} > 0)) || { echo 'No OS suites selected' >&2; exit 1; }
      for suite in "${SUITES[@]}"; do
+       [[ "$suite" =~ ^[a-z][a-z0-9-]*$ && "$suite" != plugins ]] || { echo "Invalid OS suite: $suite" >&2; exit 1; }
        source_dir="/var/www/freight/apt/$suite/$RELEASE"
        target_dir="/var/www/freightstage/apt/$suite/theforeman-$RELEASE"
        test -d "$source_dir" || { echo "Missing source: $source_dir" >&2; exit 1; }
@@ -110,12 +165,27 @@ Create the numbered production repository from nightly, then populate the stagin
    ```bash
    (
      set -euo pipefail
+     [[ "$RELEASE" =~ ^[0-9]+\.[0-9]+$ ]] || { echo 'Set a major.minor release' >&2; exit 1; }
+     ((${#SUITES[@]} > 0)) || { echo 'No OS suites selected' >&2; exit 1; }
      targets=()
-     for suite in "${SUITES[@]}"; do targets+=("apt/$suite"); done
+     for suite in "${SUITES[@]}"; do
+       [[ "$suite" =~ ^[a-z][a-z0-9-]*$ && "$suite" != plugins ]] || { echo "Invalid OS suite: $suite" >&2; exit 1; }
+       source_dir="/var/www/freight/apt/$suite/$RELEASE"
+       target_dir="/var/www/freightstage/apt/$suite/theforeman-$RELEASE"
+       test -d "$source_dir" && test -d "$target_dir" || { echo "Missing source or destination for $suite" >&2; exit 1; }
+       differences=$(rsync -rnic --delete --include='/*.deb' --include='/*.ddeb' --exclude='/*' "$source_dir/" "$target_dir/")
+       if [[ -n "$differences" ]]; then
+         printf 'Staging binaries differ for %s; do not publish:\n%s\n' "$suite" "$differences" >&2
+         exit 1
+       fi
+       targets+=("apt/$suite")
+     done
      ((${#targets[@]} > 0)) || { echo 'No cache targets; refusing a global rebuild' >&2; exit 1; }
      freight cache -v -k -c "$HOME/freight.conf" "${targets[@]}"
    )
    ```
+
+   This `rsync -n` comparison is also a dry run. Investigate any missing, changed, or extra binary packages before publishing.
 
 9. Verify both publications. Check the signatures and components in the production `InRelease` files at `https://deb.theforeman.org/dists/<suite>/InRelease` and the staging files at `https://stagingdeb.theforeman.org/dists/<suite>/InRelease`, using the trusted repository signing key. Production should list the numbered component; staging should list `theforeman-<release>`. Check package-index checksums and representative package URLs, and confirm existing components remain available. Allow for CDN propagation. A repository index does not by itself prove that the release packages can be installed.
 
