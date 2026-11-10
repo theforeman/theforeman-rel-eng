@@ -116,7 +116,7 @@ Create the numbered production repository from nightly, then populate the stagin
 
    A distribution argument rebuilds **all components** of that distribution, not only the new release. Do not run `freight cache` without distribution arguments: it rebuilds every distribution. The `-k` option skips pool-wide cleanup, even for unreferenced files; plan any necessary cleanup separately and monitor disk space.
 
-6. Exit the `freight` shell, switch to `freightstage`, and set `RELEASE` and `SUITES` again:
+6. Continue only if the production cache command completed successfully. If it failed, stop and resolve the failure before starting staging. Check the production signing key's fingerprint against the trusted repository key, then exit the `freight` shell, switch to `freightstage`, and set `RELEASE`, `SUITES`, and an architecture to verify:
 
    ```sh
    sudo -u freightstage -i
@@ -125,9 +125,10 @@ Create the numbered production repository from nightly, then populate the stagin
    ```bash
    RELEASE=5.1
    SUITES=(bookworm jammy noble trixie)
+   VERIFY_ARCH=amd64
    ```
 
-   Use the same reviewed release and OS suites as in production. The historical staging procedure imports binary packages, not source packages or the shared plugins repository. If staging needs source packages, coordinate a separate source-package import and verify its source index; do not assume these commands provide one.
+   Use the same reviewed release and OS suites as in production, and an architecture supported by the release. The historical staging procedure imports binary packages, not source packages or the shared plugins repository. If staging needs source packages, coordinate a separate source-package import and verify its source index; do not assume these commands provide one.
 
 7. Add the production binary packages to the new staging components. This checks all staging destinations before starting and stops on an error:
 
@@ -136,11 +137,23 @@ Create the numbered production repository from nightly, then populate the stagin
      set -euo pipefail
      shopt -s nullglob
      [[ "$RELEASE" =~ ^[0-9]+\.[0-9]+$ ]] || { echo 'Set a major.minor release' >&2; exit 1; }
+     [[ "$VERIFY_ARCH" =~ ^[a-z0-9]+$ ]] || { echo 'Set a valid verification architecture' >&2; exit 1; }
      ((${#SUITES[@]} > 0)) || { echo 'No OS suites selected' >&2; exit 1; }
+     production_cache=/var/www/vhosts/deb/htdocs
      for suite in "${SUITES[@]}"; do
        [[ "$suite" =~ ^[a-z][a-z0-9-]*$ && "$suite" != plugins ]] || { echo "Invalid OS suite: $suite" >&2; exit 1; }
        source_dir="/var/www/freight/apt/$suite/$RELEASE"
        target_dir="/var/www/freightstage/apt/$suite/theforeman-$RELEASE"
+       release_file="$production_cache/dists/$suite/Release"
+       index_path="$RELEASE/binary-$VERIFY_ARCH/Packages.gz"
+       gpgv --keyring "$production_cache/keyring.gpg" "$release_file.gpg" "$release_file" || exit 1
+       awk -v component="$RELEASE" '$1 == "Components:" { for (i = 2; i <= NF; i++) if ($i == component) found = 1 } END { exit !found }' "$release_file" || {
+         echo "Production component missing for $suite" >&2; exit 1;
+       }
+       expected=$(awk -v path="$index_path" '$1 == "SHA256:" { section = 1; next } /^[^[:space:]]/ { section = 0 } section && $3 == path { print $1; exit }' "$release_file")
+       test -n "$expected" || { echo "Production index missing from $release_file: $index_path" >&2; exit 1; }
+       actual=$(sha256sum "$production_cache/dists/$suite/$index_path")
+       [[ "${actual%% *}" == "$expected" ]] || { echo "Production index checksum mismatch for $suite" >&2; exit 1; }
        test -d "$source_dir" || { echo "Missing source: $source_dir" >&2; exit 1; }
        if [[ -e "$target_dir" || -L "$target_dir" ]]; then
          echo "Destination already exists: $target_dir" >&2
