@@ -8,7 +8,7 @@ The most important environment variables are `PROJECT` and `VERSION`.
 
 ## Procedures
 
-Procedures are kept in the `procedures` directory.
+Procedures are kept in the `procedures` directory. The [Debian release packaging runbook](procedures/foreman/debian-packaging.md) documents the repository steps for Foreman releases.
 
 ### Roles
 
