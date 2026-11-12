@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
-from subprocess import check_output, STDOUT, CalledProcessError
+from base64 import b64decode
+from binascii import Error as Base64Error
+from subprocess import DEVNULL, PIPE, run
 import argparse
 import glob
 
@@ -9,17 +11,42 @@ def find_unsigned_packages(target_dir, gpgkey):
     packages = glob.glob(f"{target_dir}/*.rpm")
 
     for package in packages:
-        cmd = [
-            'rpm',
-            '--query',
-            '--queryformat',
-            '%{SIGPGP:pgpsig}',
-            package
-        ]
+        # RPM 4.19+ stores the V4 OpenPGP signature outside the legacy
+        # SIGPGP query tag.  Read the OPENPGP tag and inspect its detached
+        # signature packet instead.  This does not need the release public
+        # key in rpm's global database.
+        encoded_signature = run(
+            ['rpm', '--query', '--queryformat', '%{OPENPGP}', package],
+            stdout=PIPE,
+            stderr=DEVNULL,
+            check=False,
+        ).stdout.strip()
 
-        output = check_output(cmd, universal_newlines=True, stderr=STDOUT)
+        try:
+            signature = b64decode(encoded_signature, validate=True)
+        except Base64Error:
+            signature = None
 
-        if gpgkey.lower() not in output:
+        if not signature:
+            # RHEL/CentOS 9's RPM does not expose the OPENPGP tag.  Retain
+            # the legacy tag check for that implementation.
+            output = run(
+                ['rpm', '--query', '--queryformat', '%{SIGPGP:pgpsig}', package],
+                universal_newlines=True,
+                stdout=PIPE,
+                stderr=DEVNULL,
+                check=False,
+            ).stdout
+        else:
+            output = run(
+                ['gpg2', '--batch', '--list-packets'],
+                input=signature,
+                stdout=PIPE,
+                stderr=DEVNULL,
+                check=False,
+            ).stdout.decode(errors='replace')
+
+        if gpgkey.lower() not in output.lower():
             yield package
 
 
