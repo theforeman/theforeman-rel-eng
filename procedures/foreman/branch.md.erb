@@ -95,7 +95,7 @@
   - [ ] Create release repositories in Copr by forking nightly repositories `obal copr-project copr_projects` on the `rpm/<%= release %>` branch
   - [ ] Push the `rpm/<%= release %>` branch
 - Branch Debian packaging
-  - [ ] Clone Debian nightly repos to <%= release %> using [copy/freight instructions](https://projects.theforeman.org/projects/foreman/wiki/Debian_Packaging#Branching-for-release)
+  - [ ] Clone the Debian nightly repositories to <%= release %> and publish production and staging indexes using the [Debian release packaging runbook](https://github.com/theforeman/theforeman-rel-eng/blob/master/procedures/foreman/debian-packaging.md#branching-for-a-release). Use targeted Freight cache rebuilds rather than rebuilding every distribution.
   - [ ] Create a `deb/<%= release %>` branch in [foreman-packaging](https://github.com/theforeman/foreman-packaging) based on `deb/develop`
 
 ## Release Owner
