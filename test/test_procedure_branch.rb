@@ -20,7 +20,7 @@ class ProcedureBranchTest < Minitest::Test
     assert_includes output, "s/nightly/4.99/"
     assert_includes output, 'KATELLO_VERSION=4.99 ./branch_project'
     refute_includes output, 'KATELLO_VERSION_HERE'
-    assert_operator output.index('Create a `deb/5.1` branch'), :<, output.index('DEB: verify automation')
+    assert_operator output.index('Create a `deb/5.1` branch'), :<, output.index('DEB: review the automated changes')
   end
 
   def test_foreman_branch_rejects_missing_or_invalid_katello_version

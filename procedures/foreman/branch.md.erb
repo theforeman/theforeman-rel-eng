@@ -46,7 +46,7 @@
 ## Release Owner
 
 - [ ] Announce start of stabilization week to discourse [development category](https://community.theforeman.org/c/development).
-- [ ] As Hammer maintainers, decide whether core and the Foreman plugin each need a release, and prepare versions and tests using the [Hammer release runbook](https://github.com/theforeman/theforeman-rel-eng/blob/master/procedures/foreman/hammer-cli-release.md). An unchanged core can retain a compatible published version; do not assume both versions must match Foreman.
+- [ ] Decide whether Hammer core and the Foreman plugin each need a release. Follow the [Hammer release runbook](https://github.com/theforeman/theforeman-rel-eng/blob/master/procedures/foreman/hammer-cli-release.md) to choose versions and prepare tests. An unchanged core can stay on a compatible published version. Neither version has to match Foreman.
 - Prepare the manual for the new version:
   - [ ] Update installer options section of nightly manual using the [get-params script](https://github.com/theforeman/theforeman.org/blob/gh-pages/scripts/installer/get-params)
   - [ ] Copy [website manual content](https://github.com/theforeman/theforeman.org/tree/gh-pages/manuals) from nightly to <%= release %> and update version numbers mentioned in it.
@@ -61,9 +61,10 @@
 
 ## Release Engineer
 
-- Check whether the release key already exists and verify its fingerprint and backup before generating anything. Never overwrite an existing key or backup. Create a new GPG key only when needed. See [GPG_Keys](https://github.com/theforeman/theforeman-rel-eng/#generating-a-new-gpg-key-for-a-xy-release) if needed.
-  - [ ] If no key exists, run <%= rel_eng_script('generate_gpg') %> and <%= rel_eng_script('export_gpg_private') %> to back up the private key to gopass. If it exists, verify the existing clean backup without overwriting it.
-  - [ ] If the clean backup exists but the local release keyring is absent, restore it using <%= rel_eng_script('import_gpg_private') %> without `--force`. Verify the expected fingerprint and clean-key checks in the isolated keyring before use. Never import the personally signed public key into it.
+- Check the release GPG key before creating a new one. Do not overwrite an existing key or backup. See [GPG keys](https://github.com/theforeman/theforeman-rel-eng/#generating-a-new-gpg-key-for-a-xy-release) for details.
+  - [ ] If a release key already exists, verify its fingerprint and its clean backup. Do not overwrite the backup.
+  - [ ] If no release key exists, run <%= rel_eng_script('generate_gpg') %>. Then run <%= rel_eng_script('export_gpg_private') %> to back up the private key to gopass.
+  - [ ] If the clean backup exists but the local release keyring is absent, restore it with <%= rel_eng_script('import_gpg_private') %> without `--force`. Before using it, verify the fingerprint and clean-key checks in the isolated keyring. Never import the personally signed public key into this keyring.
 - Publish the key
   - [ ] Use <%= rel_eng_script('export_gpg_public') %> to export the clean GPG key and update the website's [security.md](https://github.com/theforeman/theforeman.org/blob/gh-pages/security.md) and create a file in [static/keys](https://github.com/theforeman/theforeman.org/tree/gh-pages/static/keys)
   - [ ] Use <%= rel_eng_script('upload_yum_gpg') %> to create [releases/<%= release %>/RPM-GPG-KEY-foreman](https://yum.theforeman.org/releases/<%= release %>/RPM-GPG-KEY-foreman) on yum.theforeman.org
@@ -75,7 +76,7 @@
 - [ ] Create new settings files for [client](https://github.com/theforeman/theforeman-rel-eng/blob/master/releases/client/<%= release %>/settings), ensure it has the rights `OSES` list and commit it too.
 - [ ] Open a PR with the result of [jenkins-jobs](https://github.com/theforeman/jenkins-jobs) branching: `./branch-foreman <%= release %> <%= katello_version %>`
 - [ ] Open PR to remove any jobs that are related to end of life versions
-- [ ] Open PR to add <%= release %> to [Forklift versions config](https://github.com/theforeman/forklift/blob/master/vagrant/config/versions.yaml). Do not merge before packaging is branched, dependency pins are confirmed, and required repositories are available; verify CI uses the mapping before release testing.
+- [ ] Open a PR to add <%= release %> to the [Forklift versions config](https://github.com/theforeman/forklift/blob/master/vagrant/config/versions.yaml). Before merging, branch packaging, confirm the dependency pins, and check that the required repositories are available. Before release testing, verify that CI uses the new mapping.
 
 # Branching: <%= target_date %>
 
@@ -96,17 +97,17 @@
 - [ ] Create <%= release %>-stable branches using <%= rel_eng_script('branch_project') %>: `KATELLO_VERSION=<%= katello_version %> ./branch_project`
 - [ ] Push <%= release %>-stable branches using <%= rel_eng_script('branch_push') %>
 - [ ] Branch foreman-documentation git repository and update website for new release by following the [README instructions](https://github.com/theforeman/foreman-documentation#branching-new-release)
-- [ ] Create and verify `<%= release %>-stable` branches for [hammer-cli](https://github.com/theforeman/hammer-cli) and [hammer-cli-foreman](https://github.com/theforeman/hammer-cli-foreman) separately; the generic Foreman branching scripts do not include Hammer.
-- [ ] Publish any selected Hammer releases using the [runbook](https://github.com/theforeman/theforeman-rel-eng/blob/master/procedures/foreman/hammer-cli-release.md), then update RPM and Debian packaging on the newly created stable branches:
-  - [ ] RPM: update `rubygem-hammer_cli` and `rubygem-hammer_cli_foreman` on `rpm/<%= release %>` to the chosen published versions using `obal update <package> --version <version>`. Review source URLs, dependencies, and the PR.
-  - [ ] DEB: verify automation's changes on `deb/develop`; cherry-pick suitable changes to `deb/<%= release %>`, or prepare a stable-specific change. Ensure both stable packages and dependencies select published, compatible gems before the final build. Do not bump `deb/develop` to an unpublished future gem.
+- [ ] Create and verify `<%= release %>-stable` branches for [hammer-cli](https://github.com/theforeman/hammer-cli) and [hammer-cli-foreman](https://github.com/theforeman/hammer-cli-foreman). The Foreman branching scripts do not include Hammer.
+- [ ] Publish any selected Hammer releases using the [runbook](https://github.com/theforeman/theforeman-rel-eng/blob/master/procedures/foreman/hammer-cli-release.md). Then update packaging on the new stable branches:
+  - [ ] RPM: update `rubygem-hammer_cli` and `rubygem-hammer_cli_foreman` on `rpm/<%= release %>` to the chosen published versions. Use `obal update <package> --version <version>` and review the source URLs, dependencies, and PR.
+  - [ ] DEB: review the automated changes on `deb/develop`. Cherry-pick suitable changes to `deb/<%= release %>`, or prepare a stable-specific change. Before the final build, check that both stable packages and their dependencies select published, compatible gems. Do not bump `deb/develop` to an unpublished future gem.
 
 The next step should only be done after all branching, including packaging, has completed.
 
 - [ ] Bump versions to <%= develop %>-develop using <%= rel_eng_script('develop_branch_bump') %>
 - [ ] Push version bumps to <%= develop %>-develop using <%= rel_eng_script('develop_branch_push') %>
 - [ ] Create Redmine version <%= develop %>.0 using <%= rel_eng_script('create_redmine_version') %>
-- [ ] Prepare and review next-development version bumps separately in Hammer core and plugin after branching; these are not covered by the Foreman bump scripts.
+- [ ] After branching, prepare and review the next-development version bumps in Hammer core and the plugin. The Foreman bump scripts do not cover them.
 
 # Preparing build systems: <%= target_date %>
 
@@ -117,7 +118,7 @@ The next step should only be done after all branching, including packaging, has 
   - [ ] rpm/develop:
     - Update the build tag: `sed -i 's/fm<%= release.tr('.', '_') %>/fm<%= develop.tr('.', '_') %>/g' package_manifest.yaml`
     - Set the Foreman specs to version `<%= develop %>.0` and reset release to `1`: `sed -i '/^Version:/ s/[0-9\.]\+$/<%= develop %>.0/ ; /^%global release/ s/[0-9]\+$/1/' packages/foreman/foreman{,-{installer,proxy,release,selinux}}/*.spec`
-    - Set each Hammer RPM spec to its reviewed next-development version from the corresponding Hammer branch and reset its release to `1`. These versions need not match Foreman.
+    - Set each Hammer RPM spec to the reviewed next-development version from its Hammer branch. Reset its release to `1`. These versions do not have to match Foreman.
     - Create changelogs with `obal changelog`, using the appropriate version in each message for Foreman and for each Hammer package.
     - Commit: `git commit -a -m 'Bump version to <%= develop %>-develop'`
   - [ ] deb/develop: `scripts/changelog.rb -v <%= develop %>.0-1 -m "Bump changelog to <%= develop %>.0 to match VERSION" debian/*/*/changelog`
