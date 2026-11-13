@@ -2,6 +2,15 @@
 
 . settings
 
+katello_version="$VERSION"
+if [[ $PROJECT == foreman ]]; then
+	if [[ ! ${KATELLO_VERSION:-} =~ ^[0-9]+\.[0-9]+$ ]]; then
+		echo "KATELLO_VERSION must be set to a Katello X.Y version for PROJECT=foreman" >&2
+		exit 1
+	fi
+	katello_version="$KATELLO_VERSION"
+fi
+
 for repo in $(./ensure_clean_git_checkouts "$@") ; do
 	(
 		cd "$GIT_DIR/$repo"
@@ -20,9 +29,8 @@ for repo in $(./ensure_clean_git_checkouts "$@") ; do
 			git add .gitignore Puppetfile*
 			git commit --message "Pin Puppet modules for ${VERSION}"
 		elif [[ $repo == foreman ]] ; then
-			# Foreman and Katello share the same X.Y version number, so the
-			# stable branch's Katello test dependency is pinned to $VERSION too.
-			sed -i "/plugin_repository/a\      plugin_version: KATELLO-$VERSION" .github/workflows/foreman.yml
+			# Pin the Katello test dependency to the explicitly paired version.
+			sed -i "/plugin_repository/a\      plugin_version: KATELLO-$katello_version" .github/workflows/foreman.yml
 			sed -i "s/nightly/$VERSION/; /rpm\/develop/ s/develop/$VERSION/" .packit.yaml
 			git add .github/workflows/foreman.yml .packit.yaml
 			git commit --message "Pin CI to ${VERSION} stable branches"

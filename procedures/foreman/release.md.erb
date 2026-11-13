@@ -33,8 +33,10 @@
 - [ ] Update release version similar to [here](https://github.com/theforeman/theforeman-rel-eng/commit/2029a9688da00d9c385c3438dd71b594ba5f728e)
 <% end -%>
 - Tag the projects
+  - [ ] Confirm the exact release version, stable commits, signing key and fingerprint before tagging. `tag_project` creates signed annotated tags; verify signatures and targets before pushing. Do not replace an existing tag without release-team review.
   - [ ] Create tags using <%= rel_eng_script('tag_project') %>
   - [ ] Push tags using <%= rel_eng_script('tag_push') %>
+  - [ ] If Hammer releases are needed, follow the separate [Hammer runbook](https://github.com/theforeman/theforeman-rel-eng/blob/master/procedures/foreman/hammer-cli-release.md); the generic Foreman tag scripts do not tag Hammer.
 <% unless is_rc -%>
 - Update Redmine versions
   - [ ] Close old <%= short_version %>.x versions using <%= rel_eng_script('close_redmine_version') %>
@@ -64,18 +66,28 @@ Note: If for some reason there was an issue with the tarballs that required uplo
 - Update [foreman-packaging](https://github.com/theforeman/foreman-packaging) branches
   - [ ] rpm/<%= short_version %> using <%= rel_eng_script('bump_rpm_packaging') %>
   - [ ] deb/<%= short_version %> using <%= rel_eng_script('bump_deb_packaging') %>
-- [ ] Wait for packages to be built using <%= rel_eng_script('wait_packaging') %> (checks [rpm/<%= short_version %>](https://ci.theforeman.org/job/foreman-packaging-rpm-<%= short_version %>-release/) and [deb/<%= short_version %>](https://ci.theforeman.org/job/foreman-packaging-deb-<%= short_version %>-release/)). This takes a while so you can already start on the manual updates.
 - Check for outstanding PRs against <%= short_version %> packaging, and merge if possible:
   - [ ] [rpm/<%= short_version%>](https://github.com/theforeman/foreman-packaging/pulls?q=is%3Apr+is%3Aopen+base%3Arpm%2F<%= short_version %>): `gh pr list --repo theforeman/foreman-packaging --state open --base rpm/<%= short_version %>`
   - [ ] [deb/<%= short_version%>](https://github.com/theforeman/foreman-packaging/pulls?q=is%3Apr+is%3Aopen+base%3Adeb%2F<%= short_version %>): `gh pr list --repo theforeman/foreman-packaging --state open --base deb/<%= short_version %>`
+- [ ] Resolve or explicitly disposition outstanding PRs before the final builds; rerun after relevant merges.
+- [ ] Wait for packages to be built using <%= rel_eng_script('wait_packaging') %> (checks [rpm/<%= short_version %>](https://ci.theforeman.org/job/foreman-packaging-rpm-<%= short_version %>-release/) and [deb/<%= short_version %>](https://ci.theforeman.org/job/foreman-packaging-deb-<%= short_version %>-release/)). This takes a while so you can already start on the manual updates.
+- [ ] Confirm the completed RPM and Debian build runs used the intended packaging commits. Inspect release Copr build results for each supported RPM target, including `rubygem-hammer_cli` and `rubygem-hammer_cli_foreman`. A Copr project forked from nightly can retain development packages even when a later release job is green. Build missing stable versions in the release Copr and verify the results.
 - Sign the RPMs in the release
+  - [ ] Use a fresh, isolated local stage for this project and version. The generator reuses `tmp/<project>/<version>` and does not remove every obsolete version; if it already exists, preserve it and use a separate worktree with an empty `tmp` and the verified release configuration and clean signing key. Do not delete a remote stage to reset local state.
   - [ ] <%= rel_eng_script('generate_stage_repository') %>
+  - [ ] Inspect generated staging package versions for every supported RPM target, including both Hammer packages. If incorrect, correct release Copr and generate again in a fresh local stage, then recheck before signing.
   - [ ] <%= rel_eng_script('sign_stage_rpms') %>
+  - [ ] Verify signatures and inspect an equivalent rsync dry run, including the exact destination and any deletions; `upload_stage_rpms` uses `--delete-after`.
   - [ ] <%= rel_eng_script('upload_stage_rpms') %>
 - Sign RPMs for client repos (call scripts with `PROJECT=client`)
+  - [ ] Use a fresh, isolated client local stage, as above.
   - [ ] <%= rel_eng_script('generate_stage_repository') %>
   - [ ] <%= rel_eng_script('sign_stage_rpms') %>
+  - [ ] Verify signatures and inspect an equivalent rsync dry run for the client destination and any deletions.
   - [ ] <%= rel_eng_script('upload_stage_rpms') %>
+- [ ] Before the release pipeline, verify repository metadata and dependencies for each supported OS and its applicable installation paths, including containers where appropriate, using the actual enabled repositories. Run repository closure and a no-install package solver preflight against the staged versions, including Hammer; investigate missing dependencies rather than bypassing gates. Record OS, repository URLs, selected versions, and results.
+- [ ] Verify the release and upgrade mappings in [Forklift](https://github.com/theforeman/forklift/blob/master/vagrant/config/versions.yaml), dependency pins and repository availability. Confirm the Jenkins job's actual Forklift checkout and selected baseline/target versions, not just the merged mapping. Preserve the real install and upgrade gates; a solver check is not an install or upgrade.
+- [ ] Confirm promotion is authorized before starting or retrying the parent release pipeline: a successful run promotes packages. Record the run and inspect the install, upgrade, and publication stages; a failed gate is a blocker.
 - [ ] Kick off the [release pipeline](https://ci.theforeman.org/job/foreman-<%= short_version %>-release-pipeline/) by calling <%= rel_eng_script('release_pipeline') %>
 - [ ] Kick off the [client pipeline](https://ci.theforeman.org/job/foreman-client-<%= short_version %>-rpm-pipeline/) by calling `PROJECT=client ./release_pipeline`
 - [ ] Kick off the [plugins pipeline](https://ci.theforeman.org/job/foreman-plugins-<%= short_version %>-rpm-pipeline/) by calling <%= rel_eng_script('plugins_pipeline') %>
@@ -84,10 +96,11 @@ Note: If for some reason there was an issue with the tarballs that required uplo
 
 ## Release Owner
 
+- [ ] Prepare one reviewed inventory of issues, headline features, upgrade warnings, deprecations, and Hammer changes and known exceptions. Use it for both publications below; reconcile omissions and differences before submitting.
 - [ ] Update manual if applicable for any additional installation steps
 - [ ] Update the [website's release notes section](https://github.com/theforeman/theforeman.org/tree/gh-pages/_includes/manuals/<%= short_version %>/1.2_release_notes.md) in the manual
   - Using the [release notes script](https://github.com/theforeman/theforeman.org/blob/gh-pages/scripts/release_notes.rb): `./scripts/release_notes.rb foreman <%= version %>`
-  - Append CLI release notes taken from the [hammer-cli](https://github.com/theforeman/hammer-cli/blob/<%= short_version %>-stable/doc/release_notes.md) and [hammer-cli-foreman](https://github.com/theforeman/hammer-cli-foreman/blob/<%= short_version %>-stable/doc/release_notes.md) changelogs, in [theforeman.org](https://github.com/theforeman/theforeman.org/trees/gh-pages/_includes/manuals/<%= short_version %>/1.2_release_notes.md).
+  - Append CLI release notes for the versions actually published, using the matching tags in [hammer-cli](https://github.com/theforeman/hammer-cli) and [hammer-cli-foreman](https://github.com/theforeman/hammer-cli-foreman), not later changes on a stable branch.
 <% if is_rc || is_first_ga -%>
   - Headline features: half a dozen important features with a few sentences description each
   - Upgrade warnings: all important notices that users must be aware of before upgrading
@@ -96,17 +109,18 @@ Note: If for some reason there was an issue with the tarballs that required uplo
   - Submit this as a PR
 - [ ] Update [docs.theforeman.org](https://github.com/theforeman/foreman-documentation)
   - Using [redmine_release_notes](https://github.com/theforeman/foreman-documentation/blob/<%= short_version %>/guides/doc-Release_Notes/redmine_release_notes) script (see [README](https://github.com/theforeman/foreman-documentation/blob/<%= short_version %>/guides/doc-Release_Notes/README.md) as well): `./guides/doc-Release_Notes/redmine_release_notes foreman <%= version %> > ./guides/doc-Release_Notes/topics/foreman-<%= version %>.adoc`
-  - Append CLI release notes taken from the [hammer-cli](https://github.com/theforeman/hammer-cli/blob/<%= short_version %>-stable/doc/release_notes.md) and [hammer-cli-foreman](https://github.com/theforeman/hammer-cli-foreman/blob/<%= short_version %>-stable/doc/release_notes.md) changelogs to [`foreman-<%= version %>.adoc`](https://github.com/theforeman/foreman-documentation/tree/<%= short_version %>/guides/doc-Release_Notes/topics/foreman-<%= version %>.adoc).
+  - Append the same CLI release notes from the matching published Hammer tags to [`foreman-<%= version %>.adoc`](https://github.com/theforeman/foreman-documentation/tree/<%= short_version %>/guides/doc-Release_Notes/topics/foreman-<%= version %>.adoc).
 <% if is_first_rc || (!is_rc && !is_first_ga) -%>
   - Add `topics/foreman-<%= version %>.adoc` to `guides/doc-Release_Notes/master.adoc`: `sed -i '/x.y.z releases here/a include::topics/foreman-<%= version %>.adoc[leveloffset=+1]' guides/doc-Release_Notes/master.adoc`
 <% end -%>
   - Make sure [foreman-contributors.adoc](https://github.com/theforeman/foreman-documentation/blob/<%= short_version %>/guides/doc-Release_Notes/topics/foreman-contributors.adoc) is updated
   - Make sure headline features, upgrade warnings and deprecations are in sync with the website
   - Submit this as a PR
+- [ ] Review the API documentation source commit and the effect on `foreman/latest`; adding the newest version can change `latest`. Confirm that the versioned documentation and intended latest target are correct after publication.
 <% if is_first_rc -%>
-- [ ] [Generate](https://github.com/theforeman/apidocs#adding-new-version) the apipie docs and raise pull request in [apidocs](https://github.com/theforeman/apidocs) repository
+- [ ] [Generate](https://github.com/theforeman/apidocs#managing-foreman-versions) the apipie docs and raise pull request in [apidocs](https://github.com/theforeman/apidocs) repository
 <% else -%>
-- [ ] [Update](https://github.com/theforeman/apidocs#adding-new-version) the apipie docs and place those in the [foreman/<%= short_version %>/apidoc](https://github.com/theforeman/apidocs/tree/gh-pages/foreman/<%= short_version %>/apidoc) directory if any changes were made to the API
+- [ ] [Update](https://github.com/theforeman/apidocs#managing-foreman-versions) the apipie docs and place those in the [foreman/<%= short_version %>/apidoc](https://github.com/theforeman/apidocs/tree/gh-pages/foreman/<%= short_version %>/apidoc) directory if any changes were made to the API
 <% end -%>
 
 # After the packages have been released
@@ -126,7 +140,7 @@ Note: If for some reason there was an issue with the tarballs that required uplo
     - Update `foreman_latest_releases`
 <% end -%>
 <% if is_first_rc -%>
-    - Add the <%= short_version %> in `foreman_versions` list
+    - Verify <%= short_version %> appears once in `foreman_versions`; add it only if missing.
 <% end -%>
 <% end -%>
 <% if is_first_rc -%>

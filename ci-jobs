@@ -68,7 +68,8 @@ def build_job(job, parameters=None, wait=True):
         sleep(1)
 
     if wait:
-        _poll(server, job, last_build_number)
+        if _poll(server, job, last_build_number) != 'SUCCESS':
+            sys.exit(1)
     else:
         build_info = server.get_build_info(job, last_build_number)
         print(build_info['url'])
@@ -85,8 +86,9 @@ def _poll(server, job, build_number):
         except KeyboardInterrupt:
             raise SystemExit('Aborted')
 
-    print(build_info['result'])
-    return build_info['result']
+    result = build_info.get('result')
+    print(result)
+    return result
 
 
 def ping(args):  # pylint: disable=unused-argument
@@ -106,7 +108,8 @@ def poll(args):
     else:
         build_number = get_last_build_number(server, job)
 
-    _poll(server, job, build_number)
+    if _poll(server, job, build_number) != 'SUCCESS':
+        sys.exit(1)
 
 
 def release(args):

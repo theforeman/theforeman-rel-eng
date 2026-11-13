@@ -16,6 +16,11 @@ end
 def header(filename)
   git_commit = `git rev-parse HEAD`.strip
   git_filename = Pathname.new(filename).relative_path_from(`git rev-parse --show-toplevel`.strip)
+  tracked = system('git', 'ls-files', '--error-unmatch', '--', filename, out: File::NULL, err: File::NULL)
+  unchanged = system('git', 'diff', '--quiet', 'HEAD', '--', filename, out: File::NULL, err: File::NULL)
+  unless tracked && unchanged
+    warn "Warning: #{git_filename} has uncommitted changes or is untracked; the linked commit does not identify the rendered template."
+  end
   <<~HEADER
     This procedure was generated from [#{git_filename} at #{git_commit}](https://github.com/theforeman/theforeman-rel-eng/blob/#{git_commit}/#{git_filename})
 
@@ -72,7 +77,7 @@ global = OptionParser.new do |opts|
 end
 procedures = {
 	'branch' => OptionParser.new do |opts|
-    opts.banner = "Usage: #{opts.program_name} branch --project [foreman|katello|candlepin] --release [X.Y] --target-date [YYYY-MM-DD] --owner [OWNER] [--engineer [ENGINEER]]"
+    opts.banner = "Usage: #{opts.program_name} branch --project [foreman|katello|candlepin] --release [X.Y] [--katello-version X.Y] --target-date [YYYY-MM-DD] --owner [OWNER] [--engineer [ENGINEER]]"
 
     opts.on('--project [PROJECT]', ['foreman', 'katello', 'candlepin'],
             'Project to generate branch procedure for') do |t|
@@ -82,6 +87,10 @@ procedures = {
             'Version currently in nightly in the major.minor format, like 3.7') do |release|
       context[:release] = release
       context[:develop] = bump_last(release)
+    end
+    opts.on('--katello-version [X.Y]', /^\d+\.\d+$/,
+            'Katello version paired with the Foreman release (required for Foreman branching)') do |katello_version|
+      context[:katello_version] = katello_version
     end
     opts.on('--target-date [YYYY-MM-DD]', Date,
             'Target date that the procedure should be completed on') do |date|
@@ -164,7 +173,8 @@ def missing_required_option?(procedure, context)
   when 'katello'
     context[:target_date].nil? || context[:owner].nil? || (procedure == 'release' && context[:foreman_version].nil?)
   when 'foreman'
-    context[:target_date].nil? || context[:owner].nil?
+    context[:target_date].nil? || context[:owner].nil? ||
+      (procedure == 'branch' && (context[:release].nil? || context[:katello_version].nil?))
   else
     true
   end
