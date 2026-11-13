@@ -1,0 +1,27 @@
+---
+name: Release guardrails
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+      - uses: astral-sh/setup-uv@v6
+      - name: Test procedure rendering
+        run: ruby -Itest -e 'Dir["test/test_*.rb"].sort.each { |file| require File.expand_path(file) }'
+      - name: Test release command guardrails
+        run: uv run --no-project --no-managed-python python -m unittest discover -s tests -v

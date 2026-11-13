@@ -48,10 +48,12 @@ These are the same as Foreman's release engineer.
 
 ### Branching
 
-Use `procedure_branch` to display the steps. Modify `PROJECT` and `VERSION` as needed.
+Use `procedure_branch` to display the steps. Set `PROJECT` and `VERSION` for the release.
+
+For Foreman, also set the paired `KATELLO_VERSION`. The two versions do not always match. If you omit the Katello version, the script prompts for it.
 
 ```sh
-PROJECT=foreman VERSION=3.7 ./procedure_branch
+PROJECT=foreman VERSION=3.7 KATELLO_VERSION=4.9 ./procedure_branch
 ```
 
 It will have created `releases/${PROJECT}/${VERSION}/settings`, which should be submitted as a pull request.
@@ -60,8 +62,12 @@ A more advanced invocation is to specify the parameters directly and copy the ou
 This uses `wl-copy` for Wayland; `xclip` achieves the same for Xorg.
 
 ```
-PROJECT=foreman VERSION=3.7 ./procedure_branch 2023-05-23 TheOwner TheEngineer | wl-copy
+PROJECT=foreman VERSION=3.7 KATELLO_VERSION=4.9 ./procedure_branch 2023-05-23 TheOwner TheEngineer | wl-copy
 ```
+
+The generated procedure links to its template at the current Git commit. If the template has uncommitted changes, the script warns on stderr. Commit the template first if you need the link to match the generated text.
+
+When you create the Foreman branches, use the generated `KATELLO_VERSION=... ./branch_project` command. The script needs this version again to pin Foreman's Katello CI dependency.
 
 Now post this to [Discourse Development/Releases](https://community.theforeman.org/c/development/releases/20) as `$PROJECT $VERSION branching process`.
 Follow the process as instructed.

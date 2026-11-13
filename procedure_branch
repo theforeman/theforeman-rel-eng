@@ -18,8 +18,16 @@ if [[ -z $ENGINEER ]] ; then
 	read -r -p "Release engineer (Discourse username): " ENGINEER
 	READ=1
 fi
+if [[ $PROJECT == foreman && -z $KATELLO_VERSION ]] ; then
+	read -r -p "Paired Katello version (X.Y): " KATELLO_VERSION
+	READ=1
+fi
 if [[ $READ == 1 ]] ; then
 	echo >&2
 fi
 
-./procedure branch --project "$PROJECT" --release "$VERSION" --target-date "$TARGET_DATE" --owner "$OWNER" --engineer "$ENGINEER"
+args=(branch --project "$PROJECT" --release "$VERSION" --target-date "$TARGET_DATE" --owner "$OWNER" --engineer "$ENGINEER")
+if [[ $PROJECT == foreman ]] ; then
+	args+=(--katello-version "$KATELLO_VERSION")
+fi
+./procedure "${args[@]}"
